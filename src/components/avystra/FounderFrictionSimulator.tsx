@@ -50,18 +50,13 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
         alt="Founder — confident, system in place"
         referrerPolicy="no-referrer"
         loading="lazy"
-        // This image already contains a circular portrait inside it (the
-        // person's head is framed in an inner circle with a dark grid
-        // background). Using object-contain ensures the ENTIRE image —
-        // including the inner circle and the hair at its top — is fully
-        // visible inside the container circle with NO cutting. The dark
-        // background of the image blends with the container's navy bg.
-        // This matches the frustrated image's framing: full person visible,
-        // no clipping.
-        className="absolute inset-0 w-full h-full object-contain transition-opacity duration-500"
+        // Same framing as the frustrated image: object-cover fills the circle,
+        // object-position "center 25%" biases toward the top so the face + hair
+        // stay visible while the lower torso crops.
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
         style={{
           opacity: isResolved ? 1 : 0,
-          objectPosition: "center center",
+          objectPosition: "center 25%",
         }}
       />
       {/* Green tint overlay for confident state */}
