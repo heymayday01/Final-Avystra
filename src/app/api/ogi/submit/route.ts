@@ -296,21 +296,32 @@ export async function POST(request: Request) {
     );
   }
 
-  // 2. Send emails via Resend. Each send is independently try/caught so a
+  // 2. Send emails via Resend. Each send is independently handled so a
   //    failure in one doesn't block the other. If RESEND_API_KEY is not
   //    configured, we skip both and return emailSent: false — the DB record
   //    is still saved, which is the user's primary requirement.
+  //
+  //    NOTE: The Resend SDK resolves (does not throw) on API-level errors
+  //    like 403/422. It returns { data, error } — we must check `.error`
+  //    explicitly, not just rely on try/catch (which only catches network
+  //    errors).
   let emailSent = false;
 
   if (resend) {
     // Email #1 → AVYSTRA (full data)
     try {
-      await resend.emails.send({
+      const result = await resend.emails.send({
         from: FROM_EMAIL,
         to: AVYSTRA_NOTIFY_EMAIL,
         subject: `New OGI Submission — ${data.name} (${data.role})`,
         html: buildAvystraEmailHtml(data),
       });
+      if (result.error) {
+        console.error(
+          "[ogi/submit] AVYSTRA notification email rejected by Resend:",
+          result.error
+        );
+      }
     } catch (err) {
       console.error("[ogi/submit] AVYSTRA notification email failed:", err);
     }
@@ -318,7 +329,7 @@ export async function POST(request: Request) {
     // Email #2 → User (result summary), only if a valid email was provided
     if (data.email) {
       try {
-        await resend.emails.send({
+        const result = await resend.emails.send({
           from: FROM_EMAIL,
           to: data.email,
           subject: "Your AVYSTRA OGI Result",
@@ -328,7 +339,14 @@ export async function POST(request: Request) {
             band: data.band,
           }),
         });
-        emailSent = true;
+        if (result.error) {
+          console.error(
+            "[ogi/submit] User result email rejected by Resend:",
+            result.error
+          );
+        } else {
+          emailSent = true;
+        }
       } catch (err) {
         console.error("[ogi/submit] User result email failed:", err);
       }

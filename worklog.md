@@ -145,3 +145,36 @@ Stage Summary:
 - The API saves to DB first (source of truth), then sends 2 emails via Resend (to AVYSTRA + to user). Both email sends fail gracefully — DB record is always preserved.
 - To activate email delivery: add a real `RESEND_API_KEY` to `.env`, verify the `avystra.co.in` domain with Resend, and swap `FROM_EMAIL` from `onboarding@resend.dev` to a verified sender like `noreply@avystra.co.in`. Until then, submissions still save to the DB and the frontend shows "Your submission was received".
 - Lint clean, no runtime/console errors, full flow verified end-to-end via Agent Browser.
+
+---
+Task ID: 5
+Agent: main-orchestrator
+Task: Add user-provided Resend API key, test email delivery, fix Resend SDK error handling
+
+Work Log:
+- Added the user-provided Resend API key to `.env`: `RESEND_API_KEY=re_XrQfbSpf_...`
+- Restarted the dev server (Next.js does not hot-reload `.env` changes) — `pkill -f "next dev"` then `bun run dev` in background. Server ready in 1092ms.
+- Tested the email flow via curl. Initial test showed `emailSent: true` but I suspected this was inaccurate because the Resend Node SDK resolves (does not throw) on API-level errors like 403 — it returns `{ data, error }`.
+- Confirmed by calling Resend's API directly with curl: the account is registered to `aryanthakare2003@gmail.com`, and with `onboarding@resend.dev` as the sender, Resend only allows sending to that exact email. Any other recipient returns 403: "You can only send testing emails to your own email address".
+- Root cause of the false-positive: my original try/catch only caught network errors, not Resend API rejections. The SDK happily resolved with `{ data: null, error: {...} }` and my code set `emailSent = true` without checking `.error`.
+- Fixed `src/app/api/ogi/submit/route.ts`: both email sends now check `result.error` explicitly. If Resend rejects (e.g. 403 for unverified recipient), the error is logged and `emailSent` stays `false`. Only a confirmed send (`result.error` falsy) sets `emailSent = true`. Added a code comment documenting this Resend SDK behavior.
+- Re-tested after the fix:
+  - Test 1 (to `aryanthakare2003@gmail.com` — the account owner): `emailSent: true` ✓ — user email delivered.
+  - Test 2 (to `random.external.user@example.com` — unverified): `emailSent: false` ✓ — DB record saved, Resend rejection handled gracefully, error logged.
+- Agent Browser end-to-end test: filled form (Aryan Thakare, Founder & CEO, +91 98765 43210, aryanthakare2003@gmail.com), answered all 16 questions, clicked GET MY FULL REPORT → success state showed "Your results have been emailed to you" (confirming `emailSent: true`).
+- Verified dev log: AVYSTRA notification email (to `info@avystra.co.in`) was rejected by Resend (expected — onboarding mode can't send there yet), but the user email (to `aryanthakare2003@gmail.com`) delivered successfully.
+- Cleaned up all test records from the DB.
+- Ran `bun run lint` → clean.
+
+Stage Summary:
+- The Resend API key is now active in `.env` and emails are being sent.
+- Fixed a critical bug: the Resend SDK does not throw on API errors — it returns `{ data, error }`. My original code was reporting `emailSent: true` even when Resend rejected the send. Now the code checks `result.error` explicitly, so `emailSent` accurately reflects whether the user email actually delivered.
+- Current delivery state (Resend onboarding mode, `onboarding@resend.dev` sender):
+  - ✅ User email → `aryanthakare2003@gmail.com` (the Resend account owner): DELIVERS
+  - ❌ User email → any other address: rejected by Resend (403)
+  - ❌ AVYSTRA notification email → `info@avystra.co.in`: rejected by Resend (403)
+- To unlock full delivery to any email address (including `info@avystra.co.in` and all real users' emails), the user needs to:
+  1. Verify the `avystra.co.in` domain with Resend at https://resend.com/domains (add the DNS records Resend provides)
+  2. Swap `FROM_EMAIL` in `src/app/api/ogi/submit/route.ts` from `"AVYSTRA <onboarding@resend.dev>"` to a verified sender like `"AVYSTRA <noreply@avystra.co.in>"`
+- Until domain verification is done, the flow still works end-to-end: DB record always saves, the user email delivers to the account owner's inbox for testing, and `emailSent` accurately tells the frontend which message to show.
+- Lint clean, no runtime errors, full flow verified via Agent Browser.
