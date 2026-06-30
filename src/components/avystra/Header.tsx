@@ -127,10 +127,24 @@ export default function Header() {
   const handleScrollTo = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
       e.preventDefault();
-      // Delay closing the menu slightly so the scroll initiates first
-      // on mobile devices where touch events can be finicky
-      smoothScrollTo(targetId);
-      setTimeout(() => setIsOpen(false), 50);
+      // Stop propagation so the document-level hash-link handler in
+      // useSmoothScroll doesn't double-fire and compete with this scroll.
+      e.stopPropagation();
+      // Close the mobile menu FIRST. On touch devices, calling
+      // window.scrollTo({ behavior: 'smooth' }) while the menu's
+      // AnimatePresence exit animation mutates the layout can cancel
+      // or jitter the smooth scroll, which is why taps appeared to do
+      // nothing. Closing first lets the layout settle, then we scroll.
+      setIsOpen(false);
+      setActiveSection(targetId);
+      // Defer the scroll two animation frames so React has flushed the
+      // menu-close re-render and the browser has laid out the new state
+      // before we measure the target's position and start scrolling.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          smoothScrollTo(targetId);
+        });
+      });
     },
     []
   );
@@ -165,9 +179,10 @@ export default function Header() {
 
   return (
     <div
-      className={`fixed left-0 right-0 z-[60] flex justify-center px-4 sm:px-6 lg:px-8 pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      className={`fixed left-0 right-0 z-[60] flex justify-center px-4 sm:px-6 lg:px-8 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         scrolled || isOpen ? "top-2 md:top-3" : "top-2 sm:top-[48px]"
-      } ${isOpen ? "pointer-events-auto" : ""}`}
+      }`}
+      style={{ pointerEvents: "none" }}
     >
       <motion.header
         initial={{ y: -30, opacity: 0 }}
@@ -312,7 +327,7 @@ export default function Header() {
                       href={item.href}
                       onClick={(e) => handleScrollTo(e, item.href.substring(1))}
                       className="flex items-center gap-3 px-3.5 py-3 min-h-[48px] rounded-xl bg-white/50 hover:bg-white/70 active:bg-white/80 border border-white/30 hover:border-gold/20 transition-all font-sans group cursor-pointer"
-                      style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+                      style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent", pointerEvents: "auto" }}
                     >
                       <span className="font-mono text-[10.5px] font-bold text-gold tracking-widest opacity-90 shrink-0">
                         {item.number}
@@ -334,7 +349,7 @@ export default function Header() {
                     href="#consult"
                     onClick={(e) => handleScrollTo(e, "consult")}
                     className="w-full mt-2 py-3.5 min-h-[48px] bg-navy-deep text-white font-bold font-display text-[11.5px] uppercase tracking-[0.16em] flex items-center justify-center gap-2 rounded-xl shadow-lg active:scale-[0.98] transition-transform whitespace-nowrap cursor-pointer"
-                    style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+                    style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent", pointerEvents: "auto" }}
                   >
                     Check Your OGI Score
                     <ArrowUpRight className="w-3.5 h-3.5 text-gold" />

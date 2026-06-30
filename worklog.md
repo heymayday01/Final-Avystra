@@ -26,3 +26,34 @@ Stage Summary:
 - Fix: `bun install` (6 packages added). No source code changes were required — the existing code is clean and passes `eslint`.
 - Dev server is running cleanly on port 3000. `/` returns HTTP 200 with full content. Lint clean. No runtime/console errors. Lazy-loaded sections (OGI Diagnostic, Footer) hydrate and become interactive. Mobile + desktop both render correctly with the sticky footer pushed down naturally on long pages.
 - Project is fully operational and verified end-to-end via Agent Browser.
+
+---
+Task ID: 2
+Agent: main-orchestrator
+Task: Fix mobile menu — tapping expanded menu options doesn't react or navigate
+
+Work Log:
+- Reproduced the issue in Agent Browser with iPhone 14 emulation. Opened the hamburger menu, tapped "01 THE PROBLEM" link, and observed that scrollY did not change (before=1059, after=1059). Confirmed the bug.
+- Inspected the DOM ancestor chain of the mobile menu `<a>` links via `getComputedStyle`. Found that the Header's outer fixed container had BOTH `pointer-events-none` (base class) AND `pointer-events-auto` (appended when `isOpen`) in its className, but the computed style was `pointer-events: none` — a Tailwind CSS source-ordering bug where `.pointer-events-none` is generated after `.pointer-events-auto` so it always wins regardless of className order.
+- Traced the click flow: React's `onClick` (calls `e.preventDefault()` + `smoothScrollTo()` + `setTimeout(() => setIsOpen(false), 50)`) and the document-level `handleHashClick` from `useSmoothScroll` both fire and both try to scroll. On touch devices, the `setTimeout(..., 50)` closes the menu mid-smooth-scroll, and the AnimatePresence exit animation's layout mutation interrupts `window.scrollTo({ behavior: 'smooth' })`, causing the tap to appear non-functional.
+- Edited `src/components/avystra/Header.tsx` `handleScrollTo`:
+  1. Added `e.stopPropagation()` so the document-level hash-link handler doesn't double-fire and compete.
+  2. Changed to close the menu FIRST (`setIsOpen(false)`) instead of after a 50ms timeout, so the layout settles before scrolling.
+  3. Deferred the scroll call inside a double `requestAnimationFrame` so React flushes the menu-close re-render and the browser lays out the new state before we measure the target's position and start the smooth scroll.
+  4. Also set `activeSection` immediately for instant nav-pill feedback.
+- Removed the conflicting `pointer-events-none`/`pointer-events-auto` Tailwind classes from the outer container; replaced with a single inline `style={{ pointerEvents: "none" }}`. The inner `motion.header` (always `pointer-events: auto`) re-enables events for itself and the dropdown subtree.
+- Added inline `pointerEvents: "auto"` to the two mobile-menu `<a>` elements as a belt-and-suspenders guarantee that touch events reach them regardless of ancestor stacking context.
+- Verified `bun run lint` → clean.
+- Re-tested in Agent Browser (iPhone 14 emulation):
+  - Tap "01 THE PROBLEM" → scrollY 0→1059 (target ~1139), menu closed ✓
+  - Tap "03 PROGRAMS" → scrollY 0→10207 (target ~10303), menu closed ✓
+  - Tap "05 CONTACT" → scrollY 5000→13384 (consult section at absoluteTop 13563), menu closed ✓
+  - Tap "CHECK YOUR OGI SCORE" → scrollY 0→13384, menu closed ✓
+- Verified desktop nav (1920×1080) still works: Tap PROGRAMS → scrolled to programs section (Lenis settled at 6405, section visible at 196px from top).
+- VLM cross-check on before/after mobile screenshots: "page scrolled to show a section about bottlenecks/the problem; the menu is now closed; and the content relevant to 'The Problem' is visible."
+- `agent-browser errors` and `agent-browser console` (filtering error/warn/fail) → both empty. `dev.log` clean.
+
+Stage Summary:
+- Root cause: (a) Tailwind CSS source-ordering made `pointer-events-none` always win over `pointer-events-auto` on the Header's outer container, and (b) the `setTimeout(() => setIsOpen(false), 50)` closed the mobile menu mid-smooth-scroll, and on touch devices the AnimatePresence exit animation's layout mutation cancelled the in-flight `window.scrollTo({ behavior: 'smooth' })`.
+- Fix: close the menu first, defer the scroll two rAFs until layout settles, stopPropagation to avoid the double-handler, and replace the conflicting Tailwind pointer-events classes with a single inline style.
+- All 5 mobile menu links + the OGI CTA button now scroll to their correct sections on mobile. Desktop nav is unaffected. Lint clean, no console/runtime errors.
