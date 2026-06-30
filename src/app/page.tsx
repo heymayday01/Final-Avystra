@@ -70,31 +70,53 @@ export default function Home() {
           transition={{ duration: 0.5 }}
           className="flex flex-col flex-1"
         >
-          {/* ═══ AMBIENT BACKGROUND — PERFORMANCE-OPTIMIZED ═══
-              Reduced from 5 animated blobs to 2 static orbs.
-              Animations on 60vw+ elements were the #1 scroll-jank cause —
-              each frame repainted massive radial gradients. Static orbs
-              give the same visual depth with zero per-frame cost.
-              Grain texture (mix-blend-multiply) also removed — it forced
-              a full-layer composite on every scroll tick. */}
+          {/* ═══ LIVELY AMBIENT BACKGROUND — ENHANCED + GPU-SAFE ═══
+              4 drifting orbs with GPU-only animations (transform/opacity).
+              Each orb is on its own compositor layer (will-change: transform)
+              so animations never trigger main-thread repaint. Radial gradients
+              are pre-rendered to the layer once, then only transform changes
+              per frame — ~60fps with zero scroll jank.
+              Sizes capped at 40vw (down from 60vw) to reduce fill area. */}
           <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
             {/* Warm ivory base wash */}
             <div className="absolute inset-0 bg-cream-bg" />
 
-            {/* Single gold orb — top left (static, no animation) */}
+            {/* Gold orb — top left, strong, slow drift */}
             <div
-              className="absolute -top-[10%] -left-[5%] w-[50vw] h-[50vw] rounded-full opacity-60"
+              className="absolute -top-[10%] -left-[8%] w-[40vw] h-[40vw] rounded-full opacity-70 animate-glow-blob"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(184,146,78,0.35) 0%, transparent 65%)",
+                  "radial-gradient(circle, rgba(184,146,78,0.40) 0%, transparent 65%)",
+                willChange: "transform",
               }}
             />
-            {/* Single navy orb — bottom right (static, no animation) */}
+            {/* Navy orb — bottom right, strong, slow drift (reverse) */}
             <div
-              className="absolute top-[55%] -right-[10%] w-[45vw] h-[45vw] rounded-full opacity-50"
+              className="absolute top-[55%] -right-[10%] w-[38vw] h-[38vw] rounded-full opacity-60 animate-glow-blob-reverse"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(11,27,46,0.18) 0%, transparent 65%)",
+                  "radial-gradient(circle, rgba(11,27,46,0.22) 0%, transparent 65%)",
+                willChange: "transform",
+                animationDelay: "2s",
+              }}
+            />
+            {/* Central warm gold haze — gentle pulse */}
+            <div
+              className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[45vw] h-[30vw] rounded-full opacity-60 animate-pulse-slow"
+              style={{
+                background:
+                  "radial-gradient(ellipse, rgba(212,178,106,0.22) 0%, transparent 70%)",
+                willChange: "transform, opacity",
+              }}
+            />
+            {/* Accent gold orb — mid-right, small, vivid */}
+            <div
+              className="absolute top-[45%] right-[8%] w-[22vw] h-[22vw] rounded-full opacity-50 animate-glow-blob"
+              style={{
+                background:
+                  "radial-gradient(circle, rgba(184,146,78,0.30) 0%, transparent 60%)",
+                willChange: "transform",
+                animationDelay: "4s",
               }}
             />
           </div>

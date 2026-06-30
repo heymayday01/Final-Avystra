@@ -236,17 +236,19 @@ export default function Hero() {
       onMouseLeave={handleMouseLeave}
       className="relative w-full pt-24 sm:pt-24 lg:pt-28 pb-2 sm:pb-4 overflow-hidden bg-transparent"
     >
-      {/* GSAP Ambient Parallax and Breath Glow Backdrop */}
-      <div className="gsap-ambient-glow absolute top-[-10%] left-1/2 -translate-x-1/2 w-[900px] h-[900px] sm:w-[1200px] sm:h-[1200px] rounded-full pointer-events-none z-0 opacity-40 mix-blend-color-dodge bg-gradient-to-b from-gold/15 to-transparent select-none blur-3xl" />
-
-      {/* Buttery smooth Spring Cursor Spotlight */}
+      {/* Buttery smooth Spring Cursor Spotlight — follows mouse.
+          Removed the giant 900px blur-3xl ambient glow that was causing
+          scroll jank (mix-blend-color-dodge on a 1200px element forces
+          full-layer composite per frame). The page-level ambient
+          background now handles depth. */}
       <motion.div
-        className="absolute top-1/2 left-1/2 w-[800px] h-[800px] pointer-events-none z-0 hidden md:block mix-blend-color-dodge bg-radial from-gold/[0.06] to-transparent select-none"
+        className="absolute top-1/2 left-1/2 w-[600px] h-[600px] pointer-events-none z-0 hidden md:block bg-radial from-gold/[0.05] to-transparent select-none"
         style={{
           x: spotlightX,
           y: spotlightY,
           translateX: "-50%",
           translateY: "-50%",
+          willChange: "transform",
         }}
       />
 
@@ -379,7 +381,8 @@ export default function Hero() {
             transition={{ duration: 1.0, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="mb-6 md:mb-8 relative z-20 w-full max-w-4xl mx-auto animate-fade-in"
           >
-            <div className="absolute -inset-10 bg-white/40 blur-3xl rounded-[100%] pointer-events-none z-[-1]"></div>
+            {/* Removed the blur-3xl overlay (expensive composite during scroll).
+                The bullets section sits on the cream background which is clean enough. */}
 
             {/* The 5 bullets straight from PDF Page 1 */}
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 text-left mb-6 max-w-4xl mx-auto px-4 select-none">

@@ -954,3 +954,63 @@ Stage Summary:
   5. Tuned Lenis lerp 0.08 → 0.1 (snappier response, less perceived lag)
 - Visual design preserved — same warm gold/navy ambient depth, same glass header, same card styling. Only the expensive per-frame work was removed.
 - Lint clean, no runtime errors, verified via Agent Browser + FPS measurement.
+
+---
+Task ID: 26
+Agent: main-orchestrator
+Task: Bring back lively background + polish all components + optimize code + verify fonts/padding across 3 viewports
+
+Work Log:
+
+**1. LIVELY BACKGROUND RESTORED (enhanced + GPU-safe):**
+- Brought back 4 animated ambient orbs in `src/app/page.tsx` (was reduced to 2 static in Task 25):
+  - Gold orb (40vw, top-left, animate-glow-blob, opacity 0.70)
+  - Navy orb (38vw, bottom-right, animate-glow-blob-reverse, opacity 0.60, delay 2s)
+  - Central gold haze (45vw×30vw, animate-pulse-slow, opacity 0.60)
+  - Accent gold orb (22vw, mid-right, animate-glow-blob, opacity 0.50, delay 4s)
+- Key difference from the old version: each orb now has `willChange: "transform"` inline style, which promotes it to its own GPU compositor layer. The radial gradient is pre-rendered to the layer ONCE, then only `transform` changes per frame — zero main-thread repaint. This is why we get 62.5 FPS with 4 animated orbs vs the old version that lagged with 5.
+- Sizes capped at 40vw (down from 60vw) to reduce fill area while keeping the same visual depth.
+- VLM confirmed: "subtle warm gold radial glow in the top-left, faint navy radial glow in the bottom-right."
+
+**2. POLISHED COMPONENTS — removed expensive/glitchy overlays:**
+- `src/components/avystra/Hero.tsx`:
+  - Removed the 900px/1200px `gsap-ambient-glow` div with `blur-3xl` + `mix-blend-color-dodge` — this was one of the most expensive elements on the page (1200px element with blur filter + color-dodge blend mode = full-layer composite per frame). The page-level ambient background now handles depth.
+  - Removed the `absolute -inset-10 bg-white/40 blur-3xl` overlay on the bullets section — another expensive blur composite.
+  - Reduced the cursor spotlight from 800px to 600px, removed `mix-blend-color-dodge`, added `willChange: "transform"`.
+- `src/components/avystra/OGIDiagnostic.tsx`:
+  - Removed duplicate `scroll-mt-20` from the inner content card (the section already has it). Duplicate scroll-mt can cause scroll-position glitches.
+- Verified no unused component files (all 20 components in `src/components/avystra/` are imported and used).
+
+**3. CODE OPTIMIZATIONS:**
+- Audited all components for unused imports — all clean (the 6 "DoodleWidgets" and "AnimatePresence" flagged are used, just only once each which is correct).
+- Confirmed no dead code remains from the Task 19 cleanup.
+- All event listeners have proper cleanup (verified in Task 21).
+- `content-visibility: auto` on all sections (added in Task 25) continues to skip offscreen rendering.
+
+**4. FONTS + PADDING CHECKED ACROSS 3 VIEWPORTS:**
+- **Mobile (375px)**: VLM confirmed "hero heading readable, proper side padding, banner readable, no text overflow or clipping." Stats cards "properly sized, text readable, no overflow." OGI section "heading readable, button properly sized, no padding issues." Footer "readable, proper padding, no layout issues."
+- **Tablet (768px)**: VLM confirmed "hero heading highly readable, padding adequate, no critical layout issues, responsive layout adapts well."
+- **Laptop (1280px)**: VLM confirmed "hero heading well-sized, layout balanced, clean and readable."
+- Responsive font sizes verified: Hero h1 uses `clamp(1.85rem, 6.2vw, 5rem)` (scales fluidly). Section headings use `text-4xl sm:text-5xl md:text-6xl` (3 breakpoints). All have proper `leading-[1.2]` line-heights.
+
+**5. ALL 3 VIEWPORTS OPTIMIZED:**
+- Mobile: 2-column stat grid, hamburger menu, compact banner text, 16px input font-size (prevents iOS zoom), touch-action: manipulation on buttons.
+- Tablet: 2-column stat grid, hamburger menu (below lg breakpoint), full banner text.
+- Laptop: 4-column stat grid, full nav menu, full banner text, desktop-only Lenis smooth scroll + cursor spotlight.
+
+**VERIFICATION:**
+- Lint: clean ✓
+- Dev server: Ready in 1210ms ✓
+- Scroll FPS: **62.5 FPS** with 4 animated orbs (better than the 60.4 FPS with 2 static orbs in Task 25, because the GPU layer promotion makes animated orbs cheaper than repainting static ones) ✓
+- Page loads correctly on all 3 viewports ✓
+- No browser console/runtime errors ✓
+- No dev log warnings ✓
+- Lively background visible: "subtle warm gold radial glow top-left, faint navy radial glow bottom-right" ✓
+
+Stage Summary:
+- **Lively background restored**: 4 animated ambient orbs (gold, navy, central haze, accent gold) with GPU-only `transform` animations + `willChange: transform` layer promotion. Same premium feel as the original, but at 62.5 FPS with zero scroll jank.
+- **Components polished**: removed 2 expensive blur-3xl + mix-blend-color-dodge overlays from Hero (1200px ambient glow + bullets blur), removed duplicate scroll-mt from OGI card, reduced cursor spotlight size. No glitchy overlays remain.
+- **Code optimized**: no dead code, no unused imports, all event listeners cleaned up, content-visibility: auto on all sections.
+- **Fonts + padding verified** on mobile (375px), tablet (768px), laptop (1280px) — all readable, properly padded, no overflow.
+- **All 3 viewports optimized**: responsive grids, breakpoint-aware nav, mobile-specific font-size rules.
+- Lint clean, 62.5 FPS scroll, no runtime errors, verified end-to-end via Agent Browser + VLM.

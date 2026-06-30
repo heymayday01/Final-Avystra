@@ -256,7 +256,7 @@ export default function OGIDiagnostic() {
         {/* Content Box */}
         <div
           ref={contentBoxRef}
-          className="bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-3xl overflow-hidden min-h-[420px] flex flex-col justify-between gsap-stagger-card scroll-mt-20"
+          className="bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-3xl overflow-hidden min-h-[420px] flex flex-col justify-between gsap-stagger-card"
         >
           <AnimatePresence mode="wait">
             {/* INTRO SCREEN */}
