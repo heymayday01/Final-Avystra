@@ -716,3 +716,29 @@ Stage Summary:
 - Total: 8 packages uninstalled, 1 file deleted, ~50 lines of duplicate code removed.
 - The codebase is now cleaner with no dead code, no duplicate definitions, and no stale dependencies. Single source of truth for OGI questions, scoring, and band logic (all in `src/lib/ogi-data.ts`).
 - Lint clean, all APIs + pages verified working after cleanup.
+
+---
+Task ID: 20
+Agent: main-orchestrator
+Task: Make founder images bigger (was still too small at scale 0.78)
+
+Work Log:
+- Measured the actual fill ratio at scale 0.78: image was 76×108px inside a 138×138px circle = only 43% fill. Way too small — the portrait image (aspect 0.71) was being scaled to fit the height, leaving the narrow width as huge empty space on both sides.
+- Root cause: `object-contain` + `h-full w-auto` scales a portrait image to fit the circle's HEIGHT, but the width becomes only 71% of the height → 43% area fill. No amount of scale adjustment fixes this — `object-contain` will always leave side gaps for a portrait image in a square container.
+- Solution: switched back to `object-cover` (fills the entire circle, no empty space) with `objectPosition: "center 25%"` to bias the viewport toward the top of the image so the face + hair stay visible while the lower torso crops naturally.
+- Changed both images in `src/components/avystra/FounderFrictionSimulator.tsx` `FounderImages`:
+  - className: `absolute top-0 h-full w-auto max-w-none object-contain` → `absolute inset-0 w-full h-full object-cover`
+  - style: removed `left: 50%` + `transform: "translateX(-50%) scale(0.78)"` (no longer needed — object-cover fills natively)
+  - style: added `objectPosition: "center 25%"` — shows the upper 25% of the portrait (face + hair + upper torso) which is the most important part for a founder portrait
+- Fill ratio went from 43% → 100% (image now fills the entire circle).
+- VLM verification (bottlenecked): "big and fills the circle, face and head clearly visible, hair visible (not cut off), fills ~90-95% of the circle." ✓
+- VLM verification (confident): "big and fills the circle, face/head/hair visible, crossed arms visible, fills the entire circular frame (no empty space)." ✓
+- VLM verification (mobile 375px): "big and fills the circle, face/head visible." ✓
+- Lint clean, no browser console/runtime errors.
+
+Stage Summary:
+- Founder images are now BIG — they fill the entire circle (100% fill ratio, up from 43%).
+- Uses `object-cover` with `object-position: center 25%` so the face + hair + upper torso are the visible focus, while the lower torso crops naturally inside the circle.
+- Both frustrated and confident states look full and focused — no more empty space around the portrait.
+- Verified on desktop (1280px) and mobile (375px).
+- Lint clean, no runtime errors.

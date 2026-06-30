@@ -25,17 +25,15 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
         alt="Founder — frustrated, bottlenecked"
         referrerPolicy="no-referrer"
         loading="lazy"
-        // Portrait image in a square circle. The image is scaled so its
-        // bounding box fits entirely INSIDE the circle's circumference
-        // (no corner clipping). For a portrait image with aspect ~0.71,
-        // scale 0.78 places the image corners just inside the circle radius
-        // with a small safety margin. translateX(-50%) centers horizontally;
-        // it must come before scale so -50% is relative to the unscaled width.
-        className="absolute top-0 h-full w-auto max-w-none object-contain transition-opacity duration-500"
+        // object-cover fills the entire circle (no empty space). The image
+        // is portrait, so the top/bottom overflow and get clipped by the
+        // circle's overflow-hidden. object-position "center 25%" biases
+        // toward the top so the face + hair stay visible while the lower
+        // torso crops. This gives a big, filled, focused portrait.
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
         style={{
           opacity: isResolved ? 0 : 1,
-          left: "50%",
-          transform: "translateX(-50%) scale(0.78)",
+          objectPosition: "center 25%",
         }}
       />
       {/* Red tint overlay for frustrated state */}
@@ -52,11 +50,10 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
         alt="Founder — confident, system in place"
         referrerPolicy="no-referrer"
         loading="lazy"
-        className="absolute top-0 h-full w-auto max-w-none object-contain transition-opacity duration-500"
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
         style={{
           opacity: isResolved ? 1 : 0,
-          left: "50%",
-          transform: "translateX(-50%) scale(0.78)",
+          objectPosition: "center 25%",
         }}
       />
       {/* Green tint overlay for confident state */}
