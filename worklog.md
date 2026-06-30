@@ -837,3 +837,24 @@ Stage Summary:
 - Fix was surgical: only the confident image's `objectPosition` changed from `center 25%` → `center 45%`. The frustrated image is untouched and still looks good.
 - Both images now display fully: frustrated shows face + hand-on-forehead, confident shows face + crossed arms (hands visible).
 - Lint clean, no runtime errors, verified both states via Agent Browser + VLM.
+
+---
+Task ID: 23
+Agent: main-orchestrator
+Task: Shrink the confident image so hair endpoint touches circle (not overflows); frustrated image unchanged
+
+Work Log:
+- User reported the AVYSTRA system (confident) image was overflowing — the hair's endpoint was touching/overflowing the top edge of the circle. Requested making it smaller with better alignment so the hair just touches the circle cleanly.
+- VLM confirmed: "The person's hair is touching/overflowing the top edge of the circle (no visible gap). The image appears too zoomed in."
+- Root cause: the confident image (727×995, aspect 0.731) is slightly wider than the frustrated image (712×1007, aspect 0.707). With `object-cover` at `object-position: center 45%`, the image fills the 138px circle width, but the height (189px) overflows the 138px circle → hair touches the top edge.
+- Fix in `src/components/avystra/FounderFrictionSimulator.tsx`: added `transform: "scale(0.88)"` to ONLY the confident image. This shrinks it 12%, creating a small clean gap between the hair's endpoint and the circle's top edge, while keeping the face and crossed arms fully visible.
+- The frustrated image is unchanged (no transform, object-position: center 25%).
+- VLM verification (confident, scale 0.88): "Yes, there is a small gap between the person's hair and the top edge of the circle (hair does not touch/overflow). Crossed arms still fully visible. Face visible. Image looks well-aligned and balanced inside the circle." ✓
+- VLM verification (frustrated — unchanged): "Image still big and filling the circle. Face and hand-on-forehead clearly visible. Nothing cut off." ✓
+- Lint clean, no browser console/runtime errors.
+
+Stage Summary:
+- The AVYSTRA system (confident) founder image is now 12% smaller via `transform: scale(0.88)`, creating a clean gap between the hair's endpoint and the circle's top edge.
+- The image is well-aligned: face visible, crossed arms fully visible, hair just inside the circle border (not touching/overflowing).
+- The frustrated image is completely unchanged — still big, filling the circle, with the hand-on-forehead gesture fully visible.
+- Lint clean, no runtime errors, verified both states via Agent Browser + VLM.
