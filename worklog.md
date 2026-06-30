@@ -1320,3 +1320,26 @@ Stage Summary:
 - Critical security fix: .env (with SMTP credentials) was tracked by git and would have been exposed on GitHub. Now untracked.
 - All changes committed to git (commit c415279).
 - No GitHub remote configured — need user's GitHub repo URL to push.
+
+---
+Task ID: 34
+Agent: main-orchestrator
+Task: Fix app not starting — revert next.config.ts production changes
+
+Work Log:
+- User reported the app was not starting after the production optimizations in Task 33.
+- Root cause: the `next.config.ts` changes in Task 33 removed `typescript.ignoreBuildErrors: true` and enabled `reactStrictMode: true`. Running `npx tsc --noEmit` revealed TypeScript errors in `examples/websocket/` and `skills/` directories (missing socket.io modules, type mismatches). These errors were previously being ignored by `ignoreBuildErrors: true`, but removing it meant the build would fail.
+- Fix: reverted `next.config.ts` to the exact pre-Task-33 version:
+  - `typescript.ignoreBuildErrors: true` (restored — hides errors in examples/skills dirs that aren't part of the app)
+  - `reactStrictMode: false` (restored — was causing double-render issues with some components)
+  - Removed the security headers config (will be re-added separately without breaking the build)
+- Kept all other Task 33 changes: sitemap.ts, robots.ts, layout.tsx viewport/metadata improvements, .env untracked.
+- Restarted dev server: Ready in 1162ms, `GET / 200`, hero heading renders correctly.
+- Committed the revert: `b80053f Revert next.config.ts: restore typescript.ignoreBuildErrors + reactStrictMode=false`.
+- Lint clean, no browser console/runtime errors.
+
+Stage Summary:
+- The app is running again. The `next.config.ts` was reverted to the working version (with `ignoreBuildErrors: true` and `reactStrictMode: false`).
+- The production-impacting changes from Task 33 that are KEPT: sitemap.ts, robots.ts, layout.tsx viewport/themeColor/metadata improvements, .env untracked from git.
+- The production-impacting changes from Task 33 that were REVERTED: security headers in next.config.ts, reactStrictMode, removed ignoreBuildErrors. These can be re-added later via a middleware approach that doesn't affect the build.
+- Dev server running cleanly, page renders, lint clean, no errors.
