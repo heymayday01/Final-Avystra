@@ -858,3 +858,34 @@ Stage Summary:
 - The image is well-aligned: face visible, crossed arms fully visible, hair just inside the circle border (not touching/overflowing).
 - The frustrated image is completely unchanged — still big, filling the circle, with the hand-on-forehead gesture fully visible.
 - Lint clean, no runtime errors, verified both states via Agent Browser + VLM.
+
+---
+Task ID: 24
+Agent: main-orchestrator
+Task: Replace confident founder image with new landscape image + fix hair clipping
+
+Work Log:
+- User uploaded a new image (`pasted_image_1782840060401.png`, 757×348, landscape aspect 2.175) to replace the confident founder image. The previous image was portrait (727×995, aspect 0.731). This is a fundamentally different aspect ratio requiring different positioning.
+- Replaced `/home/z/my-project/public/founder-confident.png` with the new image.
+- First attempt with old settings (object-position: center 45%, scale 0.88): VLM reported hair was cut off at the top — the 45% vertical bias was too low for this image where the hair is at the top (~29% down).
+- Analyzed the image layout via Python PIL cropping:
+  - Top third (0-116px): dark background + curved green line + hair at the bottom of this section (~100px)
+  - Center third (116-232px): face (eyes, nose, mouth)
+  - Hair is at ~29% down the image, face is in the center
+- Key insight: with a LANDSCAPE image (aspect 2.175) in a SQUARE circle using `object-cover`, the image fills the circle's HEIGHT exactly and overflows the WIDTH (left/right crop). The vertical `object-position` has minimal effect because the height is fully filled. The horizontal `object-position` controls which part of the width is visible.
+- Fix in `src/components/avystra/FounderFrictionSimulator.tsx` (confident image only):
+  - Changed `objectPosition` from `"center 45%"` → `"center 20%"` — biases the viewport UP so the hair (top of head) is fully visible
+  - Changed `transform: scale(0.88)` → `scale(0.95)` — keeps the image bigger (only 5% shrink) while still leaving a small gap so nothing touches the edge
+  - The frustrated image is completely unchanged (object-position: center 25%, no transform)
+- VLM verification (desktop, confident): "The first thing visible at the very top of the circle is the hair (top portion of the person's hair). The face is fully visible." ✓
+- VLM verification (mobile 375px, confident): "The person's hair is fully visible at the top of the circle (no cropping). The face is fully visible. The image is well-placed inside the circle. Nothing is cut off." ✓
+- VLM verification (frustrated — unchanged): "Face and hand-on-forehead gesture clearly visible. Image is big and fills the circle. Nothing is cut off." ✓
+- Lint clean, no browser console/runtime errors.
+
+Stage Summary:
+- The new confident founder image (757×348 landscape) is now deployed with proper positioning:
+  - `object-position: center 20%` — biases viewport UP so hair is fully visible at the top
+  - `transform: scale(0.95)` — keeps image big with a small gap from the circle edge
+- The hair is fully visible (not cut off) on both desktop (1280px) and mobile (375px).
+- The frustrated image is completely unchanged — still big, filling the circle, with hand-on-forehead fully visible.
+- Lint clean, no runtime errors, verified both states + both viewports via Agent Browser + VLM.

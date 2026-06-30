@@ -50,17 +50,17 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
         alt="Founder — confident, system in place"
         referrerPolicy="no-referrer"
         loading="lazy"
-        // The confident image is slightly wider than the frustrated one, so at
-        // object-cover it fills the circle too tightly — the hair touches the
-        // top edge. transform: scale(0.88) shrinks it 12% to create a small
-        // gap between the hair's endpoint and the circle's top, while
-        // object-position "center 45%" keeps both the face and crossed arms
-        // visible. Only this image is scaled; the frustrated image is unchanged.
+        // This image is landscape (757×348). With object-cover in a square
+        // circle, the image fills the circle's height and the left/right
+        // sides crop. object-position "center 20%" biases the viewport UP
+        // so the hair (top of head) stays visible inside the circle —
+        // "center 45%" was cropping the hair. scale(0.95) keeps the image
+        // big while leaving a small gap so nothing touches the edge.
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
         style={{
           opacity: isResolved ? 1 : 0,
-          objectPosition: "center 45%",
-          transform: "scale(0.88)",
+          objectPosition: "center 20%",
+          transform: "scale(0.95)",
         }}
       />
       {/* Green tint overlay for confident state */}
