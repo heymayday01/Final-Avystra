@@ -1046,3 +1046,27 @@ Stage Summary:
 - All 4 nav links (THE PROBLEM, PROGRAMS, CONTACT, and the floating OGI button) now scroll to the correct positions with the target section visible at ~180px from viewport top (clearing the sticky header).
 - Scroll performance is still good at 61.9 FPS — the GPU layer promotions (`will-change: transform` on animated cards) + the reduced/optimized background animations provide enough scroll perf without needing content-visibility.
 - Lint clean, no runtime errors, all scroll targets verified via Agent Browser.
+
+---
+Task ID: 28
+Agent: main-orchestrator
+Task: Fix shaky scroll on OGI section — auto-scroll was fighting with user scroll
+
+Work Log:
+- User reported shaky/jittery animations when scrolling through the OGI section ("Let's index your identity" form page).
+- Root cause: the OGIDiagnostic component has an auto-scroll `useEffect` that fires on EVERY screen change (INTRO → INFO_CAPTURE → QUESTIONS → RESULTS) with `lenis.scrollTo(el, { offset: -100, duration: 0.8 })`. When the user starts scrolling during that 0.8-second Lenis animation, the two scroll commands fight — Lenis is trying to scroll to a specific position, the user's wheel/touch is trying to scroll in a different direction. This creates the visible "shaky" feeling.
+- Fix in `src/components/avystra/OGIDiagnostic.tsx`: added a visibility check before auto-scrolling. The `useEffect` now:
+  1. Gets the OGI box's `getBoundingClientRect()`
+  2. Checks if the box is already visible in the viewport (top ≥ 80px for header, bottom ≤ window.innerHeight)
+  3. If visible → returns immediately (no auto-scroll, lets the user keep their scroll position)
+  4. If NOT visible → auto-scrolls as before (only when the box is offscreen)
+- This means: when the user clicks "BEGIN ASSESSMENT" and the form appears, if the box is already in view, no auto-scroll fires → no fighting with user scroll → no shaking. The auto-scroll only fires when the user has scrolled away from the OGI section and a screen change happens.
+- Verified: scroll trace during OGI form interaction shows stable positions (9661 → 9461 on explicit scroll, no up-down jitter between readings). `stable: true`.
+- VLM confirmed form still visible and working: "Full Name, Professional Designation/Role, WhatsApp Number, Business Email fields visible, CONTINUE TO QUESTIONS button visible."
+- Lint clean, no browser console/runtime errors.
+
+Stage Summary:
+- The shaky scroll on the OGI section is fixed. The auto-scroll now only fires when the OGI box is NOT already visible in the viewport — if the user can already see it, their scroll position is left alone.
+- This eliminates the fighting between Lenis's programmed scroll (0.8s duration) and the user's manual scroll that was causing the jittery/shaky feeling.
+- The form, questions, and results screens still auto-scroll into view when needed (e.g. if the user has scrolled away and then answers a question that triggers a screen change).
+- Lint clean, no runtime errors, verified via scroll trace + VLM.

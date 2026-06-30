@@ -91,6 +91,12 @@ export default function OGIDiagnostic() {
   // Skips the initial mount (INTRO) so the page loads normally without
   // jumping to the OGI section. Only fires when the user actively navigates
   // between screens (Begin Diagnostic → form → questions → results).
+  //
+  // IMPORTANT: Only scrolls if the OGI box is NOT already visible in the
+  // viewport. This prevents the auto-scroll from fighting with the user's
+  // manual scroll (which was causing the "shaky" feeling when scrolling
+  // through the OGI section). If the user can already see the box, we
+  // leave their scroll position alone.
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -99,6 +105,15 @@ export default function OGIDiagnostic() {
     if (screen === "LOADING") return; // don't scroll during loading spinner
     const el = contentBoxRef.current;
     if (!el) return;
+
+    // Check if the OGI box is already visible in the viewport.
+    // If it is, don't auto-scroll — let the user keep their position.
+    const rect = el.getBoundingClientRect();
+    const viewportTop = 80; // account for sticky header
+    const viewportBottom = window.innerHeight;
+    const isVisible = rect.top >= viewportTop && rect.bottom <= viewportBottom;
+    if (isVisible) return;
+
     // Slight delay to let the new screen's AnimatePresence render
     const timer = setTimeout(() => {
       const lenis = getLenis();
