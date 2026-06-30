@@ -15,6 +15,7 @@ import {
 import { motion } from "motion/react";
 import { UnderlineSquiggle } from "./DoodleWidgets";
 import CountUp from "./CountUp";
+import CumulativePenalty from "./CumulativePenalty";
 
 interface StatItemProps {
   id: string;
@@ -184,6 +185,13 @@ export default function StatsFounder() {
               </motion.div>
             ))}
           </div>
+        </div>
+
+        {/* ═══ CUMULATIVE PENALTY ═══
+            Rendered here (between the stats grid and the founder profile)
+            so it flows: India is Bleeding → Cumulative Penalty → About the Founder. */}
+        <div className="py-8">
+          <CumulativePenalty />
         </div>
 
         {/* SECTION 2: ABOUT THE FOUNDER */}

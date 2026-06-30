@@ -13,7 +13,6 @@ import FounderFrictionSimulator from "@/components/avystra/FounderFrictionSimula
 import Flowchart from "@/components/avystra/Flowchart";
 import FourPillars from "@/components/avystra/FourPillars";
 import StatsFounder from "@/components/avystra/StatsFounder";
-import CumulativePenalty from "@/components/avystra/CumulativePenalty";
 import ProgramsSection from "@/components/avystra/ProgramsSection";
 import TestimonialsSection from "@/components/avystra/TestimonialsSection";
 import FAQSection from "@/components/avystra/FAQSection";
@@ -182,11 +181,9 @@ export default function Home() {
             {/* Four Pillars alignment methodology */}
             <FourPillars />
 
-            {/* Operational Diagnostics statistics & Founder's Profile Grid */}
+            {/* Operational Diagnostics statistics, Cumulative Penalty & Founder's Profile Grid
+                (StatsFounder now renders all three in order: stats → cumulative penalty → founder) */}
             <StatsFounder />
-
-            {/* The Cumulative Penalty — hidden costs that compound daily */}
-            <CumulativePenalty />
 
             {/* Bespoke operational capability training programs */}
             <ProgramsSection />

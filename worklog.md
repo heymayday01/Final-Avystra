@@ -460,3 +460,34 @@ Stage Summary:
 - Global CSS rules in globals.css provide 9 layers of iOS/cross-device protection: serif italic descender padding, text-size-adjust, font-smoothing, safe-area insets, overflow-hidden heading padding, LiquidHeading overflow-visible, input zoom prevention (16px minimum), word-break for long words.
 - The fixes are defensive and don't change the visual design — they only add breathing room for text glyphs that were being clipped.
 - Lint clean, verified on iPhone 16, 320px mobile, and 1920px desktop via Agent Browser + VLM.
+
+---
+Task ID: 13
+Agent: main-orchestrator
+Task: Move "The Cumulative Penalty" section to sit between "India is Bleeding Performance" and "About the Founder"
+
+Work Log:
+- Identified the issue: the "Cumulative Penalty" section was rendered as a standalone section in page.tsx AFTER the entire StatsFounder component (which contains both "India is Bleeding Performance" stats AND "About the Founder"). The user wanted it positioned BETWEEN those two, not after both.
+- Examined StatsFounder.tsx structure: it has two internal sections — Section 1 (stats grid, "India is Bleeding Performance") and Section 2 (founder profile, "Kirankumar Pandey") — both inside one <section id="team"> wrapper.
+- Approach: import CumulativePenalty inside StatsFounder and render it between the two internal sections, then remove it from page.tsx to avoid duplicate rendering.
+- Edited `src/components/avystra/StatsFounder.tsx`:
+  - Added `import CumulativePenalty from "./CumulativePenalty";`
+  - Inserted `<div className="py-8"><CumulativePenalty /></div>` between Section 1 (stats) and Section 2 (founder profile), with a comment explaining the flow: "India is Bleeding → Cumulative Penalty → About the Founder"
+- Edited `src/app/page.tsx`:
+  - Removed `import CumulativePenalty from "@/components/avystra/CumulativePenalty";` (no longer used here)
+  - Removed `<CumulativePenalty />` from the main render tree
+  - Updated the comment above `<StatsFounder />` to note it now renders all three sections in order
+- Ran `bun run lint` → clean.
+- Agent Browser verification — checked DOM heading order:
+  1. "India is Bleeding Performance" (h2) — stats section
+  2. "The cost is not always visible." (h2) — Cumulative Penalty heading
+  3. "Kirankumar Pandey" (h3) — About the Founder section
+  Order confirmed correct. ✓
+- VLM verification: "Yes, the screenshot shows the bottom of the 'India is Bleeding Performance' stats section transitioning into the 'THE CUMULATIVE PENALTY' section. The Cumulative Penalty section is directly below the stats cards." ✓
+- Dev log clean, no browser console/runtime errors.
+
+Stage Summary:
+- The page section order is now: Hero → FounderFrictionSimulator → Flowchart → FourPillars → **StatsFounder (which renders: India is Bleeding stats → Cumulative Penalty → About the Founder)** → ProgramsSection → TestimonialsSection → FAQSection → OGIDiagnostic.
+- The Cumulative Penalty section now sits exactly where the user wanted: directly below "India is Bleeding Performance" and directly above "About the Founder" (Kirankumar Pandey).
+- No duplicate rendering — CumulativePenalty is removed from page.tsx and only rendered once (inside StatsFounder).
+- Lint clean, no runtime errors, verified via DOM heading order + VLM screenshots.
