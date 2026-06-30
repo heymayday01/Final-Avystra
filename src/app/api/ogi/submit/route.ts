@@ -8,6 +8,7 @@ import {
   dimensionLabels,
   type DimensionCode,
 } from "@/lib/ogi-data";
+import { appendOgiSubmissionToSheet } from "@/lib/sheets";
 
 // ── SMTP transport (Gmail) ──────────────────────────────────────────────────
 // Uses Gmail's SMTP server with an App Password. Free, 500 emails/day, and
@@ -393,32 +394,46 @@ export async function POST(request: Request) {
     );
   }
 
-  // 2. Send emails via Gmail SMTP. Each send is independently try/caught so
-  //    a failure in one doesn't block the other. If SMTP creds are missing,
-  //    we skip both and return emailSent: false — the DB record is still
-  //    saved, which is the user's primary requirement.
-  let emailSent = false;
-
-  if (transporter) {
-    // Email #1 → AVYSTRA (full data)
-    try {
-      await transporter.sendMail({
-        from: FROM_EMAIL,
-        to: AVYSTRA_NOTIFY_EMAIL,
-        replyTo: SMTP_USER,
-        subject: `New OGI Submission — ${data.name} (${data.role})`,
-        text: buildAvystraEmailText(data),
-        html: buildAvystraEmailHtml(data),
-        headers: EMAIL_HEADERS,
+  // 2. Fire off the three side-effects in parallel: AVYSTRA notification
+  //    email, user result email, and Google Sheets row append. Each is
+  //    wrapped so a failure in one never blocks the others. The DB record
+  //    (saved above) is the source of truth — all three are best-effort.
+  //
+  //    Promise.allSettled means we always wait for all three to finish
+  //    (or fail) before responding, but a rejection in any single task
+  //    doesn't reject the whole batch.
+  //
+  //    Index mapping:
+  //      [0] → AVYSTRA notification email
+  //      [1] → User result email (only sent if data.email present)
+  //      [2] → Google Sheets row append
+  const avystraEmailTask = transporter
+    ? transporter
+        .sendMail({
+          from: FROM_EMAIL,
+          to: AVYSTRA_NOTIFY_EMAIL,
+          replyTo: SMTP_USER,
+          subject: `New OGI Submission — ${data.name} (${data.role})`,
+          text: buildAvystraEmailText(data),
+          html: buildAvystraEmailHtml(data),
+          headers: EMAIL_HEADERS,
+        })
+        .catch((err) => {
+          console.error(
+            "[ogi/submit] AVYSTRA notification email failed:",
+            err
+          );
+          throw err; // re-throw so allSettled marks this as rejected
+        })
+    : Promise.resolve().then(() => {
+        console.warn(
+          "[ogi/submit] SMTP credentials not set — skipping AVYSTRA notification email"
+        );
       });
-    } catch (err) {
-      console.error("[ogi/submit] AVYSTRA notification email failed:", err);
-    }
 
-    // Email #2 → User (result summary), only if a valid email was provided
-    if (data.email) {
-      try {
-        await transporter.sendMail({
+  const userEmailTask = transporter && data.email
+    ? transporter
+        .sendMail({
           from: FROM_EMAIL,
           to: data.email,
           replyTo: SMTP_USER,
@@ -434,14 +449,39 @@ export async function POST(request: Request) {
             band: data.band,
           }),
           headers: EMAIL_HEADERS,
-        });
-        emailSent = true;
-      } catch (err) {
-        console.error("[ogi/submit] User result email failed:", err);
-      }
-    }
-  } else {
-    console.warn("[ogi/submit] SMTP credentials not set — skipping email sends");
+        })
+        .catch((err) => {
+          console.error("[ogi/submit] User result email failed:", err);
+          throw err;
+        })
+    : Promise.resolve();
+
+  const sheetTask = appendOgiSubmissionToSheet({
+    name: data.name,
+    role: data.role,
+    contact: data.contact,
+    email: data.email ?? null,
+    score: data.score,
+    band: data.band,
+  });
+
+  const [avystraResult, userResult, sheetResult] = await Promise.allSettled([
+    avystraEmailTask,
+    userEmailTask,
+    sheetTask,
+  ]);
+
+  // emailSent reflects ONLY whether the user result email delivered —
+  // this is what the frontend uses to pick its success message.
+  const emailSent = userResult.status === "fulfilled" && !!data.email;
+
+  if (avystraResult.status === "rejected") {
+    // already logged inside the .catch above; nothing more to do
+  }
+  if (sheetResult.status === "rejected") {
+    // appendOgiSubmissionToSheet swallows its own errors, so this branch
+    // is effectively unreachable — but we log defensively just in case.
+    console.error("[ogi/submit] Sheet append rejected unexpectedly:", sheetResult.reason);
   }
 
   return NextResponse.json({

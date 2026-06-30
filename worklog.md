@@ -240,3 +240,46 @@ Stage Summary:
   3. Transactional headers (`X-Mailer`, `X-Priority`, `List-Unsubscribe`) — signal legitimacy to spam filters.
 - IMPORTANT — the user must still do ONE manual step to fully train Gmail's filter: open the first email in `info.avystra@gmail.com`'s Spam folder (if it lands there), click "Report not spam". Also add `info.avystra@gmail.com` to Google Contacts. These actions tell Gmail "this sender is trusted" and future emails will land in the inbox. This is a one-time warmup — Gmail builds sender reputation over the first few sends.
 - Lint clean, no runtime errors, full flow verified end-to-end.
+
+---
+Task ID: 8
+Agent: main-orchestrator
+Task: Add live Google Sheets logging to OGI submission flow (parallel with emails via Promise.allSettled)
+
+Work Log:
+- Installed `googleapis@173.0.0` via `bun add googleapis`.
+- Created `src/lib/sheets.ts`:
+  - Exports `appendOgiSubmissionToSheet(data: OgiSheetRow)` — async, never throws.
+  - Authenticates with a Google service account via `google.auth.JWT` using `GOOGLE_SHEETS_CLIENT_EMAIL`, `GOOGLE_SHEETS_PRIVATE_KEY` (with `\n` → newline conversion for PEM parsing), and scopes `spreadsheets`.
+  - Appends one row to the tab "AVYSTRA OGI Submissions" (range `A:G`) via `sheets.spreadsheets.values.append` with `valueInputOption: USER_ENTERED` and `insertDataOption: INSERT_ROWS`.
+  - Row format: [name, role, contact, email (empty string if null), score, band, formatted IST timestamp].
+  - Timestamp via `Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", ... })` → "30 Jun 2026, 06:15 PM IST".
+  - If any of the 3 env vars are missing, logs a warning and returns immediately (no throw).
+  - All Google API errors caught, logged with `[sheets]` prefix, and swallowed — sheet logging is purely best-effort.
+- Added to `.env`: `GOOGLE_SHEETS_CLIENT_EMAIL=`, `GOOGLE_SHEETS_PRIVATE_KEY=`, `GOOGLE_SHEET_ID=` (empty placeholders, with a comment block explaining all three must be set to enable sheet logging).
+- Refactored `src/app/api/ogi/submit/route.ts` email-sending block:
+  - Replaced the sequential try/catch email chain with three parallel tasks: `avystraEmailTask`, `userEmailTask`, `sheetTask`.
+  - All three run via `Promise.allSettled([...])` — a rejection in any single task never blocks the others.
+  - `emailSent` flag is now derived from `userResult.status === "fulfilled" && !!data.email` (only the user email result matters for the frontend success message).
+  - Added defensive logging for the (theoretically unreachable) case where `sheetTask` rejects despite the internal try/catch in `appendOgiSubmissionToSheet`.
+  - Imported `appendOgiSubmissionToSheet` from `@/lib/sheets`.
+  - DB save remains the source of truth — it happens first (synchronously), then the three side-effects fan out in parallel.
+- Ran `bun run lint` → clean.
+- Restarted dev server (`.env` changed, Next.js doesn't hot-reload env).
+- Tested via curl with Google creds empty: `emailSent: true`, DB record saved, sheet append skipped with the expected warning `[sheets] Google Sheets credentials not set — skipping sheet append.`. No errors, response 200 in ~2.5s.
+- Agent Browser end-to-end test: filled form (Rohan Kapoor, COO, +91 98765 43210, aryanthakare2003@gmail.com), answered all 16 questions, clicked GET MY FULL REPORT → "Your results have been emailed to you" success state. Dev log showed the expected sheet-skip warning + Prisma INSERT + 2 emails sent. Browser console/errors empty.
+- Cleaned up test records from the DB.
+
+Stage Summary:
+- Google Sheets logging is fully wired in and runs in parallel with the two email sends via `Promise.allSettled`. All three side-effects (AVYSTRA email, user email, sheet row) fire concurrently — total response time is dominated by the slowest single task (SMTP round-trip ~2.5s), not their sum.
+- The DB save happens first (synchronously, source of truth). Then the three side-effects fan out. A failure in any one (e.g. Google API quota exceeded, SMTP down) never blocks the others — each is independently try/caught.
+- `emailSent` returned to the frontend reflects ONLY whether the user result email delivered, so the frontend's success message ("Your results have been emailed to you" vs "Your submission was received") stays accurate.
+- TO ACTIVATE Google Sheets logging, the user needs to:
+  1. Create a Google Cloud service account with Sheets API enabled (Google Cloud Console → IAM → Service Accounts → Create).
+  2. Create a JSON key for that service account, download it.
+  3. Create the Google Sheet "AVYSTRA OGI Submissions" with header row: Name | Role | Contact | Email | Score | Band | Submitted At (rename the first tab to match exactly).
+  4. Share the sheet with the service account's email (e.g. `avystra-ogi@my-project.iam.gserviceaccount.com`) as Editor.
+  5. Fill in `.env`: `GOOGLE_SHEETS_CLIENT_EMAIL` (from the JSON `client_email` field), `GOOGLE_SHEETS_PRIVATE_KEY` (from `private_key`, keep the `\n` escapes), `GOOGLE_SHEET_ID` (the ID from the sheet URL between `/d/` and `/edit`).
+  6. Restart the dev server.
+- Until creds are added, sheet logging is silently skipped — the existing DB + email flow is completely unaffected.
+- Lint clean, no runtime errors, full flow verified end-to-end via Agent Browser.
