@@ -366,3 +366,35 @@ Stage Summary:
 - All 4 outcome cards (LEADERSHIP, MANAGERS, TEAMS, EXECUTION) now show their full sub-points without truncation — "No measurement or follow-through" is fully visible.
 - Colors transition smoothly between states (red → green) via the existing `accent` CSS variable.
 - Lint clean, no runtime errors, verified on desktop + mobile via Agent Browser + VLM.
+
+---
+Task ID: 11
+Agent: main-orchestrator
+Task: Make "Book an assessment call" button redirect to WhatsApp with pre-made context-aware text template
+
+Work Log:
+- Located the "Book an assessment call" button in `src/components/avystra/FounderFrictionSimulator.tsx` (line ~608) — it's in the CTA bar below the founder dependency simulator that says "Recognise your business in the left state?".
+- Found `handleBookCall()` (line 83) — previously just called `smoothScrollTo("consult")` to scroll down to the OGI form. User wanted it to redirect to WhatsApp with a pre-made message instead.
+- Updated `handleBookCall()` to:
+  - Build a context-aware WhatsApp message based on the current toggle state (`isResolved`):
+    - **Bottlenecked state**: "Hi AVYSTRA, I just went through the Founder Dependency Simulator on your website and I recognise my business in the bottlenecked state — everything still depends on me. I'd like to book an assessment call to understand how AVYSTRA can help. When are you available?"
+    - **AVYSTRA system state**: "Hi AVYSTRA, I just went through the Founder Dependency Simulator on your website and I can see how an AVYSTRA-aligned system would work for my organization. I'd like to book an assessment call to discuss how we can build this kind of structure. When are you available?"
+  - URL-encode the message via `encodeURIComponent()`
+  - Open `https://wa.me/918596059607?text={encodedMessage}` in a new tab via `window.open(url, "_blank", "noopener,noreferrer")`
+  - The message adapts to which state the user is viewing — if they're looking at the bottlenecked (red) state, the message says "I recognise my business in the bottlenecked state"; if they toggled to the AVYSTRA system (green) state, the message says "I can see how an AVYSTRA-aligned system would work for my organization".
+- Ran `bun run lint` → clean.
+- Agent Browser verification:
+  - Intercepted `window.open` to capture the URL without actually navigating away.
+  - Bottlenecked state click → captured URL: `https://wa.me/918596059607?text=Hi%20AVYSTRA%2C%20I%20just%20went%20through%20the%20Founder%20Dependency%20Simulator...recognise%20my%20business%20in%20the%20bottlenecked%20state...` ✓
+  - Toggled to AVYSTRA system state, clicked again → captured URL: `https://wa.me/918596059607?text=Hi%20AVYSTRA%2C%20I%20just%20went%20through%20the%20Founder%20Dependency%20Simulator...can%20see%20how%20an%20AVYSTRA-aligned%20system%20would%20work...` ✓
+  - Both messages decoded correctly, properly URL-encoded, addressed to the right WhatsApp number (918596059607).
+  - No browser console/runtime errors.
+
+Stage Summary:
+- The "Book an assessment call" button now redirects to WhatsApp (`https://wa.me/918596059607`) with a pre-filled, context-aware message template.
+- The message dynamically adapts based on which state the user is viewing:
+  - If viewing the bottlenecked (red) state: message says they recognise their business in that state and want help.
+  - If viewing the AVYSTRA system (green) state: message says they can see how the AVYSTRA-aligned system would work and want to discuss building it.
+- Opens in a new tab (`_blank`) with `noopener,noreferrer` for security.
+- WhatsApp number `918596059607` matches the existing number used elsewhere on the site (footer, floating WhatsApp button, OGI results screen).
+- Lint clean, no runtime errors, verified both states via Agent Browser.

@@ -81,7 +81,14 @@ export default function FounderFrictionSimulator() {
   }, []);
 
   const handleBookCall = () => {
-    smoothScrollTo("consult");
+    // Redirect to WhatsApp with a pre-filled message tailored to the
+    // "book an assessment call" context. The message references the
+    // bottlenecked-vs-AVYSTRA-system comparison the user just viewed.
+    const message = isResolved
+      ? "Hi AVYSTRA, I just went through the Founder Dependency Simulator on your website and I can see how an AVYSTRA-aligned system would work for my organization. I'd like to book an assessment call to discuss how we can build this kind of structure. When are you available?"
+      : "Hi AVYSTRA, I just went through the Founder Dependency Simulator on your website and I recognise my business in the bottlenecked state — everything still depends on me. I'd like to book an assessment call to understand how AVYSTRA can help. When are you available?";
+    const whatsappUrl = `https://wa.me/918596059607?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
 
   // ── Outcome cards — 4 strategic pillars, red when bottlenecked, green when AVYSTRA-aligned ──
