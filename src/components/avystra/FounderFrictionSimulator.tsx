@@ -50,17 +50,16 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
         alt="Founder — confident, system in place"
         referrerPolicy="no-referrer"
         loading="lazy"
-        // This image is landscape (757×348). With object-cover in a square
-        // circle, the image fills the circle's height and the left/right
-        // sides crop. object-position "center 20%" biases the viewport UP
-        // so the hair (top of head) stays visible inside the circle —
-        // "center 45%" was cropping the hair. scale(0.95) keeps the image
-        // big while leaving a small gap so nothing touches the edge.
+        // This is a landscape headshot (292×215, aspect 1.358). With
+        // object-cover in a square circle, the image fills the circle's
+        // HEIGHT exactly (138px) and the left/right sides crop slightly.
+        // object-position "center center" keeps the face centered.
+        // No transform scale — the image fills the circle naturally with
+        // the full height (including hair) visible.
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
         style={{
           opacity: isResolved ? 1 : 0,
-          objectPosition: "center 20%",
-          transform: "scale(0.95)",
+          objectPosition: "center center",
         }}
       />
       {/* Green tint overlay for confident state */}
