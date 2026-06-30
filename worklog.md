@@ -84,3 +84,64 @@ Stage Summary:
 - Root cause: `StatCard` component lacked `h-full`, so when CSS grid stretched its wrapper to match the tallest sibling, the card's navy background didn't fill the cell — creating a visible height gap on cards with shorter description text (especially card 3 "LATENT OWNERSHIP" at mobile width, where the 15px gap was most noticeable).
 - Fix: Added `h-full` to both the wrapper and the card root, and used `flex-1 flex items-end justify-center` on the description paragraph so text is bottom-aligned and all cards have identical visible height. Applied the same `mt-auto` pattern to the credentials cards for consistency.
 - All stat cards and credentials cards are now visually symmetric at all viewport widths. Lint clean, no runtime/console errors.
+
+---
+Task ID: 4
+Agent: main-orchestrator
+Task: Minimal OGI email notification flow — Prisma model, API route (Zod + Resend dual-email), frontend split contact → phone + email, "Get My Full Report" button with loading/success/error states
+
+Work Log:
+- Created `src/lib/ogi-data.ts` — shared module exporting: `questions` (16 OGI items), `answerOptions` (Never/Rarely/Sometimes/Usually/Always), `DimensionCode` type, `computeOgiScore(answers)` (returns `{ score, band }`), `getResultBand(score)`, `answerLabel(value)`, `dimensionLabels`. This guarantees the score the user sees on screen == the score stored in the DB, since both the client component and the API route import from the same source.
+- Updated `prisma/schema.prisma` — added `OgiSubmission` model with fields: id (cuid), name, role, contact (phone), email (nullable, for result delivery), score (Int), band (String), answersJson (JSON string), createdAt. Ran `bun run db:push` — schema synced to SQLite, Prisma Client regenerated.
+- Installed `resend@6.16.0` via `bun add resend`.
+- Updated `.env` — added `RESEND_API_KEY=` (empty placeholder) + `AVYSTRA_NOTIFY_EMAIL=info@avystra.co.in`.
+- Created `src/app/api/ogi/submit/route.ts` (POST handler):
+  - Zod schema validates: name (required, CR/LF stripped for header-injection safety), role (required), contact (required), email (optional, valid email format), answers (record of 0-4 values), score (0-100 int), band (string).
+  - Saves to DB via `db.ogiSubmission.create()` — always succeeds unless DB is down.
+  - Sends email #1 to `info@avystra.co.in` (AVYSTRA_NOTIFY_EMAIL): subject "New OGI Submission — {name} ({role})", branded HTML with score band, contact details, and a full answers table grouped by dimension (L/M/T/E) with question text + answer label + numeric value.
+  - Sends email #2 to the user's email (only if valid email provided): subject "Your AVYSTRA OGI Result", branded HTML with their name, score, band badge, and a closing line that AVYSTRA will follow up.
+  - Both email sends wrapped in independent try/catch — failure doesn't block the other or the DB save. `emailSent` flag returned to frontend.
+  - If `RESEND_API_KEY` is empty/not set, Resend client is null → both emails skipped gracefully, returns `emailSent: false`.
+  - Uses `AVYSTRA <onboarding@resend.dev>` as sender (Resend shared onboarding address) — noted in a comment to swap to a verified `avystra.co.in` sender once DNS is configured.
+  - Returns `{ success: true, submissionId, emailSent }` on success, 400 with Zod field errors on validation failure, 500 on DB failure.
+- Updated `src/components/avystra/OGIDiagnostic.tsx`:
+  - Added imports: `Mail`, `Phone`, `CheckCircle2` from lucide-react; `questions`, `answerOptions`, `computeOgiScore`, `DimensionCode` from `@/lib/ogi-data`.
+  - Replaced local `questions` array (120 lines) + `answerOptions` + `DimensionCode` type with the shared imports — no behavior change, just DRY.
+  - Replaced `contact` state with two separate states: `phone` (WhatsApp number) + `email` (business email).
+  - Split the single "WhatsApp Number or Business Email" input into two separate inputs: "WhatsApp Number" (tel, Phone icon, autoComplete=tel) and "Business Email" (email, Mail icon, autoComplete=email). Both required.
+  - Updated `validateAndNextInfo` — validates phone (≥10 digits) and email (regex) separately with specific error messages.
+  - Updated `handleRestart` to clear phone, email, submissionResult, submitError.
+  - Added `handleSubmitResults()` async handler — computes score+band via `computeOgiScore(answers)`, POSTs `{ name, role, contact: phone, email, answers, score, band }` to `/api/ogi/submit?XTransformPort=3000`, manages `isSubmitting` / `submissionResult` / `submitError` state.
+  - Added submission state: `isSubmitting` (loading), `submissionResult` (success with emailSent flag), `submitError` (error message).
+  - Added "Get My Full Report" panel on the RESULTS screen (navy gradient card with gold border, placed between Recommended Programs and the WhatsApp CTA): shows description + "Get My Full Report" gold button → on click shows loading spinner "Saving your results…" → on success shows green checkmark + "Your results have been emailed to you" (if emailSent) or "Your submission was received" (if not) → on error shows red alert box + retry.
+  - The entire panel is replaced by the success message after submission, so the button physically disappears — preventing any duplicate submissions.
+- Ran `bun run lint` → clean.
+- Agent Browser end-to-end verification:
+  - Navigated to OGI section, clicked BEGIN ASSESSMENT.
+  - Verified the form now has 4 inputs: name, role, phone (placeholder "+91 91234 56789"), email (placeholder "contact@firm.com").
+  - Tested validation: empty form → "Please enter your name."; name+role only → "Please enter a valid WhatsApp number (at least 10 digits)."; short phone "123" → same phone error; valid phone + invalid email "not-an-email" → "Please enter a valid business email address."
+  - Filled all 4 fields (Raj Sharma, Founder & CEO, +91 98765 43210, raj.sharma@firm.com), clicked CONTINUE → advanced to questions.
+  - Answered all 16 questions (clicked "Usually" 16 times, including passing the halfway nudge screen).
+  - Loading screen showed "Analyzing Raj Sharma's Results…" → auto-advanced to RESULTS.
+  - RESULTS screen showed the "GET MY FULL REPORT" gold button in the navy panel.
+  - Clicked GET MY FULL REPORT → loading spinner "Saving your results…" → success state: green checkmark + "Your submission was received" + thank-you message.
+  - Verified the button disappeared after success (replaced by success message) — no duplicate submission possible.
+  - Verified DB record: { name: "Raj Sharma", role: "Founder & CEO", contact: "+91 98765 43210", email: "raj.sharma@firm.com", score: 75, band: "Growth Ready", answersJson: all 16 answers = 3 }.
+  - VLM screenshot verification confirmed the success state visually.
+- Direct API testing via curl:
+  - Valid payload → 200 `{ success: true, submissionId: "cmr...", emailSent: false }` (RESEND_API_KEY empty, expected).
+  - Missing name → 400 `{ error: "Validation failed", details: { name: ["Name is required"] } }`.
+  - Invalid email → 400 `{ error: "Validation failed", details: { email: ["Invalid email address"] } }`.
+  - Invalid JSON → 400 `{ error: "Invalid JSON body" }`.
+- Dev log clean: no errors, only expected `prisma:query INSERT` entries and `[ogi/submit] RESEND_API_KEY not set — skipping email sends` warnings.
+- Agent Browser console + errors → both empty.
+- Cleaned up 3 test records from the DB after verification.
+
+Stage Summary:
+- Delivered exactly what was requested — minimal scoped email notification flow, no PDF, no WhatsApp send, no rate limiting.
+- 4 new/modified files: `src/lib/ogi-data.ts` (shared data+scoring), `src/app/api/ogi/submit/route.ts` (API route), `prisma/schema.prisma` (OgiSubmission model), `src/components/avystra/OGIDiagnostic.tsx` (split form + submit button). Plus `.env` additions.
+- The contact field is now two separate inputs (WhatsApp Number + Business Email), both required, with specific validation.
+- The "Get My Full Report" button on the results screen POSTs to `/api/ogi/submit`, shows loading, then success (with emailSent-aware messaging) or error+retry. Button disappears after success to prevent duplicates.
+- The API saves to DB first (source of truth), then sends 2 emails via Resend (to AVYSTRA + to user). Both email sends fail gracefully — DB record is always preserved.
+- To activate email delivery: add a real `RESEND_API_KEY` to `.env`, verify the `avystra.co.in` domain with Resend, and swap `FROM_EMAIL` from `onboarding@resend.dev` to a verified sender like `noreply@avystra.co.in`. Until then, submissions still save to the DB and the frontend shows "Your submission was received".
+- Lint clean, no runtime/console errors, full flow verified end-to-end via Agent Browser.

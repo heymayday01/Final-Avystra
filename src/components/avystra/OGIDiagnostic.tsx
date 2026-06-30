@@ -5,6 +5,9 @@ import {
   User,
   Briefcase,
   MessageSquare,
+  Mail,
+  Phone,
+  CheckCircle2,
   ChevronRight,
   ChevronLeft,
   ArrowRight,
@@ -18,6 +21,12 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { DoodleSparkle } from "./DoodleWidgets";
 import { smoothScrollTo, getLenis } from "@/lib/scroll";
+import {
+  questions as ogiQuestions,
+  answerOptions as ogiAnswerOptions,
+  computeOgiScore,
+  type DimensionCode,
+} from "@/lib/ogi-data";
 
 // Shared easing curve — premium expo-out for elegant reveals
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -25,139 +34,15 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 interface Question {
   id: number;
   text: string;
-  dimensionCode: "L" | "M" | "T" | "E";
+  dimensionCode: DimensionCode;
   dimensionName: string;
   color: string;
 }
 
-const questions: Question[] = [
-  // DIMENSION 1 — Leadership & Direction (code: L, color: navy #2C3947)
-  {
-    id: 1,
-    dimensionCode: "L",
-    dimensionName: "Leadership & Direction",
-    color: "#2C3947",
-    text: "When leadership sets a new priority — does it change how teams actually work on the ground?",
-  },
-  {
-    id: 2,
-    dimensionCode: "L",
-    dimensionName: "Leadership & Direction",
-    color: "#2C3947",
-    text: "Are important decisions made at the right level — without coming back to the founder every time?",
-  },
-  {
-    id: 3,
-    dimensionCode: "L",
-    dimensionName: "Leadership & Direction",
-    color: "#2C3947",
-    text: "Does your organization consistently recognize and reward high performers — regardless of who they are close to?",
-  },
-  {
-    id: 4,
-    dimensionCode: "L",
-    dimensionName: "Leadership & Direction",
-    color: "#2C3947",
-    text: "Does your organization run smoothly — even when the founder is not directly involved in day-to-day decisions?",
-  },
-  // DIMENSION 2 — Manager Effectiveness (code: M, color: gold #C2A56D)
-  {
-    id: 5,
-    dimensionCode: "M",
-    dimensionName: "Manager Effectiveness",
-    color: "#C2A56D",
-    text: "When a manager gives feedback to a team member — does it lead to visible, lasting change?",
-  },
-  {
-    id: 6,
-    dimensionCode: "M",
-    dimensionName: "Manager Effectiveness",
-    color: "#C2A56D",
-    text: "Are promotions and salary decisions based on measurable performance — rather than personal relationships?",
-  },
-  {
-    id: 7,
-    dimensionCode: "M",
-    dimensionName: "Manager Effectiveness",
-    color: "#C2A56D",
-    text: "When someone underperforms consistently — does a manager address it directly and quickly?",
-  },
-  {
-    id: 8,
-    dimensionCode: "M",
-    dimensionName: "Manager Effectiveness",
-    color: "#C2A56D",
-    text: "Do employees in your organization feel safe raising concerns about their manager?",
-  },
-  // DIMENSION 3 — Team Accountability (code: T, color: blue #547A95)
-  {
-    id: 9,
-    dimensionCode: "T",
-    dimensionName: "Team Accountability",
-    color: "#547A95",
-    text: "After a meeting where tasks are agreed — are they actually completed two weeks later?",
-  },
-  {
-    id: 10,
-    dimensionCode: "T",
-    dimensionName: "Team Accountability",
-    color: "#547A95",
-    text: "When something goes wrong — does your organization clearly identify who was responsible?",
-  },
-  {
-    id: 11,
-    dimensionCode: "T",
-    dimensionName: "Team Accountability",
-    color: "#547A95",
-    text: "Are the same rules and standards applied to everyone — regardless of seniority or relationships?",
-  },
-  {
-    id: 12,
-    dimensionCode: "T",
-    dimensionName: "Team Accountability",
-    color: "#547A95",
-    text: "When two departments need to collaborate — does it happen smoothly and without friction?",
-  },
-  // DIMENSION 4 — Execution Systems (code: E, color: green #10B981)
-  {
-    id: 13,
-    dimensionCode: "E",
-    dimensionName: "Execution Systems",
-    color: "#10B981",
-    text: "By mid-year — is your annual plan still being actively tracked and acted upon?",
-  },
-  {
-    id: 14,
-    dimensionCode: "E",
-    dimensionName: "Execution Systems",
-    color: "#10B981",
-    text: "When a new process is introduced — is it still being followed three months later?",
-  },
-  {
-    id: 15,
-    dimensionCode: "E",
-    dimensionName: "Execution Systems",
-    color: "#10B981",
-    text: "Does the most deserving person get ahead — rather than the most visible or politically connected?",
-  },
-  {
-    id: 16,
-    dimensionCode: "E",
-    dimensionName: "Execution Systems",
-    color: "#10B981",
-    text: "When your organization faces pressure or tight deadlines — does the team stay focused and perform well?",
-  },
-];
-
-const answerOptions = [
-  { label: "Never", value: 0 },
-  { label: "Rarely", value: 1 },
-  { label: "Sometimes", value: 2 },
-  { label: "Usually", value: 3 },
-  { label: "Always", value: 4 },
-];
-
-type DimensionCode = "L" | "M" | "T" | "E";
+// Questions + answer options + scoring now live in src/lib/ogi-data.ts
+// so the API route and this component share the exact same data source.
+const questions = ogiQuestions;
+const answerOptions = ogiAnswerOptions;
 
 interface Contradiction {
   title: string;
@@ -194,7 +79,8 @@ export default function OGIDiagnostic() {
   // User info
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
-  const [contact, setContact] = useState(""); // Email or WhatsApp
+  const [phone, setPhone] = useState("");  // WhatsApp number
+  const [email, setEmail] = useState("");  // Business email — used for result delivery
 
   // Question tracking
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -203,6 +89,11 @@ export default function OGIDiagnostic() {
 
   // Validation state
   const [infoError, setInfoError] = useState("");
+
+  // ── Submission state (POST to /api/ogi/submit) ──
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<{ emailSent: boolean } | null>(null);
+  const [submitError, setSubmitError] = useState("");
 
   // Ref to the content box — used to auto-scroll into view on screen changes
   const contentBoxRef = useRef<HTMLDivElement>(null);
@@ -278,21 +169,18 @@ export default function OGIDiagnostic() {
       setInfoError("Please enter your professional role.");
       return;
     }
-    if (!contact.trim()) {
-      setInfoError("Please enter a WhatsApp number or email address.");
+    const cleanPhone = phone.trim();
+    const digitsOnly = cleanPhone.replace(/[^0-9]/g, "");
+    if (!cleanPhone || digitsOnly.length < 10) {
+      setInfoError("Please enter a valid WhatsApp number (at least 10 digits).");
       return;
     }
-
-    // Simple validation match
-    const cleanContact = contact.trim();
-    const isEmail = cleanContact.includes("@");
-    const isPhone = cleanContact.replace(/[^0-9]/g, "").length >= 7;
-
-    if (!isEmail && !isPhone) {
-      setInfoError("Please provide a valid email address or WhatsApp number.");
+    const cleanEmail = email.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail);
+    if (!cleanEmail || !emailOk) {
+      setInfoError("Please enter a valid business email address.");
       return;
     }
-
     setInfoError("");
     setScreen("QUESTIONS");
   };
@@ -324,8 +212,48 @@ export default function OGIDiagnostic() {
     setCurrentQuestionIndex(0);
     setName("");
     setRole("");
-    setContact("");
+    setPhone("");
+    setEmail("");
+    setSubmissionResult(null);
+    setSubmitError("");
     setScreen("INTRO");
+  };
+
+  // ── Submit results to backend ──
+  // POSTs { name, role, contact(=phone), email, answers, score, band } to
+  // /api/ogi/submit. The score + band are recomputed here from `answers`
+  // using the shared computeOgiScore() so the DB record exactly matches
+  // what the user saw on the results screen.
+  const handleSubmitResults = async () => {
+    if (isSubmitting || submissionResult) return;
+    setIsSubmitting(true);
+    setSubmitError("");
+    try {
+      const { score, band } = computeOgiScore(answers);
+      const res = await fetch("/api/ogi/submit?XTransformPort=3000", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          role: role.trim(),
+          contact: phone.trim(),
+          email: email.trim(),
+          answers,
+          score,
+          band: band.badge,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data?.error || "Submission failed");
+      }
+      setSubmissionResult({ emailSent: !!data.emailSent });
+    } catch (err) {
+      console.error("[OGI] submit failed:", err);
+      setSubmitError("Something went wrong while saving your results. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const currentQ = questions[currentQuestionIndex];
@@ -470,22 +398,44 @@ export default function OGIDiagnostic() {
                       </div>
                     </div>
 
-                    {/* Contact Entry */}
+                    {/* WhatsApp Number */}
                     <div className="space-y-1.5">
-                      <label className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">WhatsApp Number or Business Email</label>
+                      <label className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">WhatsApp Number</label>
                       <div className="relative">
-                        <MessageSquare className="absolute left-4 top-3.5 w-4 h-4 text-[#C5A059] pointer-events-none" />
+                        <Phone className="absolute left-4 top-3.5 w-4 h-4 text-[#C5A059] pointer-events-none" />
                         <input
-                          type="text"
+                          type="tel"
                           required
-                          value={contact}
+                          value={phone}
                           onChange={(e) => {
-                            setContact(e.target.value);
+                            setPhone(e.target.value);
                             if (infoError) setInfoError("");
                           }}
-                          placeholder="e.g. contact@firm.com or +91 91234 56789"
+                          placeholder="e.g. +91 91234 56789"
                           className="w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-4 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all"
-                          id="ogi-input-contact"
+                          id="ogi-input-phone"
+                          autoComplete="tel"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Business Email */}
+                    <div className="space-y-1.5">
+                      <label className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">Business Email</label>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-3.5 w-4 h-4 text-[#C5A059] pointer-events-none" />
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (infoError) setInfoError("");
+                          }}
+                          placeholder="e.g. contact@firm.com"
+                          className="w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-4 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all"
+                          id="ogi-input-email"
+                          autoComplete="email"
                         />
                       </div>
                     </div>
@@ -1363,6 +1313,72 @@ export default function OGIDiagnostic() {
                           </motion.div>
                         ))}
                       </div>
+                    </div>
+
+                    {/* 2.75 Get My Full Report — submit results to backend */}
+                    <div className="bg-gradient-to-br from-[#0A192F] to-[#162033] rounded-2xl p-6 sm:p-8 border border-[#C2A56D]/20 shadow-lg text-left">
+                      {!submissionResult ? (
+                        <div className="space-y-4">
+                          <div>
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#C2A56D]/15 rounded-full border border-[#C2A56D]/20 text-[10.5px] text-[#C2A56D] font-mono tracking-widest font-bold uppercase mb-2">
+                              <Mail className="w-3 h-3" />
+                              Get Your Full Report
+                            </span>
+                            <h4 className="font-display font-semibold text-lg text-white mb-1">
+                              Save your results &amp; receive a copy
+                            </h4>
+                            <p className="text-xs sm:text-sm text-slate-300 font-sans font-light leading-relaxed">
+                              We&apos;ll save your assessment and email a summary of your OGI score to <strong className="text-white font-medium">{email || "your inbox"}</strong>. The AVYSTRA team will follow up to discuss what these results mean for your organization.
+                            </p>
+                          </div>
+
+                          {submitError && (
+                            <div className="flex items-start gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+                              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                              <p className="text-xs text-red-300 font-sans">{submitError}</p>
+                            </div>
+                          )}
+
+                          <button
+                            onClick={handleSubmitResults}
+                            disabled={isSubmitting}
+                            className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 bg-[#C2A56D] hover:bg-[#D4B26A] disabled:opacity-60 disabled:cursor-not-allowed text-[#0A192F] font-display font-bold text-xs uppercase tracking-[0.16em] rounded-xl cursor-pointer transition-all active:scale-[0.98] shadow-md"
+                          >
+                            {isSubmitting ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <span>Saving your results…</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>Get My Full Report</span>
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      ) : (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.97 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.4, ease: EASE }}
+                          className="space-y-3 text-center"
+                        >
+                          <div className="w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-2">
+                            <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                          </div>
+                          <h4 className="font-display font-semibold text-lg text-white">
+                            {submissionResult.emailSent
+                              ? "Your results have been emailed to you"
+                              : "Your submission was received"}
+                          </h4>
+                          <p className="text-xs sm:text-sm text-slate-300 font-sans font-light leading-relaxed max-w-md mx-auto">
+                            {submissionResult.emailSent
+                              ? `A summary of your OGI score has been sent to ${email}. Our team will reach out shortly to walk through the findings.`
+                              : "Thank you for completing the OGI assessment. A member of the AVYSTRA team will follow up with you soon."}
+                          </p>
+                        </motion.div>
+                      )}
                     </div>
 
                     {/* 2.8 WhatsApp CTA — full width */}

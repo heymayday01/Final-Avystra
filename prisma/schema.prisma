@@ -30,3 +30,15 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model OgiSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  contact     String   // email or phone, whatever was entered
+  email       String?  // explicitly validated email if available, used for result delivery
+  score       Int
+  band        String
+  answersJson String   // JSON.stringify of the raw answers object
+  createdAt   DateTime @default(now())
+}
