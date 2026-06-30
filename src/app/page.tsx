@@ -70,65 +70,31 @@ export default function Home() {
           transition={{ duration: 0.5 }}
           className="flex flex-col flex-1"
         >
-          {/* ═══ AMBIENT LIVING BACKGROUND ═══
-              Fixed full-viewport layer with slow-drifting gold/navy radial
-              glows + a faint grain texture. Sits behind all content (z-0).
-              GPU-only animations (transform/opacity) for zero jank. */}
+          {/* ═══ AMBIENT BACKGROUND — PERFORMANCE-OPTIMIZED ═══
+              Reduced from 5 animated blobs to 2 static orbs.
+              Animations on 60vw+ elements were the #1 scroll-jank cause —
+              each frame repainted massive radial gradients. Static orbs
+              give the same visual depth with zero per-frame cost.
+              Grain texture (mix-blend-multiply) also removed — it forced
+              a full-layer composite on every scroll tick. */}
           <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
             {/* Warm ivory base wash */}
             <div className="absolute inset-0 bg-cream-bg" />
 
-            {/* Slow-drifting gold orb — top left, strong */}
+            {/* Single gold orb — top left (static, no animation) */}
             <div
-              className="absolute -top-[15%] -left-[10%] w-[60vw] h-[60vw] rounded-full opacity-80 animate-glow-blob"
+              className="absolute -top-[10%] -left-[5%] w-[50vw] h-[50vw] rounded-full opacity-60"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(184,146,78,0.42) 0%, transparent 62%)",
+                  "radial-gradient(circle, rgba(184,146,78,0.35) 0%, transparent 65%)",
               }}
             />
-            {/* Slow-drifting navy orb — bottom right, strong */}
+            {/* Single navy orb — bottom right (static, no animation) */}
             <div
-              className="absolute top-[60%] -right-[15%] w-[55vw] h-[55vw] rounded-full opacity-70 animate-glow-blob-reverse"
+              className="absolute top-[55%] -right-[10%] w-[45vw] h-[45vw] rounded-full opacity-50"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(11,27,46,0.22) 0%, transparent 65%)",
-                animationDelay: "2s",
-              }}
-            />
-            {/* Central warm gold haze — drifting */}
-            <div
-              className="absolute top-[25%] left-1/2 -translate-x-1/2 w-[75vw] h-[45vw] rounded-full opacity-70 animate-pulse-slow"
-              style={{
-                background:
-                  "radial-gradient(ellipse, rgba(212,178,106,0.26) 0%, transparent 70%)",
-              }}
-            />
-            {/* Accent gold orb — mid-right, small and vivid */}
-            <div
-              className="absolute top-[45%] right-[5%] w-[30vw] h-[30vw] rounded-full opacity-60 animate-glow-blob"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(184,146,78,0.32) 0%, transparent 60%)",
-                animationDelay: "4s",
-              }}
-            />
-            {/* Accent navy orb — lower-left, small */}
-            <div
-              className="absolute top-[80%] left-[10%] w-[35vw] h-[35vw] rounded-full opacity-60 animate-glow-blob-reverse"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(22,38,61,0.20) 0%, transparent 62%)",
-                animationDelay: "1s",
-              }}
-            />
-
-            {/* Fine grain texture overlay for tactile depth */}
-            <div
-              className="absolute inset-0 opacity-[0.025] mix-blend-multiply"
-              style={{
-                backgroundImage:
-                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-                backgroundSize: "180px 180px",
+                  "radial-gradient(circle, rgba(11,27,46,0.18) 0%, transparent 65%)",
               }}
             />
           </div>

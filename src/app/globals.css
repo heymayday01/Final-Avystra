@@ -705,3 +705,43 @@ h1, h2, h3, h4, p {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+/* ═══ SCROLL PERFORMANCE OPTIMIZATIONS ═══
+   content-visibility: auto tells the browser to skip rendering/compositing
+   work for sections that are offscreen. This is the single biggest scroll-
+   perf win for long pages — the browser can skip painting 80%+ of the page
+   that the user isn't looking at. contain-intrinsic-size gives the browser
+   a placeholder size so the scrollbar doesn't jump as sections render. */
+
+/* Apply to major page sections (each <section> in the main content) */
+main > section,
+main > div > section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* The OGI diagnostic section is taller — give it a bigger intrinsic size */
+#consult {
+  contain-intrinsic-size: auto 900px;
+}
+
+/* GPU-promote elements that animate during scroll to their own layer.
+   This prevents repaint from propagating to parent layers. */
+.friction-card,
+.glass-card,
+.glass-nav,
+.pillar-card,
+.program-carousel-card {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Reduce backdrop-filter cost — these elements create a new stacking context
+   and the browser must re-sample the backdrop on every scroll frame. Limit
+   to header only (the most visible glass element); convert others to
+   semi-transparent solid backgrounds which are dramatically cheaper. */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

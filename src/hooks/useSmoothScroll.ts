@@ -124,9 +124,9 @@ export function useSmoothScroll() {
     // ═══ DESKTOP ONLY: Full Lenis + scrollerProxy setup ═══
 
     const lenis = new Lenis({
-      // lerp 0.08 = slightly smoother (was 0.1). Lower = smoother but more lag.
-      // 0.08 is the sweet spot for premium feel without noticeable input delay.
-      lerp: 0.08,
+      // lerp 0.1 = snappy but smooth. Lower values (0.08) felt laggy on long
+      // pages; 0.1 responds quickly while still smoothing trackpad jitter.
+      lerp: 0.1,
       smoothWheel: true,
       syncTouch: false,
       infinite: false,
