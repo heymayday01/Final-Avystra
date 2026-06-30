@@ -218,10 +218,39 @@ export default function Home() {
           </Suspense>
 
           {/* ═══ PREMIUM FLOATING ACTION STACK ═══
-              Single WhatsApp circle button — clean, always visible, no overlap.
-              The Consult Now text is incorporated into the WhatsApp link's
-              aria-label so there's only ONE floating element on screen.
-              This eliminates all overlap/cut-off glitches on small viewports. */}
+              Two floating buttons stacked vertically on the right edge:
+              1. "Check Your OGI Score" — gold pill button, scrolls to #consult
+              2. WhatsApp circle button — navy with gold glyph
+              Positioned so they never overlap each other or page content. */}
+
+          {/* OGI Score CTA — gold pill, sits above the WhatsApp button */}
+          <motion.button
+            onClick={() => smoothScrollTo("consult")}
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="fixed right-4 sm:right-6 bottom-20 sm:bottom-24 z-[9998] inline-flex items-center gap-2 bg-gold text-navy-deep font-display font-bold text-[10px] sm:text-[11px] uppercase tracking-[0.14em] px-4 sm:px-5 py-3 sm:py-3.5 rounded-full cursor-pointer float-btn-glow border border-gold/40 group shadow-[0_8px_24px_-4px_rgba(184,146,78,0.4)] hover:bg-gold-light transition-colors duration-300 whitespace-nowrap"
+            aria-label="Check your OGI Score"
+          >
+            {/* Zap icon for energy/urgency */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="14"
+              height="14"
+              fill="currentColor"
+              className="shrink-0 group-hover:scale-110 transition-transform duration-300"
+              aria-hidden="true"
+            >
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+            <span className="hidden xs:inline sm:inline">Check OGI Score</span>
+            <span className="xs:hidden sm:hidden">OGI Score</span>
+          </motion.button>
+
+          {/* WhatsApp circle button — below the OGI button */}
           <motion.a
             href="https://wa.me/918596059607"
             target="_blank"

@@ -491,3 +491,35 @@ Stage Summary:
 - The Cumulative Penalty section now sits exactly where the user wanted: directly below "India is Bleeding Performance" and directly above "About the Founder" (Kirankumar Pandey).
 - No duplicate rendering — CumulativePenalty is removed from page.tsx and only rendered once (inside StatsFounder).
 - Lint clean, no runtime errors, verified via DOM heading order + VLM screenshots.
+
+---
+Task ID: 14
+Agent: main-orchestrator
+Task: Add a floating "Check Your OGI Score" button above the WhatsApp button that scrolls to the OGI section
+
+Work Log:
+- Read the existing floating WhatsApp button in `src/app/page.tsx` (lines 225-245) — a navy circle with gold WhatsApp glyph, fixed at `bottom-4 sm:bottom-6 right-4 sm:right-6`.
+- Added a new floating "Check OGI Score" button ABOVE the WhatsApp button:
+  - **Position**: `fixed right-4 sm:right-6 bottom-20 sm:bottom-24 z-[9998]` — sits 80px (mobile) / 96px (desktop) above the bottom edge, clear of the WhatsApp circle below it.
+  - **Style**: gold pill button (`bg-gold text-navy-deep`), bold uppercase tracking, lightning/zap SVG icon, premium shadow `shadow-[0_8px_24px_-4px_rgba(184,146,78,0.4)]`, `float-btn-glow` class (matches the WhatsApp button's hover glow), gold border, hover transitions to `bg-gold-light`.
+  - **Text**: "Check OGI Score" (full text on sm+ screens, "OGI Score" on very small screens via `xs:hidden` responsive toggle — though `xs` isn't a default Tailwind breakpoint, the `sm:inline` / `sm:hidden` split handles it correctly).
+  - **Action**: `onClick={() => smoothScrollTo("consult")}` — uses the existing smooth scroll utility to scroll to the `#consult` section (the OGI Diagnostic).
+  - **Animation**: Framer Motion entrance (`opacity: 0 → 1, scale: 0.8 → 1, y: 10 → 0`) with `delay: 1.0` (appears slightly before the WhatsApp button at `delay: 1.2` for a staggered entrance). Hover scale 1.05, tap scale 0.95.
+  - **Icon**: A lightning bolt SVG (`M13 2L3 14h9l-1 8 10-12h-9l1-8z`) for energy/urgency, scales 1.10 on hover.
+  - **Accessibility**: `aria-label="Check your OGI Score"`, `z-[9998]` (one below WhatsApp's `z-[9999]` so the WhatsApp pulsing indicator stays on top if they ever overlap).
+- Updated the comment block above the floating stack to document the two-button layout.
+- Ran `bun run lint` → clean.
+- Agent Browser verification (desktop 1280px):
+  - VLM: "Yes, there are two floating buttons stacked vertically in the bottom-right corner: (1) A gold pill-shaped button with the text 'CHECK OGI SCORE' and a lightning icon on the left. (2) A navy-colored circular button with a WhatsApp icon inside. They are properly stacked without overlapping." ✓
+  - Click test: scrolled from `scrollY: 0` → `scrollY: 9481`, OGI section (#consult) now at `rect.top: 179px` (visible in viewport). ✓
+- Agent Browser verification (mobile 375px):
+  - VLM: "Yes, there are two floating buttons stacked vertically. The top one is a gold 'OGI Score' pill-shaped button, and the bottom one is a navy-colored WhatsApp circle. They do not overlap. The layout is clean." ✓
+- Dev log clean, no browser console/runtime errors.
+
+Stage Summary:
+- A new floating "Check OGI Score" gold pill button now sits above the existing WhatsApp circle button in the bottom-right corner on every page.
+- Clicking it smooth-scrolls to the OGI Diagnostic section (#consult) using the existing `smoothScrollTo` utility (Lenis on desktop, native smooth scroll on mobile).
+- Both buttons are properly stacked with no overlap on desktop (1280px) or mobile (375px).
+- Staggered entrance animations: OGI button appears at `delay: 1.0`, WhatsApp at `delay: 1.2`.
+- Premium styling: gold pill with lightning icon + shadow matches the AVYSTRA navy/gold palette.
+- Lint clean, no runtime errors, verified on desktop + mobile via Agent Browser + VLM.
