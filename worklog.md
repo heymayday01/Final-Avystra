@@ -632,3 +632,29 @@ Stage Summary:
 - The crossfade transition between the two states still works smoothly.
 - Applies to both desktop (140px circle) and mobile (120px circle) since the scaling is relative.
 - Lint clean, no runtime errors, verified both states via Agent Browser + VLM.
+
+---
+Task ID: 18
+Agent: main-orchestrator
+Task: Fix off-center founder images — translateX was being overridden by transform: scale()
+
+Work Log:
+- User reported both founder images were "out of focus" (off-center) and not well inside the circle border. VLM analysis of the user's screenshot confirmed: "His head is positioned in the upper right quadrant of the circle, leaving significant empty space on the left and lower portions. The subject is shifted toward the right."
+- Root cause found via Agent Browser DOM inspection: I had set `transform: "scale(0.85)"` AND `translateX: "-50%"` as separate inline style properties. The browser's computed style showed `transform: matrix(0.85, 0, 0, 0.85, 0, 0)` — the last two values (translate X/Y) were `0, 0`. The `translateX` CSS property was being overridden/ignored because the `transform` property takes precedence.
+- Result: the image was positioned at `left: 50%` (69px = half of 138px parent) with its LEFT EDGE at that point, but no translate to center it. The image (100px wide) extended from 69px to 169px, while the parent was 138px wide — so the image was shifted ~30px to the right of center.
+- Fix in `src/components/avystra/FounderFrictionSimulator.tsx`: combined the translate and scale into a SINGLE `transform` value:
+  - Before: `transform: "scale(0.85)"` + `translateX: "-50%"` (separate properties — translate ignored)
+  - After: `transform: "translateX(-50%) scale(0.85)"` (single combined transform — translate applies first, then scale)
+  - Note: order matters in CSS transforms. `translateX(-50%)` must come BEFORE `scale(0.85)` so the -50% is relative to the image's own width (pre-scale), not the scaled width.
+- Verified via Agent Browser DOM inspection: transform matrix is now `matrix(0.85, 0, 0, 0.85, -48.7812, 0)` — the -48.78 translate is applied. Image center X (640) matches parent center X (640) — perfectly centered. `centered: true`.
+- VLM verification (bottlenecked state): "The person is centered within the circle (not shifted left/right). The entire person (hair + shoulders) is visible. The image is well inside the circle border with a comfortable margin." ✓
+- VLM verification (confident state): "The person is centered. The entire person is visible, including hair, shoulders, and crossed arms. Well inside the circle border with a comfortable margin." ✓
+- VLM verification (mobile 375px): "The person is centered. The entire person (including hair and shoulders) is visible. Comfortable margin between the person and the circle's border." ✓
+- Lint clean, no browser console/runtime errors.
+
+Stage Summary:
+- Both founder images (frustrated + confident) are now perfectly centered horizontally inside the circle.
+- The bug was a CSS transform override: `translateX` as a separate property was being ignored because `transform: scale(0.85)` took precedence. Fix was to combine both into a single `transform: "translateX(-50%) scale(0.85)"` value.
+- Images show the entire person (hair → face → shoulders → crossed arms) with a comfortable 15% zoom-out margin from the circle's edge.
+- Verified centered on desktop (1280px), confident state, and mobile (375px) via Agent Browser DOM measurement + VLM.
+- Lint clean, no runtime errors.

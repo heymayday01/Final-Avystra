@@ -26,15 +26,15 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
         referrerPolicy="no-referrer"
         loading="lazy"
         // Portrait image in a square circle: scale to fit height so the
-        // entire person (hair → shoulders) is visible. Center horizontally.
-        // scale(0.85) gives enough zoom-out margin so nothing touches the
-        // circle's edge on either image.
-        className="absolute h-full w-auto max-w-none object-contain transition-opacity duration-500"
+        // entire person (hair → shoulders) is visible. Center horizontally
+        // using a combined transform (translate must come before scale so
+        // the -50% is relative to the image's own width, not the scaled
+        // width). scale(0.85) gives a comfortable zoom-out margin.
+        className="absolute top-0 h-full w-auto max-w-none object-contain transition-opacity duration-500"
         style={{
           opacity: isResolved ? 0 : 1,
-          transform: "scale(0.85)",
           left: "50%",
-          translateX: "-50%",
+          transform: "translateX(-50%) scale(0.85)",
         }}
       />
       {/* Red tint overlay for frustrated state */}
@@ -51,12 +51,11 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
         alt="Founder — confident, system in place"
         referrerPolicy="no-referrer"
         loading="lazy"
-        className="absolute h-full w-auto max-w-none object-contain transition-opacity duration-500"
+        className="absolute top-0 h-full w-auto max-w-none object-contain transition-opacity duration-500"
         style={{
           opacity: isResolved ? 1 : 0,
-          transform: "scale(0.85)",
           left: "50%",
-          translateX: "-50%",
+          transform: "translateX(-50%) scale(0.85)",
         }}
       />
       {/* Green tint overlay for confident state */}
