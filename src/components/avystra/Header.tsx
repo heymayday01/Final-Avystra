@@ -180,7 +180,7 @@ export default function Header() {
   return (
     <div
       className={`fixed left-0 right-0 z-[60] flex justify-center px-4 sm:px-6 lg:px-8 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        scrolled || isOpen ? "top-2 md:top-3" : "top-2 sm:top-[48px]"
+        scrolled || isOpen ? "top-2 md:top-3" : "top-[36px] sm:top-[48px]"
       }`}
       style={{ pointerEvents: "none" }}
     >

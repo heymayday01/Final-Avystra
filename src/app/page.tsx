@@ -133,19 +133,26 @@ export default function Home() {
             />
           </div>
 
-          {/* Top Banner — slim, hidden on mobile (<640px), visible on tablet+ */}
+          {/* Top Banner — slim promo bar, visible on ALL viewports.
+              On mobile the text is shortened to fit one line without wrapping. */}
           <div
             onClick={handleScrollToConsult}
-            className="relative z-50 bg-navy-deep hover:bg-navy-soft border-b border-gold/20 text-center py-1.5 px-4 cursor-pointer transition-colors duration-300 hidden sm:block"
+            className="relative z-50 bg-navy-deep hover:bg-navy-soft border-b border-gold/20 text-center py-1.5 px-3 sm:px-4 cursor-pointer transition-colors duration-300"
           >
-            <div className="max-w-7xl mx-auto flex items-center justify-center gap-2.5 flex-wrap">
-              <span className="inline-flex items-center gap-1 bg-gold text-navy-deep text-[10.5px] font-mono font-black px-2 py-0.5 rounded uppercase tracking-wider">
+            <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 sm:gap-2.5 flex-nowrap">
+              <span className="inline-flex items-center gap-1 bg-gold text-navy-deep text-[9px] sm:text-[10.5px] font-mono font-black px-1.5 sm:px-2 py-0.5 rounded uppercase tracking-wider shrink-0">
                 Take Free
               </span>
-              <span className="text-slate-100 font-sans text-[12px] sm:text-[13px] font-medium tracking-wide">
+              {/* Full text on tablet+ */}
+              <span className="hidden sm:inline text-slate-100 font-sans text-[12px] sm:text-[13px] font-medium tracking-wide">
                 Check Your Company&apos;s OGI Score for{" "}
                 <span className="font-bold underline text-gold">FREE</span> —
                 Organizational Growth Index
+              </span>
+              {/* Compact text on mobile — short enough to fit one line */}
+              <span className="sm:hidden text-slate-100 font-sans text-[10.5px] font-medium tracking-wide whitespace-nowrap">
+                Check Your OGI Score for{" "}
+                <span className="font-bold underline text-gold">FREE</span>
               </span>
             </div>
           </div>

@@ -523,3 +523,45 @@ Stage Summary:
 - Staggered entrance animations: OGI button appears at `delay: 1.0`, WhatsApp at `delay: 1.2`.
 - Premium styling: gold pill with lightning icon + shadow matches the AVYSTRA navy/gold palette.
 - Lint clean, no runtime errors, verified on desktop + mobile via Agent Browser + VLM.
+
+---
+Task ID: 15
+Agent: main-orchestrator
+Task: Show the top promo banner on mobile viewport (was desktop-only) without overlapping the header
+
+Work Log:
+- The top promo banner ("TAKE FREE — Check Your Company's OGI Score for FREE — Organizational Growth Index") was hidden on mobile (`hidden sm:block` class). User wanted it visible on all viewports without overlapping the floating header.
+
+**Changes to `src/app/page.tsx` (banner):**
+- Removed `hidden sm:block` — banner now shows on ALL viewports.
+- Added responsive text: two separate `<span>` elements:
+  - Full text on sm+ (`hidden sm:inline`): "Check Your Company's OGI Score for FREE — Organizational Growth Index"
+  - Compact text on mobile (`sm:hidden`): "Check Your OGI Score for FREE" — short enough to fit one line on 320px screens without wrapping.
+- Made the "Take Free" badge slightly smaller on mobile (`text-[9px]` vs `text-[10.5px]`, `px-1.5` vs `px-2`).
+- Changed the flex container from `flex-wrap` to `flex-nowrap` + added `shrink-0` on the badge to prevent wrapping.
+- Reduced horizontal padding on mobile (`px-3` vs `px-4`).
+- Added `whitespace-nowrap` on the mobile text span as a safety measure.
+
+**Changes to `src/components/avystra/Header.tsx` (header positioning):**
+- Updated the header's `top` position logic from:
+  - `scrolled || isOpen ? "top-2 md:top-3" : "top-2 sm:top-[48px]"`
+  - to: `scrolled || isOpen ? "top-2 md:top-3" : "top-[36px] sm:top-[48px]"`
+- On mobile when not scrolled, the header now sits at `top-[36px]` (below the 31px-tall banner + 5px gap) instead of `top-2` (which would overlap the banner).
+- When scrolled or menu open, the header still moves to `top-2` (banner has scrolled away naturally).
+
+**Verification (Agent Browser + VLM):**
+- Mobile (375px): VLM confirmed "navy blue banner at the very top with gold 'TAKE FREE' badge and text 'Check Your OGI Score for FREE'. Navigation header positioned below the banner without overlapping. Banner text fits on one line without being cut off or wrapping." ✓
+- Mobile (320px — smallest): banner present, 320px wide, 31px tall, at top: 0. Header at top: 36px (5px gap below banner). No overlap. ✓
+- Desktop (1280px): full banner text visible, header below it, no overlap. ✓
+- Scrolled (mobile): header moves to top-2, banner scrolls away naturally. VLM confirmed "header at the very top, banner scrolled away, no overlap or layout issue." ✓
+- Programmatic overlap check: `bannerBottom: 31, headerTop: 36, gap: 5, overlap: false`. ✓
+- Lint clean, no browser console/runtime errors.
+
+Stage Summary:
+- The top promo banner is now visible on ALL viewports (mobile, tablet, desktop).
+- On mobile, the text is shortened to "Check Your OGI Score for FREE" (from "Check Your Company's OGI Score for FREE — Organizational Growth Index") to fit one line on screens as narrow as 320px.
+- The floating header's top position was adjusted from `top-2` to `top-[36px]` on mobile (when not scrolled) to sit below the 31px-tall banner with a 5px gap — no overlap.
+- When the user scrolls, the header smoothly transitions to `top-2` (the banner scrolls away with the page naturally).
+- The "Take Free" badge is slightly smaller on mobile (`text-[9px]`) to match the compact layout.
+- Desktop layout is unchanged — same full text, same header positioning.
+- Lint clean, verified on 320px, 375px, and 1280px via Agent Browser + VLM.
