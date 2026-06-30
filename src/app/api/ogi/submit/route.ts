@@ -9,6 +9,7 @@ import {
   type DimensionCode,
 } from "@/lib/ogi-data";
 import { exportOgiSubmissionsToExcel } from "@/lib/excel-export";
+import { rateLimit } from "@/lib/rate-limit";
 
 // ── SMTP transport (Gmail) ──────────────────────────────────────────────────
 // Uses Gmail's SMTP server with an App Password. Free, 500 emails/day, and
@@ -348,6 +349,27 @@ const EMAIL_HEADERS = {
 
 // ── Route handler ──────────────────────────────────────────────────────────
 export async function POST(request: Request) {
+  // Rate limit: max 5 submissions per IP per hour. Prevents spam/abuse
+  // without blocking legitimate users. Returns 429 with Retry-After header
+  // if exceeded.
+  const rl = rateLimit(request, { limit: 5, windowMs: 60 * 60 * 1000 });
+  if (!rl.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Too many submissions. Please try again later.",
+        retryAfter: rl.retryAfter,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rl.retryAfter),
+          "X-RateLimit-Remaining": "0",
+        },
+      }
+    );
+  }
+
   let json: unknown;
   try {
     json = await request.json();

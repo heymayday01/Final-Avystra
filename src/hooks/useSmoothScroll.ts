@@ -124,13 +124,23 @@ export function useSmoothScroll() {
     // ═══ DESKTOP ONLY: Full Lenis + scrollerProxy setup ═══
 
     const lenis = new Lenis({
-      lerp: 0.1,
+      // lerp 0.08 = slightly smoother (was 0.1). Lower = smoother but more lag.
+      // 0.08 is the sweet spot for premium feel without noticeable input delay.
+      lerp: 0.08,
       smoothWheel: true,
       syncTouch: false,
       infinite: false,
       autoRaf: false,
       wheelMultiplier: 1,
       touchMultiplier: 1.5,
+      // Prevent Lenis from intercepting clicks on elements that need native
+      // behavior (e.g. links with target=_blank, file downloads).
+      prevent: (node) =>
+        node.closest("[data-lenis-prevent]") !== null ||
+        node.tagName === "VIDEO" ||
+        node.tagName === "INPUT" ||
+        node.tagName === "TEXTAREA" ||
+        node.tagName === "SELECT",
     });
 
     (window as unknown as { lenis: typeof lenis }).lenis = lenis;

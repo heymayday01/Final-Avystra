@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { exportOgiSubmissionsToExcel } from "@/lib/excel-export";
+import { rateLimit } from "@/lib/rate-limit";
 
 /**
  * GET /api/ogi/export
@@ -11,8 +12,23 @@ import { exportOgiSubmissionsToExcel } from "@/lib/excel-export";
  * The file is also always available at the static URL /ogi-submissions.xlsx
  * (auto-regenerated on every new submission). This endpoint is for when you
  * want to force a fresh export or download via an API call.
+ *
+ * Rate-limited to 10 requests per IP per hour to prevent abuse (the DB query
+ * + file write is moderately expensive).
  */
-export async function GET() {
+export async function GET(request: Request) {
+  // Rate limit: 10 exports per IP per hour.
+  const rl = rateLimit(request, { limit: 10, windowMs: 60 * 60 * 1000 });
+  if (!rl.success) {
+    return NextResponse.json(
+      { success: false, error: "Too many export requests. Please try again later." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rl.retryAfter) },
+      }
+    );
+  }
+
   try {
     const filePath = await exportOgiSubmissionsToExcel();
 

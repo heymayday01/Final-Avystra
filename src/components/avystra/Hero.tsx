@@ -126,27 +126,36 @@ export default function Hero() {
       ease: "elastic.out(1, 0.42)",
     });
 
+    let pendingFrame: number | null = null;
+
     const handleMouseMoveCTA = (e: MouseEvent) => {
-      const rect = cta.getBoundingClientRect();
-      const ctaX = rect.left + rect.width / 2;
-      const ctaY = rect.top + rect.height / 2;
+      // Throttle to one update per animation frame. mousemove can fire
+      // 100+ times/sec on fast machines; gsap.quickTo already smooths the
+      // motion, so we only need the latest position per frame.
+      if (pendingFrame !== null) return;
+      pendingFrame = requestAnimationFrame(() => {
+        pendingFrame = null;
+        const rect = cta.getBoundingClientRect();
+        const ctaX = rect.left + rect.width / 2;
+        const ctaY = rect.top + rect.height / 2;
 
-      const dx = e.clientX - ctaX;
-      const dy = e.clientY - ctaY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+        const dx = e.clientX - ctaX;
+        const dy = e.clientY - ctaY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-      const triggerRadius = Math.max(rect.width, rect.height) / 2 + 65;
+        const triggerRadius = Math.max(rect.width, rect.height) / 2 + 65;
 
-      if (distance < triggerRadius) {
-        const ratio = (triggerRadius - distance) / triggerRadius;
-        const targetX = (dx / distance) * 10 * ratio;
-        const targetY = (dy / distance) * 10 * ratio;
-        xTo(targetX);
-        yTo(targetY);
-      } else {
-        xTo(0);
-        yTo(0);
-      }
+        if (distance < triggerRadius) {
+          const ratio = (triggerRadius - distance) / triggerRadius;
+          const targetX = (dx / distance) * 10 * ratio;
+          const targetY = (dy / distance) * 10 * ratio;
+          xTo(targetX);
+          yTo(targetY);
+        } else {
+          xTo(0);
+          yTo(0);
+        }
+      });
     };
 
     const handleMouseLeaveCTA = () => {
@@ -172,6 +181,7 @@ export default function Hero() {
     cta.addEventListener("mouseup", handleMouseUpCTA);
 
     return () => {
+      if (pendingFrame !== null) cancelAnimationFrame(pendingFrame);
       window.removeEventListener("mousemove", handleMouseMoveCTA);
       cta.removeEventListener("mouseleave", handleMouseLeaveCTA);
       cta.removeEventListener("mousedown", handleMouseDownCTA);
