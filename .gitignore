@@ -36,7 +36,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -50,5 +49,16 @@ test
 prompt
 
 server.log
+
 # Skills directory
 /skills/
+
+# AI artifacts — screenshots, logs, uploads, worklog (not for production)
+*.png
+!public/**/*.png
+!public/*.png
+worklog.md
+tool-results/
+upload/
+.zscripts/dev.pid
+.zscripts/dev.log
