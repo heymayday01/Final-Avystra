@@ -265,6 +265,86 @@ function escapeHtml(s: string): string {
     .replace(/'/g, "&#39;");
 }
 
+// ── Plain-text email builders ──────────────────────────────────────────────
+// A multipart/alternative email (HTML + text) scores significantly better in
+// Gmail's spam filter than HTML-only. Many spam filters penalise messages
+// that lack a text alternative, so we generate one for each HTML body.
+
+/** Plain-text version of the AVYSTRA notification email. */
+function buildAvystraEmailText(data: ParsedBody): string {
+  const { name, role, contact, email, score, band, answers } = data;
+  const numericAnswers: Record<number, number> = {};
+  for (const [k, v] of Object.entries(answers)) {
+    numericAnswers[Number(k)] = typeof v === "string" ? Number(v) : v;
+  }
+  const dimensions: DimensionCode[] = ["L", "M", "T", "E"];
+  const body = dimensions
+    .map((code) => {
+      const dimQuestions = questions.filter((q) => q.dimensionCode === code);
+      const lines = dimQuestions
+        .map((q) => {
+          const ans = numericAnswers[q.id];
+          return `  Q${q.id}: ${q.text}\n        -> ${answerLabel(ans)} (${ans ?? "—"})`;
+        })
+        .join("\n");
+      return `\n${dimensionLabels[code].toUpperCase()}\n${lines}`;
+    })
+    .join("\n");
+
+  return `NEW OGI SUBMISSION
+${name} — ${role}
+
+OGI SCORE: ${score}/100 (${band})
+
+CONTACT
+  Phone: ${contact}
+  Email: ${email || "Not provided"}
+
+FULL ASSESSMENT RESPONSES
+${body}
+
+---
+This submission was recorded automatically from the AVYSTRA website OGI diagnostic. Reply to this email or contact the lead directly to follow up.
+
+AVYSTRA Consulting Pvt. Ltd.
+info@avystra.co.in | +91 85960 59607`;
+}
+
+/** Plain-text version of the user's result email. */
+function buildUserEmailText(data: {
+  name: string;
+  score: number;
+  band: string;
+}): string {
+  const { name, score, band } = data;
+  return `Hi ${name},
+
+Thank you for completing the Organizational Growth Index assessment. Here is your result:
+
+YOUR OGI SCORE: ${score}/100 (${band})
+
+A member of the AVYSTRA team will follow up with you shortly to walk through what these results mean for your organization and discuss potential next steps.
+
+In the meantime, if you have any questions, simply reply to this email or reach us at info@avystra.co.in.
+
+Warm regards,
+The AVYSTRA Team
+
+---
+AVYSTRA Consulting Pvt. Ltd.
+info@avystra.co.in | +91 85960 59607`;
+}
+
+/** Common headers that improve deliverability + tell mail clients this is
+ *  a legitimate transactional message (not spam). */
+const EMAIL_HEADERS = {
+  "X-Mailer": "AVYSTRA Website (nodemailer)",
+  "X-Priority": "3", // normal priority
+  "X-Auto-Response-Suppress": "All", // don't trigger auto-replies
+  "List-Unsubscribe": `<mailto:info.avystra@gmail.com?subject=Unsubscribe>`,
+  "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+};
+
 // ── Route handler ──────────────────────────────────────────────────────────
 export async function POST(request: Request) {
   let json: unknown;
@@ -325,8 +405,11 @@ export async function POST(request: Request) {
       await transporter.sendMail({
         from: FROM_EMAIL,
         to: AVYSTRA_NOTIFY_EMAIL,
+        replyTo: SMTP_USER,
         subject: `New OGI Submission — ${data.name} (${data.role})`,
+        text: buildAvystraEmailText(data),
         html: buildAvystraEmailHtml(data),
+        headers: EMAIL_HEADERS,
       });
     } catch (err) {
       console.error("[ogi/submit] AVYSTRA notification email failed:", err);
@@ -338,12 +421,19 @@ export async function POST(request: Request) {
         await transporter.sendMail({
           from: FROM_EMAIL,
           to: data.email,
+          replyTo: SMTP_USER,
           subject: "Your AVYSTRA OGI Result",
+          text: buildUserEmailText({
+            name: data.name,
+            score: data.score,
+            band: data.band,
+          }),
           html: buildUserEmailHtml({
             name: data.name,
             score: data.score,
             band: data.band,
           }),
+          headers: EMAIL_HEADERS,
         });
         emailSent = true;
       } catch (err) {

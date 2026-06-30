@@ -212,3 +212,31 @@ Stage Summary:
 - Sender shows as `AVYSTRA <info.avystra@gmail.com>` — Gmail address, not a custom domain. Acceptable for lead-gen. Can upgrade to `noreply@avystra.co.in` later by verifying the domain in Resend and swapping back, but that's optional.
 - The App Password is stored only in server-side `.env` — never exposed to the client. The user should keep it secret and can revoke it anytime at https://myaccount.google.com/apppasswords if compromised.
 - Lint clean, no runtime/console errors, full flow verified end-to-end via Agent Browser.
+
+---
+Task ID: 7
+Agent: main-orchestrator
+Task: Fix spam-folder delivery + change AVYSTRA notification recipient to info.avystra@gmail.com
+
+Work Log:
+- Updated `.env`: changed `AVYSTRA_NOTIFY_EMAIL` from `info@avystra.co.in` → `info.avystra@gmail.com` (user's request — the full-data notification now lands in the Gmail inbox they actually check).
+- Root-caused the spam issue: both emails were HTML-only. Gmail's spam filter is suspicious of automated HTML messages without a plain-text alternative — multipart/alternative (text + HTML) scores significantly better. Also missing: `Reply-To`, `X-Mailer`, `X-Priority`, `List-Unsubscribe` headers that signal "legitimate transactional email" to spam filters.
+- Added to `src/app/api/ogi/submit/route.ts`:
+  - `buildAvystraEmailText(data)` — plain-text version of the AVYSTRA notification: score + band + contact + all 16 answers grouped by dimension with answer labels. Readable in any mail client, even ones that strip HTML.
+  - `buildUserEmailText({ name, score, band })` — plain-text version of the user result email: greeting + score + band + closing line + AVYSTRA contact footer.
+  - `EMAIL_HEADERS` constant with: `X-Mailer: AVYSTRA Website (nodemailer)`, `X-Priority: 3` (normal), `X-Auto-Response-Suppress: All` (prevents vacation auto-replies), `List-Unsubscribe: <mailto:info.avystra@gmail.com?subject=Unsubscribe>` + `List-Unsubscribe-Post` (one-click unsubscribe — tells Gmail this is a legitimate mailing, not spam).
+- Updated both `transporter.sendMail()` calls to include: `text` (plain-text body), `replyTo: SMTP_USER` (so replies go to info.avystra@gmail.com), `headers: EMAIL_HEADERS`. nodemailer auto-constructs the `multipart/alternative` MIME envelope when both `text` and `html` are provided.
+- Ran `bun run lint` → clean.
+- Restarted dev server (`.env` changed, Next.js doesn't hot-reload env).
+- Tested via curl: sent submission with `email: aryanthakare2003@gmail.com` → `emailSent: true`, no errors in dev log, both emails delivered as multipart.
+- Agent Browser end-to-end test: filled form (Ananya Desai, Director of Operations, +91 98765 43210, aryanthakare2003@gmail.com), answered all 16 questions, clicked GET MY FULL REPORT → "Your results have been emailed to you" success state. Dev log clean, browser console/errors empty.
+- Cleaned up test records from the DB.
+
+Stage Summary:
+- AVYSTRA full-data notifications now go to `info.avystra@gmail.com` (was `info@avystra.co.in`).
+- Spam issue addressed with three deliverability improvements:
+  1. Plain-text alternatives — both emails are now multipart/alternative (text + HTML). This is the #1 fix for Gmail spam filtering of automated HTML emails.
+  2. `Reply-To: info.avystra@gmail.com` — recipients can hit reply and reach a human.
+  3. Transactional headers (`X-Mailer`, `X-Priority`, `List-Unsubscribe`) — signal legitimacy to spam filters.
+- IMPORTANT — the user must still do ONE manual step to fully train Gmail's filter: open the first email in `info.avystra@gmail.com`'s Spam folder (if it lands there), click "Report not spam". Also add `info.avystra@gmail.com` to Google Contacts. These actions tell Gmail "this sender is trusted" and future emails will land in the inbox. This is a one-time warmup — Gmail builds sender reputation over the first few sends.
+- Lint clean, no runtime errors, full flow verified end-to-end.
