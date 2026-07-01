@@ -32,9 +32,8 @@ interface StatItemProps {
 export default function StatsFounder() {
   const [photoFailed, setPhotoFailed] = useState(false);
 
-  // Five reveal groups — each fires once via GSAP ScrollTrigger.
-  // CountUp (inside StatCard) keeps its own motion/react useInView trigger,
-  // which is a counter trigger, not a reveal animation — left untouched.
+  // CountUp (inside StatCard) uses motion/react useInView as a counter
+  // trigger (not a reveal animation) — left untouched.
 
   const stats: StatItemProps[] = [
     {

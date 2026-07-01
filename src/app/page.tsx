@@ -6,7 +6,6 @@ import Hero from "@/components/avystra/Hero";
 import ScrollProgress from "@/components/avystra/ScrollProgress";
 import { useSmoothScroll } from "@/hooks/useSmoothScroll";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowUpRight, MessageCircle } from "lucide-react";
 import { smoothScrollTo } from "@/lib/scroll";
 import LoadingScreen from "@/components/avystra/LoadingScreen";
 

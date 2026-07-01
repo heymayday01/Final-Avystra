@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   ArrowRight,
 } from "lucide-react";
-import { smoothScrollTo } from "@/lib/scroll";
 
 // ═══ Shared Founder Images — crossfade between frustrated (bottleneck)
 // and confident (AVYSTRA system) states. Defined at module scope so the
@@ -318,11 +317,9 @@ export default function FounderFrictionSimulator() {
                 className="friction-card absolute w-[200px] md:w-[220px] lg:w-[240px] rounded-2xl p-4 sm:p-5 z-10 transition-colors duration-500 overflow-hidden"
                 style={{
                   ...outcome.desktopStyle,
-                  background: "rgba(255,255,255,0.05)",
+                  background: "rgba(255,255,255,0.08)",
                   border: "1px solid rgba(255,255,255,0.10)",
                   borderLeft: `2px solid ${accent}`,
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
                 }}
               >
                 {/* Header: number + icon + label */}
@@ -487,11 +484,9 @@ export default function FounderFrictionSimulator() {
                   key={outcome.id}
                   className="rounded-2xl p-5 transition-colors duration-500"
                   style={{
-                    background: "rgba(255,255,255,0.05)",
+                    background: "rgba(255,255,255,0.08)",
                     border: "1px solid rgba(255,255,255,0.10)",
                     borderLeft: `2px solid ${accent}`,
-                    backdropFilter: "blur(16px)",
-                    WebkitBackdropFilter: "blur(16px)",
                   }}
                 >
                   <div className="flex items-center gap-2.5 mb-3">
@@ -570,10 +565,8 @@ export default function FounderFrictionSimulator() {
         <div
           className="mt-10 w-full max-w-[1000px] mx-auto rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"
           style={{
-            background: "rgba(255,255,255,0.03)",
+            background: "rgba(255,255,255,0.06)",
             border: "1px solid rgba(201,168,76,0.15)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
           }}
         >
           <p className="font-serif italic text-white text-lg sm:text-xl">

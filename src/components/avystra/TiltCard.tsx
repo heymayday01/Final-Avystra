@@ -22,6 +22,11 @@ export default function TiltCard({
   scale = 1.02,
 }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
+  // Cached bounding rect — set on mouseenter, cleared on mouseleave.
+  // Avoids forcing a sync layout read (getBoundingClientRect) on every
+  // mousemove event (60-120×/sec). The rect is stable while the pointer
+  // stays inside the card; we recompute on the next mouseenter.
+  const rectRef = useRef<DOMRect | null>(null);
   const [isActive, setIsActive] = useState(false);
 
   // Detect touch device — skip all motion value setup on touch
@@ -49,18 +54,35 @@ export default function TiltCard({
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (!ref.current) return;
-      const rect = ref.current.getBoundingClientRect();
+      // Reuse cached rect from mouseenter — avoids per-mousemove layout
+      // reads. Falls back to a fresh read if the cache is missing (e.g.
+      // mousemove fired without a prior mouseenter).
+      let rect = rectRef.current;
+      if (!rect) {
+        rect = ref.current.getBoundingClientRect();
+        rectRef.current = rect;
+      }
       mouseX.set((e.clientX - rect.left) / rect.width);
       mouseY.set((e.clientY - rect.top) / rect.height);
     },
     [mouseX, mouseY]
   );
 
-  const handleMouseEnter = useCallback(() => setIsActive(true), []);
+  const handleMouseEnter = useCallback(() => {
+    setIsActive(true);
+    // Cache the card's rect on enter so subsequent mousemove events
+    // don't need to query layout.
+    if (ref.current) {
+      rectRef.current = ref.current.getBoundingClientRect();
+    }
+  }, []);
   const handleMouseLeave = useCallback(() => {
     setIsActive(false);
     mouseX.set(0.5);
     mouseY.set(0.5);
+    // Clear the cached rect so a stale layout isn't reused after the
+    // pointer leaves (e.g. if the page scrolled or resized in between).
+    rectRef.current = null;
   }, [mouseX, mouseY]);
 
   // Touch devices: render children without any tilt wrapper

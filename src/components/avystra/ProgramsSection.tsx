@@ -108,8 +108,19 @@ export default function ProgramsSection() {
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    // Debounce resize — fires up to once per 180ms during a drag-resize
+    // instead of on every tick. Matches the createResizeHandler pattern
+    // in src/hooks/useSmoothScroll.ts.
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const debouncedCheckMobile = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(checkMobile, 180);
+    };
+    window.addEventListener("resize", debouncedCheckMobile);
+    return () => {
+      window.removeEventListener("resize", debouncedCheckMobile);
+      if (timer) clearTimeout(timer);
+    };
   }, []);
 
   const categories = [

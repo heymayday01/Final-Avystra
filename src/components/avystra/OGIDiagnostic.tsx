@@ -259,7 +259,7 @@ export default function OGIDiagnostic() {
 
     const autoSave = async () => {
       try {
-        await fetch("/api/ogi/save?XTransformPort=3000", {
+        await fetch("/api/ogi/save", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -305,7 +305,7 @@ export default function OGIDiagnostic() {
     setSubmitError("");
     try {
       const { score, band } = computeOgiScore(answers);
-      const res = await fetch("/api/ogi/submit?XTransformPort=3000", {
+      const res = await fetch("/api/ogi/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

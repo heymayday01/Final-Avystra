@@ -83,7 +83,7 @@ export function useSmoothScroll() {
     // ── Reduced motion: skip Lenis entirely, just reveal content ──
     if (prefersReducedMotion) {
       gsap.set(
-        ".gsap-stagger-card, .gsap-divider, .pillar-fade-up, .pillar-card, .gsap-hero-fade, h2, p",
+        ".gsap-stagger-card, .pillar-card, .gsap-hero-fade",
         { opacity: 1, y: 0, scaleX: 1, scale: 1, filter: "none", rotateX: 0 }
       );
       return;
@@ -103,7 +103,13 @@ export function useSmoothScroll() {
         createResizeHandler(() => ScrollTrigger.refresh());
       window.addEventListener("resize", resizeHandler, { passive: true });
 
-      // Provide a lenis-like shim so smoothScrollTo() works on mobile
+      // Provide a lenis-like shim so smoothScrollTo() works on mobile.
+      // The `on("scroll", cb)` hook actually attaches a real window scroll
+      // listener so consumers like Header can track scroll position on touch
+      // devices (without this, the header never transitions to its compact
+      // "scrolled" state on mobile).
+      const scrollListeners: Array<() => void> = [];
+      const velocityListeners: Array<() => void> = [];
       (window as unknown as { lenis: unknown }).lenis = {
         scrollTo: (
           target: number | HTMLElement,
@@ -117,10 +123,30 @@ export function useSmoothScroll() {
             window.scrollTo({ top, behavior: "smooth" });
           }
         },
-        on: () => {},
-        off: () => {},
+        on: (event: string, cb: () => void) => {
+          if (event === "scroll") {
+            scrollListeners.push(cb);
+            window.addEventListener("scroll", cb, { passive: true });
+          } else if (event === "velocity") {
+            velocityListeners.push(cb);
+          }
+        },
+        off: (event: string, cb: () => void) => {
+          if (event === "scroll") {
+            const idx = scrollListeners.indexOf(cb);
+            if (idx >= 0) scrollListeners.splice(idx, 1);
+            window.removeEventListener("scroll", cb);
+          } else if (event === "velocity") {
+            const idx = velocityListeners.indexOf(cb);
+            if (idx >= 0) velocityListeners.splice(idx, 1);
+          }
+        },
         resize: () => {},
-        destroy: () => {},
+        destroy: () => {
+          scrollListeners.forEach((cb) => window.removeEventListener("scroll", cb));
+          scrollListeners.length = 0;
+          velocityListeners.length = 0;
+        },
         scroll: 0,
         velocity: 0,
         isScrolling: false,

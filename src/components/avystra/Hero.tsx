@@ -2,7 +2,6 @@
 
 import React, { useRef, useEffect, useCallback, useState, useSyncExternalStore } from "react";
 import { ArrowRight, UserPlus, TrendingUp, Building2, Banknote, ClipboardList } from "lucide-react";
-import { motion, useMotionValue, useSpring } from "motion/react";
 import { gsap } from "@/lib/gsap";
 import { UnderlineSquiggle } from "./DoodleWidgets";
 import { smoothScrollTo } from "@/lib/scroll";
@@ -27,29 +26,11 @@ export default function Hero() {
   );
   const [isVisible, setIsVisible] = useState(true);
 
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  // ── Parallax: subtle depth on scroll for the headline block ──
-  // Removed parallax transforms + manual IntersectionObserver to reduce
-  // per-frame motion value updates during scroll. The marquee pause/
-  // play is now handled by a single scroll listener instead of 3
-  // useTransform values + 1 IntersectionObserver running simultaneously.
-  const springConfig = { damping: 45, stiffness: 120, mass: 0.6 };
-  const spotlightX = useSpring(mouseX, springConfig);
-  const spotlightY = useSpring(mouseY, springConfig);
-
-  // Single lightweight scroll listener for marquee visibility only
-  useEffect(() => {
-    const handleScroll = () => {
-      const rect = sectionRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      setIsVisible(rect.bottom > 0 && rect.top < window.innerHeight);
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Single lightweight scroll listener for marquee visibility only.
+  // The mouse spotlight (useMotionValue + useSpring + per-mousemove
+  // getBoundingClientRect) was removed for performance — it forced a
+  // sync layout read on every mousemove + 2 always-running springs on
+  // a 600px GPU layer. The ambient background orbs provide enough depth.
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -73,32 +54,9 @@ export default function Hero() {
     return () => ctx.revert();
   }, [reducedMotion]);
 
-  // CTA micro-interactions are now handled purely in CSS (.hero-btn-primary
+  // CTA micro-interactions are handled purely in CSS (.hero-btn-primary
   // / .hero-btn-secondary) — scale(1.02) + gold glow on hover with
   // power1.inOut easing. No elastic, no JS mouse tracking.
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      const isCoarse = window.matchMedia("(pointer: coarse)").matches;
-      if (isCoarse) return;
-
-      const container = sectionRef.current;
-      if (!container) return;
-
-      const rect = container.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-
-      mouseX.set(x);
-      mouseY.set(y);
-    },
-    [mouseX, mouseY]
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    mouseX.set(0);
-    mouseY.set(0);
-  }, [mouseX, mouseY]);
 
   const handleScrollToForm = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -121,26 +79,8 @@ export default function Hero() {
     <section
       id="hero-section"
       ref={sectionRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       className="relative w-full pt-24 sm:pt-24 lg:pt-28 pb-2 sm:pb-4 overflow-x-hidden bg-transparent"
     >
-      {/* Buttery smooth Spring Cursor Spotlight — follows mouse.
-          Removed the giant 900px blur-3xl ambient glow that was causing
-          scroll jank (mix-blend-color-dodge on a 1200px element forces
-          full-layer composite per frame). The page-level ambient
-          background now handles depth. */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 w-[600px] h-[600px] pointer-events-none z-0 hidden md:block bg-radial from-gold/[0.05] to-transparent select-none"
-        style={{
-          x: spotlightX,
-          y: spotlightY,
-          translateX: "-50%",
-          translateY: "-50%",
-          willChange: "transform",
-        }}
-      />
-
       <div className="relative max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full select-none">
         <div className="flex flex-col items-center text-center w-full">
 
@@ -160,7 +100,9 @@ export default function Hero() {
           </div>
 
           {/* Main heading — CSS line reveals. Solid gold color (NOT background-clip
-              gradient) so the question mark descender never clips on iOS. */}
+              gradient) so the question mark descender never clips on iOS.
+              The doodle sits safely below the text as a relative-positioned
+              child — no clip region exists to cut it. */}
           <h1
             className="font-display font-bold text-[clamp(2rem,7vw,5.5rem)] tracking-[-0.035em] text-navy-deep select-none heading-balance mb-8 sm:mb-10"
             style={{ lineHeight: 1.35 }}
@@ -172,17 +114,12 @@ export default function Hero() {
               So Why Does Everything Still
             </span>
             <span className="block text-center hero-line-3">
-              <span className="inline font-serif italic font-semibold whitespace-nowrap text-gold">
+              <span className="relative inline-block font-serif italic font-semibold whitespace-nowrap text-gold">
                 Depend On You?
+                <UnderlineSquiggle className="text-gold/60" delay={1.0} duration={1.0} />
               </span>
             </span>
           </h1>
-
-          {/* Gold underline doodle — now a sibling below the heading so it can
-              never overlap or clip the question mark. */}
-          <div className="hero-line-3 flex justify-center mb-8 sm:mb-10" aria-hidden="true">
-            <UnderlineSquiggle className="w-24 sm:w-32 h-[5px] text-gold/60" delay={1.0} duration={1.0} />
-          </div>
 
           {/* Feature chips — staggered pop-in */}
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-10 max-w-3xl mx-auto">

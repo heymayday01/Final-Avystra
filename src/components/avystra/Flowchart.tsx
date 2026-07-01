@@ -33,7 +33,6 @@ export default function Flowchart() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
-  // Three reveal groups: header (badge/h2/p), steps grid (4 cards), bottom banner.
   // The flowing pulses and pulse ring/dot remain as motion.div since they
   // are decorative infinite loops, not scroll reveals.
 

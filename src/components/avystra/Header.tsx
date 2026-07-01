@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { ScrollTrigger } from "@/lib/gsap";
 import AvystraLogo from "./AvystraLogo";
 import { smoothScrollTo, scrollToTop, getLenis } from "@/lib/scroll";
 
@@ -214,7 +214,7 @@ export default function Header() {
 
           {/* Desktop Navigation — shows on lg+ (1024px) instead of xl (1280px) */}
           <nav
-            className="hidden lg:flex items-center gap-0.5 relative bg-white/30 backdrop-blur-md px-1 py-1 rounded-full border border-white/40 shadow-sm"
+            className="hidden lg:flex items-center gap-0.5 relative bg-white/80 px-1 py-1 rounded-full border border-white/40 shadow-sm"
             onMouseLeave={() => setHoveredIndex(null)}
           >
             {navItems.map((item, i) => {
@@ -272,7 +272,7 @@ export default function Header() {
           <div className="lg:hidden flex items-center shrink-0">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="relative w-11 h-11 flex items-center justify-center text-navy-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 rounded-full bg-white/60 backdrop-blur-md border border-white/40 shadow-sm transition-all hover:bg-white/80 active:bg-white/90"
+              className="relative w-11 h-11 flex items-center justify-center text-navy-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 rounded-full bg-white/80 border border-white/40 shadow-sm transition-all hover:bg-white/90 active:bg-white/95"
               style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
               aria-label="Toggle Menu"
               aria-expanded={isOpen}
