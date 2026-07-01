@@ -6,7 +6,6 @@ import { motion, useMotionValue, useSpring } from "motion/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { UnderlineSquiggle } from "./DoodleWidgets";
-import LiquidHeading from "./LiquidHeading";
 import { smoothScrollTo } from "@/lib/scroll";
 
 // Subscribe to prefers-reduced-motion without setState-in-effect
@@ -283,9 +282,10 @@ export default function Hero() {
             className="mb-4 md:mb-6 transform-gpu relative z-20 max-w-[95vw] lg:max-w-none"
           >
             <h1
-              className="font-display font-bold text-[clamp(1.85rem,6.2vw,5rem)] leading-[1.25] sm:leading-[1.2] tracking-[-0.035em] text-navy-deep select-none text-center flex flex-wrap justify-center items-center gap-y-1.5 heading-balance py-1"
+              className="font-display font-bold text-[clamp(1.85rem,6.2vw,5rem)] tracking-[-0.035em] text-navy-deep select-none text-center heading-balance py-2"
+              style={{ lineHeight: 1.35 }}
             >
-              <span className="inline-flex flex-wrap justify-center gap-x-[0.22em] mr-[0.22em]">
+              <span className="inline-flex flex-wrap justify-center gap-x-[0.22em] mr-[0.22em] align-baseline">
                 {["You", "Built", "A", "Team."].map((word, i) => (
                   <motion.span
                     key={`w1-${i}`}
@@ -314,7 +314,7 @@ export default function Hero() {
                   </motion.span>
                 ))}
               </span>
-              <span className="inline-flex flex-wrap justify-center gap-x-[0.22em] mr-[0.22em]">
+              <span className="inline-flex flex-wrap justify-center gap-x-[0.22em] mr-[0.22em] align-baseline">
                 {["So", "Why", "Does", "Everything", "Still"].map((word, i) => (
                   <motion.span
                     key={`w2-${i}`}
@@ -343,7 +343,10 @@ export default function Hero() {
                   </motion.span>
                 ))}
               </span>
-              <LiquidHeading className="relative inline-flex overflow-visible pb-4 -mb-1 items-baseline text-gold font-serif italic font-semibold whitespace-nowrap pl-[0.1em] align-baseline">
+              <span
+                className="relative inline-flex overflow-visible items-baseline text-gold whitespace-nowrap pl-[0.1em]"
+                style={{ lineHeight: 1.5, paddingBottom: "0.15em" }}
+              >
                 <motion.span
                   initial={{
                     opacity: 0,
@@ -364,7 +367,7 @@ export default function Hero() {
                     delay: 0.8,
                     ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="inline-block transform-gpu will-change-[transform,opacity,filter] origin-bottom-right"
+                  className="inline-block transform-gpu will-change-[transform,opacity,filter] origin-bottom-right font-serif italic font-semibold"
                 >
                   Depend On You?
                 </motion.span>
@@ -373,7 +376,7 @@ export default function Hero() {
                   delay={1.1}
                   duration={1.0}
                 />
-              </LiquidHeading>
+              </span>
             </h1>
           </div>
 
