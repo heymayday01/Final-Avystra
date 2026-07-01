@@ -162,15 +162,6 @@ export default function Home() {
               <FounderFrictionSimulator />
             </Suspense>
 
-            {/* Section Divider with thin brass gradient line */}
-            <motion.div
-              initial={{ opacity: 0, scaleX: 0 }}
-              whileInView={{ opacity: 0.4, scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full h-[1px] bg-gradient-to-r from-transparent via-gold/30 to-transparent origin-center mt-4 mb-8"
-            />
-
             {/* Interactive systems flowchart timeline */}
             <div className="pb-8">
               <Suspense fallback={<div className="min-h-[40vh]" />}>

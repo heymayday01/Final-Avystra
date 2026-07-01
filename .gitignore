@@ -72,3 +72,5 @@ public/ogi-submissions.xlsx
 /examples/
 /mini-services/
 /download/
+.zscripts/
+Caddyfile
