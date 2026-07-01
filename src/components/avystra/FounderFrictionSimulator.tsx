@@ -50,13 +50,13 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
         alt="Founder — confident, system in place"
         referrerPolicy="no-referrer"
         loading="lazy"
-        // Same framing as the frustrated image, but object-position X is 35%
-        // (vs 50% for frustrated) to shift the person slightly to the right
-        // for better visual centering. Y stays at 25% to keep face + hair visible.
+        // This is a square image (1024×1024) with the person already centered.
+        // object-cover + center center fills the square circle perfectly with
+        // no cropping. The person is centered in the image so no offset needed.
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
         style={{
           opacity: isResolved ? 1 : 0,
-          objectPosition: "35% 25%",
+          objectPosition: "center center",
         }}
       />
       {/* Green tint overlay for confident state */}
