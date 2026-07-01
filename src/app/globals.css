@@ -225,19 +225,6 @@
 
 /* ─── ANIMATIONS ───────────────────────────────────────────── */
 
-/* Hero gold text fade-in — CSS only (no Framer Motion).
-   Framer Motion creates GPU layers that clip the ? tail on iOS.
-   This CSS animation fades in WITHOUT creating a compositing layer. */
-@keyframes hero-gold-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.hero-gold-fade {
-  opacity: 0;
-  animation: hero-gold-fade 1s ease 0.8s forwards;
-}
-
 @keyframes marquee {
   from { transform: translate3d(0, 0, 0); }
   to   { transform: translate3d(-33.333%, 0, 0); }

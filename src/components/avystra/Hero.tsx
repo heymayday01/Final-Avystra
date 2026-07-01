@@ -282,8 +282,8 @@ export default function Hero() {
             className="mb-4 md:mb-6 relative z-20 max-w-[95vw] lg:max-w-none"
           >
             <h1
-              className="font-display font-bold text-[clamp(1.85rem,6.2vw,5rem)] tracking-[-0.035em] text-navy-deep select-none text-center heading-balance py-2"
-              style={{ lineHeight: 1.4 }}
+              className="font-display font-bold text-[clamp(1.85rem,6.2vw,5rem)] tracking-[-0.035em] text-navy-deep select-none text-center heading-balance py-3"
+              style={{ lineHeight: 1.5 }}
             >
               <span className="inline-flex flex-wrap justify-center gap-x-[0.22em] mr-[0.22em] align-baseline">
                 {["You", "Built", "A", "Team."].map((word, i) => (
@@ -343,13 +343,17 @@ export default function Hero() {
                   </motion.span>
                 ))}
               </span>
-              {/* Gold "Depend On You?" — CSS-only fade in (no Framer Motion).
-                  Framer Motion's motion.span applies will-change during
-                  animation which creates a GPU compositing layer that clips
-                  the ? tail on iOS. CSS animation doesn't create a layer. */}
-              <span
-                className="relative text-gold font-serif italic font-semibold whitespace-nowrap pl-[0.1em] align-baseline hero-gold-fade"
-                style={{ lineHeight: 1.8 }}
+              {/* Gold "Depend On You?" — full Framer Motion animation restored.
+                  The key to fixing iOS clipping: generous line-height (1.5 on
+                  the h1) + Playfair Display font (standard descender depth) +
+                  the span has its OWN line-height of 1.6 so the ? tail has room.
+                  No overflow-hidden anywhere in the ancestor chain. */}
+              <motion.span
+                initial={{ opacity: 0, y: 30, rotateX: 20, z: -50, filter: "blur(8px)" }}
+                animate={{ opacity: 1, y: 0, rotateX: 0, z: 0, filter: "blur(0px)" }}
+                transition={{ duration: 1.0, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="relative inline-block transform-gpu will-change-[transform,opacity,filter] origin-bottom-right text-gold font-serif italic font-semibold whitespace-nowrap pl-[0.1em] align-baseline"
+                style={{ lineHeight: 1.6, overflow: "visible" }}
               >
                 Depend On You?
                 <UnderlineSquiggle
@@ -357,7 +361,7 @@ export default function Hero() {
                   delay={1.1}
                   duration={1.0}
                 />
-              </span>
+              </motion.span>
             </h1>
           </div>
 
