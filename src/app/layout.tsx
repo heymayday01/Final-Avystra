@@ -63,15 +63,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Add .js class BEFORE paint so the reveal system's hidden initial
-            state only applies when JS is enabled. No-JS users see content
-            immediately (progressive enhancement). This runs synchronously
-            in <head> before the body renders. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "document.documentElement.classList.add('js');",
-          }}
-        />
         {/* Preconnect to font hosts for faster font loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

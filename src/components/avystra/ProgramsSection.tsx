@@ -4,7 +4,6 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { BookOpen, Calendar, Users, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import TextReveal from "./TextReveal";
-import { useReveal } from "@/lib/useReveal";
 
 interface Program {
   id: string;
@@ -27,7 +26,7 @@ interface Program {
 function ProgramCard({ prog }: { prog: Program }) {
   return (
     <article
-      className="program-card group relative premium-card bg-gradient-to-br from-white to-slate-50/80 border border-slate-100 rounded-3xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between hover:border-gold/30 transition-all duration-500 h-full overflow-hidden"
+      className="program-card group relative bg-gradient-to-br from-white to-slate-50/80 border border-slate-100 rounded-3xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between hover:shadow-[0_30px_60px_-15px_rgba(11,27,46,0.12)] hover:border-gold/30 transition-all duration-500 h-full overflow-hidden"
     >
       {/* Subtle Glow Reflection Layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -88,7 +87,7 @@ function ProgramCard({ prog }: { prog: Program }) {
           )}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="shine-btn flex items-center justify-center gap-2 w-full min-h-[44px] py-3 sm:py-3.5 px-4 rounded-xl bg-navy-deep text-gold hover:bg-gold hover:text-navy-deep transition-all duration-300 cursor-pointer text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-[0.18em] sm:tracking-[0.2em] group/btn shadow-md hover:shadow-lg"
+          className="flex items-center justify-center gap-2 w-full min-h-[44px] py-3 sm:py-3.5 px-4 rounded-xl bg-navy-deep text-gold hover:bg-gold hover:text-navy-deep transition-all duration-300 cursor-pointer text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-[0.18em] sm:tracking-[0.2em] group/btn shadow-md hover:shadow-lg"
           aria-label={`Enquire about ${prog.title} program`}
         >
           <span>Enquire Now</span>
@@ -104,12 +103,6 @@ export default function ProgramsSection() {
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-
-  // Scroll-reveal groups: heading, category tabs banner, staggered desktop
-  // program-card grid. Mobile carousel scroll/active-card logic is untouched.
-  const headingRef = useReveal<HTMLDivElement>();
-  const bannerRef = useReveal<HTMLDivElement>();
-  const gridRef = useReveal<HTMLDivElement>({ stagger: 0.06 });
 
   // Track viewport for mobile carousel behavior
   useEffect(() => {
@@ -313,8 +306,7 @@ export default function ProgramsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 select-none">
         {/* Section Heading */}
         <div
-          ref={headingRef}
-          className="reveal flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
+          className="flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
         >
           <div className="border border-gold/20 bg-gradient-to-br from-white to-slate-50 border border-slate-100 px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-3 shadow-sm">
             <BookOpen className="w-3.5 h-3.5 text-gold" />
@@ -351,7 +343,7 @@ export default function ProgramsSection() {
         </div>
 
         {/* Categories Tab Navigation */}
-        <div ref={bannerRef} className="reveal flex flex-nowrap overflow-x-auto scrollbar-none pb-4 lg:pb-0 lg:flex-wrap justify-start lg:justify-center gap-3 mb-6 select-none max-w-4xl mx-auto px-4 lg:px-0 lg:mx-auto" style={{ scrollPaddingRight: '2rem' }}>
+        <div className="flex flex-nowrap overflow-x-auto scrollbar-none pb-4 lg:pb-0 lg:flex-wrap justify-start lg:justify-center gap-3 mb-6 select-none max-w-4xl mx-auto px-4 lg:px-0 lg:mx-auto" style={{ scrollPaddingRight: '2rem' }}>
           {categories.map((cat) => {
             const isActive = activeTab === cat.key;
             return (
@@ -395,7 +387,6 @@ export default function ProgramsSection() {
 
         {/* DESKTOP & TABLET GRID — hidden on mobile */}
         <div
-          ref={gridRef}
           className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 min-h-[400px] items-stretch"
           aria-label="Programs grid"
         >
@@ -403,7 +394,6 @@ export default function ProgramsSection() {
             {filteredPrograms.map((prog, index) => (
               <motion.div
                 key={prog.id}
-                data-reveal
                 initial={{ opacity: 0, y: 15, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
