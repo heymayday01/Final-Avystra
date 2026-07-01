@@ -393,27 +393,41 @@ export async function POST(request: Request) {
   }
   const data = parsed.data;
 
-  // 1. Persist to database (this is the source of truth — always succeeds
-  //    unless the DB is down, in which case we return 500).
-  let submission;
-  try {
-    submission = await db.ogiSubmission.create({
-      data: {
-        name: data.name,
-        role: data.role,
-        contact: data.contact,
-        email: data.email ?? null,
-        score: data.score,
-        band: data.band,
-        answersJson: JSON.stringify(data.answers),
-      },
-    });
-  } catch (err) {
-    console.error("[ogi/submit] DB insert failed:", err);
-    return NextResponse.json(
-      { success: false, error: "Failed to save submission" },
-      { status: 500 }
-    );
+  // 1. Look up the existing submission (saved by /api/ogi/save when the
+  //    results screen appeared). We use the most recent matching submission
+  //    from the last 10 minutes. If not found (e.g. user skipped the auto-save
+  //    or cleared their session), we create one here as a fallback.
+  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+  let submission = await db.ogiSubmission.findFirst({
+    where: {
+      name: data.name,
+      contact: data.contact,
+      createdAt: { gte: tenMinutesAgo },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (!submission) {
+    // Fallback: create the submission if the auto-save didn't happen.
+    try {
+      submission = await db.ogiSubmission.create({
+        data: {
+          name: data.name,
+          role: data.role,
+          contact: data.contact,
+          email: data.email ?? null,
+          score: data.score,
+          band: data.band,
+          answersJson: JSON.stringify(data.answers),
+        },
+      });
+    } catch (err) {
+      console.error("[ogi/submit] DB insert failed:", err);
+      return NextResponse.json(
+        { success: false, error: "Failed to save submission" },
+        { status: 500 }
+      );
+    }
   }
 
   // 2. Fire off the three side-effects in parallel: AVYSTRA notification

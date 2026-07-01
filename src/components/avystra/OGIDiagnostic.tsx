@@ -77,10 +77,13 @@ export default function OGIDiagnostic() {
   // Validation state
   const [infoError, setInfoError] = useState("");
 
-  // ── Submission state (POST to /api/ogi/submit) ──
+  // ── Submission state ──
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<{ emailSent: boolean } | null>(null);
   const [submitError, setSubmitError] = useState("");
+  // Tracks whether the auto-save (DB + Excel) has been done for this session.
+  // Prevents duplicate saves when the RESULTS screen re-renders.
+  const [autoSaved, setAutoSaved] = useState(false);
 
   // Ref to the content box — used to auto-scroll into view on screen changes
   const contentBoxRef = useRef<HTMLDivElement>(null);
@@ -217,6 +220,38 @@ export default function OGIDiagnostic() {
     }
   }, [screen]);
 
+  // ── Auto-save to DB + update Excel when RESULTS screen appears ──
+  // This fires once when the results screen first shows up, BEFORE the user
+  // clicks "GET MY FULL REPORT". It saves the submission to the database and
+  // regenerates the Excel file. The "GET MY FULL REPORT" button then only
+  // triggers the email sending (via /api/ogi/submit) — the data is already saved.
+  useEffect(() => {
+    if (screen !== "RESULTS" || autoSaved) return;
+    setAutoSaved(true); // set immediately to prevent double-fire in StrictMode
+
+    const autoSave = async () => {
+      try {
+        await fetch("/api/ogi/save?XTransformPort=3000", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name.trim(),
+            role: role.trim(),
+            contact: phone.trim(),
+            email: email.trim(),
+            answers,
+          }),
+        });
+      } catch (err) {
+        // Silent failure — the user hasn't explicitly submitted yet,
+        // so we don't show any error UI. The /api/ogi/submit call (when
+        // the user clicks "GET MY FULL REPORT") will retry the save.
+        console.error("[OGI] auto-save failed:", err);
+      }
+    };
+    autoSave();
+  }, [screen, autoSaved, name, role, phone, email, answers]);
+
   // Restart assessment
   const handleRestart = () => {
     setAnswers({});
@@ -227,6 +262,7 @@ export default function OGIDiagnostic() {
     setEmail("");
     setSubmissionResult(null);
     setSubmitError("");
+    setAutoSaved(false);
     setScreen("INTRO");
   };
 
