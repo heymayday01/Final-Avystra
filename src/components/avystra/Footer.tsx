@@ -3,12 +3,14 @@
 import { Linkedin, Instagram, MessageCircle, Facebook, Mail, Phone, ArrowUpRight } from "lucide-react";
 import AvystraLogo from "./AvystraLogo";
 import { smoothScrollTo } from "@/lib/scroll";
+import { useReveal } from "@/lib/useReveal";
 
 interface FooterProps {
   leadCount: number;
 }
 
 export default function Footer({ leadCount }: FooterProps) {
+  const contentRef = useReveal<HTMLDivElement>();
   const scrollTo = (href: string) => {
     const elementId = href.substring(1);
     smoothScrollTo(elementId);
@@ -52,7 +54,7 @@ export default function Footer({ leadCount }: FooterProps) {
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-gold/[0.04] blur-[140px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-gold/[0.02] blur-[120px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10 w-full">
+      <div ref={contentRef} className="reveal max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10 w-full">
         {/* Main Footer Content — compact 3-column grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-10">
           {/* Brand & Description */}

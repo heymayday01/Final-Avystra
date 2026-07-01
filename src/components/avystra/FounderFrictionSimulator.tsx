@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
+import { useReveal } from "@/lib/useReveal";
 import {
   Compass,
   Briefcase,
@@ -74,6 +75,16 @@ export default function FounderFrictionSimulator() {
   const [isResolved, setIsResolved] = useState<boolean>(false);
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
+
+  // Scroll-reveal refs (safe useReveal hook — only adds .is-revealed, never
+  // hides via JS; CSS .reveal class gates the initial hidden state.)
+  const subtextRef = useReveal<HTMLDivElement>();
+  const toggleRef = useReveal<HTMLDivElement>();
+  const desktopCardsRef = useReveal<HTMLDivElement>({ stagger: 0.08 });
+  const desktopCenterNodeRef = useReveal<HTMLDivElement>();
+  const mobileCenterNodeRef = useReveal<HTMLDivElement>();
+  const mobileCardsRef = useReveal<HTMLDivElement>({ stagger: 0.08 });
+  const ctaRef = useReveal<HTMLDivElement>();
 
   // Pause SVG animateMotion + CSS animations when section is off-screen
   useEffect(() => {
@@ -187,7 +198,7 @@ export default function FounderFrictionSimulator() {
         {/* ─── HEADER BLOCK ───
             "Interactive Structural Diagnostic" badge removed per spec.
             This section now leads directly with subtext + toggle. */}
-        <div className="flex flex-col items-center text-center mb-12">
+        <div ref={subtextRef} className="reveal flex flex-col items-center text-center mb-12">
           {/* Subtext */}
           <p
             className="text-white/50 font-sans text-sm sm:text-base max-w-[520px] leading-relaxed"
@@ -199,7 +210,8 @@ export default function FounderFrictionSimulator() {
 
         {/* ─── PREMIUM TOGGLE — red/green active pill ─── */}
         <div
-          className="relative mx-auto mb-12 flex items-center h-12 w-full max-w-[380px] rounded-full p-1 backdrop-blur-md"
+          ref={toggleRef}
+          className="reveal relative mx-auto mb-12 flex items-center h-12 w-full max-w-[380px] rounded-full p-1 backdrop-blur-md"
           style={{
             background: "rgba(255,255,255,0.04)",
             border: "1px solid rgba(255,255,255,0.12)",
@@ -244,6 +256,7 @@ export default function FounderFrictionSimulator() {
 
         {/* ═══ DIAGRAM — DESKTOP & TABLET (≥768px) ═══ */}
         <div
+          ref={desktopCardsRef}
           className="relative w-full max-w-[1000px] h-[480px] md:h-[520px] lg:h-[560px] mx-auto hidden md:block"
         >
           {/* SVG Connector Lines — color matches active state */}
@@ -314,8 +327,14 @@ export default function FounderFrictionSimulator() {
             return (
               <div
                 key={outcome.id}
-                className="friction-card absolute w-[200px] md:w-[220px] lg:w-[240px] rounded-2xl p-4 sm:p-5 z-10 transition-colors duration-500 overflow-hidden"
+                data-reveal
+                className="premium-card absolute w-[200px] md:w-[220px] lg:w-[240px] rounded-2xl p-4 sm:p-5 z-10 transition-colors duration-500 overflow-hidden"
                 style={{
+                  // premium-card's `position: relative` (unlayered CSS) would
+                  // override Tailwind's `.absolute` (@layer utilities) due to
+                  // cascade order, breaking the corner positioning from
+                  // desktopStyle. Inline position:absolute restores it.
+                  position: "absolute",
                   ...outcome.desktopStyle,
                   background: "rgba(255,255,255,0.08)",
                   border: "1px solid rgba(255,255,255,0.10)",
@@ -404,7 +423,11 @@ export default function FounderFrictionSimulator() {
           })}
 
           {/* ─── CENTER NODE — founder portrait crossfade, accent ring, label ─── */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+          {/* Outer div keeps the absolute + translate centering (reveal class's
+              transform would override Tailwind -translate-x/y-1/2, so the
+              reveal ref/class live on the inner wrapper instead). */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+            <div ref={desktopCenterNodeRef} className="reveal flex flex-col items-center">
             <div
               className="relative w-[140px] h-[140px] rounded-full overflow-hidden flex flex-col items-center justify-center text-center transition-all duration-500"
               style={{
@@ -437,12 +460,16 @@ export default function FounderFrictionSimulator() {
                 {isResolved ? "The system that holds" : "Single point of failure"}
               </div>
             </div>
+            </div>
           </div>
         </div>
 
         {/* ═══ MOBILE STACKED VIEW (<768px) ═══ */}
         <div className="md:hidden flex flex-col items-center">
           {/* Center node — label BELOW circle to avoid clipping */}
+          {/* Inner reveal wrapper (same reason as desktop: avoid clobbering the
+              portrait circle's state-driven transition-all + border/boxShadow). */}
+          <div ref={mobileCenterNodeRef} className="reveal flex flex-col items-center">
           <div
             className="relative w-[120px] h-[120px] rounded-full overflow-hidden transition-all duration-500"
             style={{
@@ -472,9 +499,11 @@ export default function FounderFrictionSimulator() {
               {isResolved ? "The system that holds" : "Single point of failure"}
             </div>
           </div>
+          </div>
 
           {/* Stacked outcome cards */}
           <div
+            ref={mobileCardsRef}
             className="w-full grid grid-cols-1 gap-4"
           >
             {outcomes.map((outcome) => {
@@ -482,7 +511,8 @@ export default function FounderFrictionSimulator() {
               return (
                 <div
                   key={outcome.id}
-                  className="rounded-2xl p-5 transition-colors duration-500"
+                  data-reveal
+                  className="premium-card rounded-2xl p-5 transition-colors duration-500"
                   style={{
                     background: "rgba(255,255,255,0.08)",
                     border: "1px solid rgba(255,255,255,0.10)",
@@ -563,7 +593,8 @@ export default function FounderFrictionSimulator() {
 
         {/* ─── BOTTOM CTA STRIP ─── */}
         <div
-          className="mt-10 w-full max-w-[1000px] mx-auto rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"
+          ref={ctaRef}
+          className="reveal mt-10 w-full max-w-[1000px] mx-auto rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"
           style={{
             background: "rgba(255,255,255,0.06)",
             border: "1px solid rgba(201,168,76,0.15)",
@@ -575,7 +606,7 @@ export default function FounderFrictionSimulator() {
           <button
             onClick={handleBookCall}
             aria-label="Book an assessment call"
-            className="group inline-flex items-center gap-2 bg-gold text-[#0B1B2E] font-sans font-bold text-xs uppercase tracking-[0.12em] px-7 py-3.5 rounded-full hover:bg-gold-light transition-all duration-300 cursor-pointer w-full sm:w-auto shadow-lg hover:shadow-[0_8px_24px_rgba(201,168,76,0.3)] hover:-translate-y-0.5 active:scale-95 shrink-0"
+            className="shine-btn group inline-flex items-center gap-2 bg-gold text-[#0B1B2E] font-sans font-bold text-xs uppercase tracking-[0.12em] px-7 py-3.5 rounded-full hover:bg-gold-light transition-all duration-300 cursor-pointer w-full sm:w-auto shadow-lg hover:shadow-[0_8px_24px_rgba(201,168,76,0.3)] hover:-translate-y-0.5 active:scale-95 shrink-0"
           >
             Book an assessment call
             <ArrowRight

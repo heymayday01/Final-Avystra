@@ -15,6 +15,7 @@ import {
 import { UnderlineSquiggle } from "./DoodleWidgets";
 import CountUp from "./CountUp";
 import CumulativePenalty from "./CumulativePenalty";
+import { useReveal } from "@/lib/useReveal";
 
 interface StatItemProps {
   id: string;
@@ -32,8 +33,14 @@ interface StatItemProps {
 export default function StatsFounder() {
   const [photoFailed, setPhotoFailed] = useState(false);
 
+  // Scroll-reveal groups: stats header, staggered stats grid, founder
+  // portrait section, credentials section.
   // CountUp (inside StatCard) uses motion/react useInView as a counter
   // trigger (not a reveal animation) — left untouched.
+  const headerRef = useReveal<HTMLDivElement>();
+  const statsRef = useReveal<HTMLDivElement>({ stagger: 0.08 });
+  const portraitRef = useReveal<HTMLDivElement>();
+  const credentialsRef = useReveal<HTMLDivElement>();
 
   const stats: StatItemProps[] = [
     {
@@ -139,7 +146,7 @@ export default function StatsFounder() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* SECTION 1: STATS */}
         <div className="mb-8 text-center">
-          <div className="mb-8">
+          <div ref={headerRef} className="reveal mb-8">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/60 border border-slate-200/50 rounded-full mb-3 shadow-sm">
               <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
               <span className="text-[10.5px] text-red-500 font-mono tracking-widest font-bold uppercase">
@@ -164,10 +171,11 @@ export default function StatsFounder() {
 
           {/* Metrics Grid */}
           <div
+            ref={statsRef}
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10"
           >
             {stats.map((stat) => (
-              <div key={stat.id} className="h-full">
+              <div key={stat.id} data-reveal className="h-full">
                 <StatCard stat={stat} />
               </div>
             ))}
@@ -183,7 +191,7 @@ export default function StatsFounder() {
 
         {/* SECTION 2: ABOUT THE FOUNDER */}
         <div id="about" className="border-t border-slate-100 pt-12 sm:pt-16 scroll-mt-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+          <div ref={portraitRef} className="reveal grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
             {/* Founder Portrait Column — premium framed card */}
             <div
               className="lg:col-span-5 flex justify-center"
@@ -296,7 +304,7 @@ export default function StatsFounder() {
           </div>
 
           {/* Credentials Block */}
-          <div className="mt-10 pt-6 border-t border-slate-100 text-left">
+          <div ref={credentialsRef} className="reveal mt-10 pt-6 border-t border-slate-100 text-left">
             <h4 className="text-[11.5px] font-mono font-bold text-gold uppercase tracking-widest text-center mb-6">
               — A DECADE OF BUILDING WHAT WORKS —
             </h4>
@@ -306,7 +314,7 @@ export default function StatsFounder() {
               {credentials.map((cred, i) => (
                 <div
                   key={i}
-                  className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-gold/30 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 shadow-sm flex flex-col"
+                  className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 premium-card hover:border-gold/30 hover:scale-[1.02] transition-all duration-300 shadow-sm flex flex-col"
                 >
                   {/* Icon */}
                   <div className="p-2 bg-gold/10 rounded-xl w-fit mb-3 shrink-0">
@@ -337,7 +345,7 @@ const StatCard = React.memo(function StatCard({
   stat: StatItemProps;
 }) {
   return (
-    <div className="relative rounded-2xl p-5 bg-navy-deep border border-red-500/15 flex flex-col items-center text-center group transition-all duration-300 hover:border-red-500/35 hover:shadow-[0_20px_40px_-15px_rgba(239,68,68,0.22)] hover:scale-[1.02] overflow-hidden h-full">
+    <div className="relative rounded-2xl p-5 bg-navy-deep border border-red-500/15 flex flex-col items-center text-center group premium-card transition-all duration-300 hover:border-red-500/35 hover:scale-[1.02] overflow-hidden h-full">
       {/* Red warning line at top */}
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-red-500/0 via-red-500 to-red-500/0" />
 

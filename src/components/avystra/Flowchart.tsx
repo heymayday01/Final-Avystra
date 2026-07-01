@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { DoodleSparkle, UnderlineSquiggle } from "./DoodleWidgets";
+import { useReveal } from "@/lib/useReveal";
 
 interface StepData {
   step: number;
@@ -33,8 +34,12 @@ export default function Flowchart() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
+  // Scroll-reveal groups: header, staggered steps grid, bottom banner.
   // The flowing pulses and pulse ring/dot remain as motion.div since they
   // are decorative infinite loops, not scroll reveals.
+  const headerRef = useReveal<HTMLDivElement>();
+  const stepsRef = useReveal<HTMLDivElement>({ stagger: 0.1 });
+  const bannerRef = useReveal<HTMLDivElement>();
 
   const steps: StepData[] = [
     {
@@ -145,7 +150,8 @@ export default function Flowchart() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         {/* Section Header */}
         <div
-          className="text-center max-w-2xl mx-auto mb-8 sm:mb-10"
+          ref={headerRef}
+          className="reveal text-center max-w-2xl mx-auto mb-8 sm:mb-10"
         >
           <div
             className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/60 border border-slate-200/50 rounded-full mb-3.5 relative shadow-sm"
@@ -181,6 +187,7 @@ export default function Flowchart() {
 
         {/* The Steps Grid */}
         <div
+          ref={stepsRef}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8 relative items-stretch"
         >
           {/* Connecting Arrows / Flowing Pulses for Desktop */}
@@ -211,9 +218,10 @@ export default function Flowchart() {
             return (
               <div
                 key={step.step}
+                data-reveal
                 onMouseEnter={() => setHoveredCard(idx)}
                 onMouseLeave={() => setHoveredCard(null)}
-                className="group relative flex flex-col justify-between bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 hover:shadow-[0_30px_60px_rgba(11,27,46,0.08)] hover:border-gold/40 hover:scale-[1.02] transition-all duration-500 z-10 overflow-hidden"
+                className="group relative flex flex-col justify-between premium-card bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 hover:border-gold/40 hover:scale-[1.02] transition-all duration-500 z-10 overflow-hidden"
               >
                 {/* Gold gradient sweep on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -332,7 +340,8 @@ export default function Flowchart() {
 
         {/* Double Banner Message */}
         <div
-          className="mt-6 bg-navy-deep border border-gold/30 rounded-[2rem] overflow-hidden shadow-2xl relative"
+          ref={bannerRef}
+          className="reveal mt-6 bg-navy-deep border border-gold/30 rounded-[2rem] overflow-hidden shadow-2xl relative"
         >
           <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
 
