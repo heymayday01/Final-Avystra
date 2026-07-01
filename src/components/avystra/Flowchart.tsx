@@ -192,12 +192,14 @@ export default function Flowchart() {
           <div className="absolute top-[90px] left-[12.5%] right-[12.5%] h-px bg-slate-200 pointer-events-none hidden lg:block z-0">
             <motion.div
               className="absolute top-[-2px] h-[5px] w-12 bg-gradient-to-r from-transparent via-gold to-transparent rounded-full shadow-[0_0_10px_#B8924E]"
-              animate={{ left: ["0%", "100%"] }}
+              style={{ willChange: "transform" }}
+              animate={{ x: ["0vw", "calc(75vw - 48px)"] }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />
             <motion.div
               className="absolute top-[-2px] h-[5px] w-12 bg-gradient-to-r from-transparent via-emerald-400 to-transparent rounded-full shadow-[0_0_10px_#10b981]"
-              animate={{ left: ["0%", "100%"] }}
+              style={{ willChange: "transform" }}
+              animate={{ x: ["0vw", "calc(75vw - 48px)"] }}
               transition={{
                 duration: 3,
                 repeat: Infinity,

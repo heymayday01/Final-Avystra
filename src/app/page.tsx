@@ -9,15 +9,16 @@ import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, MessageCircle } from "lucide-react";
 import { smoothScrollTo } from "@/lib/scroll";
 import LoadingScreen from "@/components/avystra/LoadingScreen";
-import FounderFrictionSimulator from "@/components/avystra/FounderFrictionSimulator";
-import Flowchart from "@/components/avystra/Flowchart";
-import FourPillars from "@/components/avystra/FourPillars";
-import StatsFounder from "@/components/avystra/StatsFounder";
-import ProgramsSection from "@/components/avystra/ProgramsSection";
-import TestimonialsSection from "@/components/avystra/TestimonialsSection";
-import FAQSection from "@/components/avystra/FAQSection";
 
-// Lazy load heavy components below the fold for performance
+// Eager: only Header, Hero, ScrollProgress, LoadingScreen (above the fold)
+// Everything below the fold is lazy-loaded for faster initial paint.
+const FounderFrictionSimulator = lazy(() => import("@/components/avystra/FounderFrictionSimulator"));
+const Flowchart = lazy(() => import("@/components/avystra/Flowchart"));
+const FourPillars = lazy(() => import("@/components/avystra/FourPillars"));
+const StatsFounder = lazy(() => import("@/components/avystra/StatsFounder"));
+const ProgramsSection = lazy(() => import("@/components/avystra/ProgramsSection"));
+const TestimonialsSection = lazy(() => import("@/components/avystra/TestimonialsSection"));
+const FAQSection = lazy(() => import("@/components/avystra/FAQSection"));
 const OGIDiagnostic = lazy(() => import("@/components/avystra/OGIDiagnostic"));
 const Footer = lazy(() => import("@/components/avystra/Footer"));
 
@@ -157,7 +158,9 @@ export default function Home() {
             <Hero />
 
             {/* Redesigned Founder Dependency Section */}
-            <FounderFrictionSimulator />
+            <Suspense fallback={<div className="min-h-[60vh]" />}>
+              <FounderFrictionSimulator />
+            </Suspense>
 
             {/* Section Divider with thin brass gradient line */}
             <motion.div
@@ -170,25 +173,36 @@ export default function Home() {
 
             {/* Interactive systems flowchart timeline */}
             <div className="pb-8">
-              <Flowchart />
+              <Suspense fallback={<div className="min-h-[40vh]" />}>
+                <Flowchart />
+              </Suspense>
             </div>
 
             {/* Four Pillars alignment methodology */}
-            <FourPillars />
+            <Suspense fallback={<div className="min-h-[50vh]" />}>
+              <FourPillars />
+            </Suspense>
 
-            {/* Operational Diagnostics statistics, Cumulative Penalty & Founder's Profile Grid
-                (StatsFounder now renders all three in order: stats → cumulative penalty → founder) */}
-            <StatsFounder />
+            {/* Operational Diagnostics statistics, Cumulative Penalty & Founder's Profile Grid */}
+            <Suspense fallback={<div className="min-h-[60vh]" />}>
+              <StatsFounder />
+            </Suspense>
 
             {/* Bespoke operational capability training programs */}
-            <ProgramsSection />
+            <Suspense fallback={<div className="min-h-[50vh]" />}>
+              <ProgramsSection />
+            </Suspense>
 
             {/* Client Success Stories */}
-            <TestimonialsSection />
+            <Suspense fallback={<div className="min-h-[40vh]" />}>
+              <TestimonialsSection />
+            </Suspense>
 
             {/* Frequently Asked Questions */}
             <div className="py-6 mt-6">
-              <FAQSection />
+              <Suspense fallback={<div className="min-h-[30vh]" />}>
+                <FAQSection />
+              </Suspense>
             </div>
 
             {/* OGI Growth Index Diagnostic assessment portal */}
