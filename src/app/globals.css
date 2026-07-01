@@ -223,33 +223,6 @@
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
 
-/* ─── TYPOGRAPHY GRADIENTS ─────────────────────────────────── */
-.text-navy-gradient,
-.text-gold-gradient {
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-navy-gradient {
-  background-image: linear-gradient(135deg, #0B1B2E 0%, #16263D 60%, #2C3947 100%);
-  color: #0B1B2E;
-}
-
-.text-gold-gradient {
-  background-image: linear-gradient(135deg, #D4B26A 0%, #B8924E 50%, #8E6F38 100%);
-  color: #B8924E;
-}
-
-/* ─── GRID OVERLAY ─────────────────────────────────────────── */
-.grid-overlay {
-  background-size: 50px 50px;
-  background-image:
-    linear-gradient(to right,  rgba(11, 27, 46, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(11, 27, 46, 0.06) 1px, transparent 1px);
-  contain: layout style paint;
-}
-
 /* ─── ANIMATIONS ───────────────────────────────────────────── */
 
 @keyframes marquee {
@@ -298,31 +271,6 @@
   will-change: transform, opacity;
 }
 
-/* ─── BLOB BACKGROUNDS ─────────────────────────────────────── */
-.blob-container {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
-  contain: layout style paint;
-}
-
-.blob {
-  position: absolute;
-  opacity: 0.4;
-  border-radius: 40% 60% 55% 45% / 50% 45% 55% 50%;
-}
-
-.will-change-transform-active { will-change: transform; }
-.will-change-transform        { will-change: transform, opacity; }
-
-@keyframes blob-transform {
-  0%   { transform: translate(  0px,  0px) scale(1);    }
-  50%  { transform: translate( 40px, 20px) scale(1.12); }
-  100% { transform: translate(-20px, 30px) scale(0.92); }
-}
-
 /* ─── ENHANCED MICRO-INTERACTIONS ──────────────────────────── */
 .glass-card {
   background: rgba(255, 255, 255, 0.6);
@@ -362,30 +310,6 @@
   animation: shimmer 2s linear infinite;
 }
 
-@keyframes gradient-flow {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-.animate-gradient-flow {
-  background-size: 200% 200%;
-  animation: gradient-flow 6s ease infinite;
-}
-
-@keyframes cinematic-reveal {
-  0% { opacity: 0; transform: translateY(40px) scale(0.98); filter: blur(8px); }
-  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-}
-
-.cinematic-reveal {
-  animation: cinematic-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes draw-underline {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
 @keyframes shine-sweep {
   0% { transform: translateX(-100%) skewX(-15deg); }
   100% { transform: translateX(200%) skewX(-15deg); }
@@ -415,15 +339,6 @@
 
 .shine-on-hover:hover::after {
   transform: translateX(200%) skewX(-15deg);
-}
-
-@keyframes float-soft {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
-}
-
-.animate-float-soft {
-  animation: float-soft 6s ease-in-out infinite;
 }
 
 /* ─── PREMIUM CARD ELEVATION ───────────────────────────────── */
@@ -456,8 +371,7 @@
 @media (max-width: 768px) {
   .animate-pulse-slow,
   .animate-glow-blob,
-  .animate-glow-blob-reverse,
-  .animate-float-soft {
+  .animate-glow-blob-reverse {
     animation: none !important;
   }
 }
@@ -469,8 +383,7 @@
   .animate-pulse-slow,
   .animate-glow-blob,
   .animate-glow-blob-reverse,
-  .animate-marquee-slow,
-  .animate-float-soft {
+  .animate-marquee-slow {
     animation: none !important;
   }
 }
@@ -485,29 +398,6 @@
 /* ─── TEXT BALANCING FOR HEADINGS ──────────────────────────── */
 .heading-balance {
   text-wrap: balance;
-}
-
-/* ─── PREMIUM LINK UNDERLINE ───────────────────────────────── */
-.link-underline {
-  position: relative;
-}
-
-.link-underline::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.link-underline:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
 }
 
 /* ═══ PREMIUM MOBILE CAROUSEL ═══
@@ -617,13 +507,6 @@
   outline: none;
 }
 
-/* ═══ LAYOUT — Wide screen max-width cap ═══ */
-/* Content caps at 1200px and centers on screens > 1440px */
-.max-w-content {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 /* ═══ iOS / CROSS-DEVICE TEXT CLIPPING FIXES ═══
    Problem: On iOS Safari and some Android devices, serif italic fonts
