@@ -343,24 +343,15 @@ export default function Hero() {
                   </motion.span>
                 ))}
               </span>
-              {/* Gold "Depend On You?" — redesigned for iOS compatibility.
-                  NO transform-gpu, NO will-change, NO inline-block on the text
-                  itself (these create GPU layers that clip the ? tail on iOS).
-                  Instead: simple inline span with opacity-only animation.
-                  The text is display:inline so it inherits the parent's line
-                  box — no separate stacking context, no clipping. */}
+              {/* Gold "Depend On You?" — CSS-only fade in (no Framer Motion).
+                  Framer Motion's motion.span applies will-change during
+                  animation which creates a GPU compositing layer that clips
+                  the ? tail on iOS. CSS animation doesn't create a layer. */}
               <span
-                className="relative text-gold font-serif italic font-semibold whitespace-nowrap pl-[0.1em] align-baseline"
+                className="relative text-gold font-serif italic font-semibold whitespace-nowrap pl-[0.1em] align-baseline hero-gold-fade"
                 style={{ lineHeight: 1.8 }}
               >
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1.0, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ display: "inline" }}
-                >
-                  Depend On You?
-                </motion.span>
+                Depend On You?
                 <UnderlineSquiggle
                   className="absolute -bottom-1 left-0 w-full h-[6px] text-gold/60"
                   delay={1.1}
