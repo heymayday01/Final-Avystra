@@ -91,14 +91,14 @@ export default function TestimonialsSection() {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className="group relative bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-2xl p-6 sm:p-8 lg:p-10 transition-all duration-700 hover:border-gold/40 hover:shadow-[0_40px_80px_-20px_rgba(11,27,46,0.15)] hover:-translate-y-2 hover:scale-[1.02] flex flex-col justify-between will-change-transform overflow-hidden"
+              className="group relative bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-2xl p-6 sm:p-8 lg:p-10 transition-[border-color,box-shadow,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-gold/30 hover:shadow-[0_16px_32px_-16px_rgba(11,27,46,0.10)] flex flex-col justify-between overflow-hidden"
             >
               {/* Shimmer sweep on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
               <div className="relative z-10">
                 {/* Quote Icon Badge */}
-                <div className="w-9 h-9 rounded-full bg-gold/5 border border-gold/10 flex items-center justify-center mb-6 text-gold group-hover:bg-gold/10 group-hover:scale-110 transition-all duration-500">
+                <div className="w-9 h-9 rounded-full bg-gold/5 border border-gold/10 flex items-center justify-center mb-6 text-gold group-hover:bg-gold/10 transition-colors duration-500">
                   <Quote className="w-4 h-4 fill-gold/10" />
                 </div>
 
@@ -106,7 +106,7 @@ export default function TestimonialsSection() {
                 <div className="flex items-center gap-1 mb-5">
                   {[...Array(5)].map((_, starIdx) => (
                     <span key={starIdx}>
-                      <Star className="w-4 h-4 fill-gold text-gold stroke-[1.5] group-hover:scale-110 transition-transform duration-300" />
+                      <Star className="w-4 h-4 fill-gold text-gold stroke-[1.5]" />
                     </span>
                   ))}
                 </div>
@@ -121,7 +121,7 @@ export default function TestimonialsSection() {
               <div className="border-t border-slate-100/90 pt-6 mt-auto">
                 <div className="flex items-center gap-3.5">
                   {/* Luxury Initials Avatar */}
-                  <div className="w-11 h-11 rounded-full bg-gold/10 text-gold font-serif italic font-bold text-base flex items-center justify-center shrink-0 border border-gold/20 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                  <div className="w-11 h-11 rounded-full bg-gold/10 text-gold font-serif italic font-bold text-base flex items-center justify-center shrink-0 border border-gold/20 shadow-inner">
                     {testimonial.initial}
                   </div>
 

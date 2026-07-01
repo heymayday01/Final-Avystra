@@ -575,7 +575,7 @@ export default function FounderFrictionSimulator() {
           <button
             onClick={handleBookCall}
             aria-label="Book an assessment call"
-            className="group inline-flex items-center gap-2 bg-gold text-[#0B1B2E] font-sans font-bold text-xs uppercase tracking-[0.12em] px-7 py-3.5 rounded-full hover:bg-gold-light transition-all duration-300 cursor-pointer w-full sm:w-auto shadow-lg hover:shadow-[0_8px_24px_rgba(201,168,76,0.3)] hover:-translate-y-0.5 active:scale-95 shrink-0"
+            className="group inline-flex items-center gap-2 bg-gold text-[#0B1B2E] font-sans font-bold text-xs uppercase tracking-[0.12em] px-7 py-3.5 rounded-full hover:bg-gold-light transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer w-full sm:w-auto shrink-0"
           >
             Book an assessment call
             <ArrowRight

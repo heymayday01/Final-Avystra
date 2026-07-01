@@ -312,74 +312,44 @@
   to   { transform: scaleX(1); opacity: 1; }
 }
 
-/* 6. Premium primary button — navy with gold sweep + scale(1.02) on hover.
-   Hover easing: power1.inOut ≈ cubic-bezier(0.45, 0, 0.55, 1). No elastic. */
+/* 6. Primary button — navy. Smooth background + shadow on hover.
+   expo-out easing (cubic-bezier(0.16,1,0.3,1)) for a premium feel. */
 .hero-btn-primary {
   background: #0B1B2E;
   position: relative;
-  transition: transform 0.35s cubic-bezier(0.45, 0, 0.55, 1),
-              background-color 0.35s cubic-bezier(0.45, 0, 0.55, 1),
-              box-shadow 0.35s cubic-bezier(0.45, 0, 0.55, 1);
-}
-
-.hero-btn-primary::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(184, 146, 78, 0.25), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.5s cubic-bezier(0.45, 0, 0.55, 1);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hero-btn-primary:hover {
-  transform: scale(1.02);
   background: #16263D;
-  box-shadow: 0 8px 32px rgba(11, 27, 46, 0.3), 0 0 0 1px rgba(184, 146, 78, 0.2);
-}
-
-.hero-btn-primary:hover::before {
-  transform: translateX(100%);
+  box-shadow: 0 12px 28px -8px rgba(11, 27, 46, 0.35);
 }
 
 .hero-btn-primary:active {
-  transform: scale(0.99);
+  transform: scale(0.98);
 }
 
-/* 7. Premium secondary button — outline with gold sweep + scale(1.02) */
+/* 7. Secondary button — outline. Smooth border + bg on hover. */
 .hero-btn-secondary {
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(203, 213, 225, 0.8);
   position: relative;
-  transition: transform 0.35s cubic-bezier(0.45, 0, 0.55, 1),
-              background-color 0.35s cubic-bezier(0.45, 0, 0.55, 1),
-              border-color 0.35s cubic-bezier(0.45, 0, 0.55, 1),
-              box-shadow 0.35s cubic-bezier(0.45, 0, 0.55, 1);
-}
-
-.hero-btn-secondary::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(184, 146, 78, 0.08), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.5s cubic-bezier(0.45, 0, 0.55, 1);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hero-btn-secondary:hover {
-  transform: scale(1.02);
   background: white;
-  border-color: rgba(184, 146, 78, 0.4);
-  box-shadow: 0 8px 24px rgba(184, 146, 78, 0.08);
-}
-
-.hero-btn-secondary:hover::before {
-  transform: translateX(100%);
+  border-color: rgba(184, 146, 78, 0.35);
+  box-shadow: 0 8px 20px -8px rgba(184, 146, 78, 0.12);
 }
 
 .hero-btn-secondary:active {
-  transform: scale(0.99);
+  transform: scale(0.98);
 }
 
 @keyframes marquee {
@@ -469,16 +439,13 @@
 
 /* ─── FLOATING BUTTON BACKDROP ─────────────────────────────── */
 .float-btn-glow {
-  box-shadow: 0 8px 24px -4px rgba(11, 27, 46, 0.25),
-              0 4px 8px -2px rgba(11, 27, 46, 0.12);
-  transition: transform 0.3s cubic-bezier(0.45, 0, 0.55, 1),
-              box-shadow 0.3s cubic-bezier(0.45, 0, 0.55, 1);
+  box-shadow: 0 6px 20px -6px rgba(11, 27, 46, 0.22);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .float-btn-glow:hover {
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 14px 32px -4px rgba(11, 27, 46, 0.35),
-              0 6px 12px -2px rgba(11, 27, 46, 0.18);
+  box-shadow: 0 10px 28px -6px rgba(11, 27, 46, 0.30);
 }
 
 /* ═══ OGI FORM MICRO-INTERACTIONS ═══
@@ -632,20 +599,19 @@
   }
 }
 
-/* Glass card hover — subtle gold glow + lift */
+/* Glass card hover — subtle gold glow only (no lift) */
 .friction-card {
-  transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .friction-card:hover {
-  box-shadow: 0 0 28px rgba(201, 168, 76, 0.15);
-  transform: translateY(-2px);
+  box-shadow: 0 0 24px rgba(201, 168, 76, 0.10);
 }
 
-/* Gold toggle pill — smooth 250ms color transition */
+/* Gold toggle pill — smooth color transition */
 .toggle-pill-btn {
-  transition: color 250ms ease;
+  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ═══ REDUCED MOTION — disable all smooth scroll + animations ═══ */

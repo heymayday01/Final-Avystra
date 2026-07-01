@@ -102,11 +102,9 @@ export default function FourPillars() {
               style={{ perspective: 1000 }}
             >
               <TiltCard
-                maxTilt={6}
-                scale={1.02}
                 className="group relative h-full will-change-transform"
               >
-                <div className="relative h-full bg-gradient-to-br from-white to-slate-50 border border-slate-100 transition-all duration-500 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 hover:shadow-[0_40px_80px_-20px_rgba(11,27,46,0.15)] hover:border-gold/40 group-hover:shadow-[0_40px_80px_-20px_rgba(11,27,46,0.15)] group-hover:border-gold/40 flex flex-col justify-between overflow-hidden">
+                <div className="relative h-full bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 hover:border-gold/40 group-hover:border-gold/40 flex flex-col justify-between overflow-hidden transition-[border-color,box-shadow] duration-500 hover:shadow-[0_20px_40px_-20px_rgba(11,27,46,0.12)] group-hover:shadow-[0_20px_40px_-20px_rgba(11,27,46,0.12)]">
                   {/* Background Number Accent */}
                   <span className="absolute top-6 right-8 text-7xl font-serif font-black text-slate-200/30 group-hover:text-gold/20 transition-colors duration-700 select-none z-0">
                     {pillar.num}

@@ -132,7 +132,7 @@ export default function Hero() {
             ].map(({ label, Icon }, idx) => (
               <div
                 key={idx}
-                className="hero-chip flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/80 bg-white/70 shadow-sm hover:border-gold/40 hover:bg-white hover:shadow-md transition-all duration-300"
+                className="hero-chip flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/80 bg-white/70 shadow-sm hover:border-gold/30 hover:bg-white transition-[border-color,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
                 style={{ animationDelay: `${0.6 + idx * 0.08}s` }}
               >
                 <Icon className="w-3.5 h-3.5 text-gold/70 group-hover:text-gold shrink-0" />
@@ -202,7 +202,7 @@ export default function Hero() {
               "Execution Systems",
             ].map((label, i) => (
               <div key={i} className="flex items-center gap-2.5 group cursor-default">
-                <span className="w-1 h-1 rounded-full bg-gold/50 group-hover:bg-gold group-hover:scale-150 transition-all duration-500" />
+                <span className="w-1 h-1 rounded-full bg-gold/50 group-hover:bg-gold transition-colors duration-500" />
                 <span className="font-mono text-[10px] sm:text-[11px] font-bold text-navy-deep/40 uppercase tracking-[0.15em] group-hover:text-navy-deep transition-colors duration-500">
                   {label}
                 </span>

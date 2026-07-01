@@ -26,7 +26,7 @@ interface Program {
 function ProgramCard({ prog }: { prog: Program }) {
   return (
     <article
-      className="program-card group relative bg-gradient-to-br from-white to-slate-50/80 border border-slate-100 rounded-3xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between hover:shadow-[0_30px_60px_-15px_rgba(11,27,46,0.12)] hover:border-gold/30 transition-all duration-500 h-full overflow-hidden"
+      className="program-card group relative bg-gradient-to-br from-white to-slate-50/80 border border-slate-100 rounded-3xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between hover:shadow-[0_16px_32px_-16px_rgba(11,27,46,0.10)] hover:border-gold/25 transition-[box-shadow,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] h-full overflow-hidden"
     >
       {/* Subtle Glow Reflection Layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -87,7 +87,7 @@ function ProgramCard({ prog }: { prog: Program }) {
           )}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full min-h-[44px] py-3 sm:py-3.5 px-4 rounded-xl bg-navy-deep text-gold hover:bg-gold hover:text-navy-deep transition-all duration-300 cursor-pointer text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-[0.18em] sm:tracking-[0.2em] group/btn shadow-md hover:shadow-lg"
+          className="flex items-center justify-center gap-2 w-full min-h-[44px] py-3 sm:py-3.5 px-4 rounded-xl bg-navy-deep text-gold hover:bg-gold hover:text-navy-deep transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-[0.18em] sm:tracking-[0.2em] group/btn"
           aria-label={`Enquire about ${prog.title} program`}
         >
           <span>Enquire Now</span>
@@ -394,13 +394,12 @@ export default function ProgramsSection() {
             {filteredPrograms.map((prog, index) => (
               <motion.div
                 key={prog.id}
-                initial={{ opacity: 0, y: 15, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                whileHover={{ scale: 1.01, y: -4 }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
                 transition={{
                   duration: 0.5,
-                  ease: [0.23, 1, 0.32, 1],
+                  ease: [0.16, 1, 0.3, 1],
                   delay: index * 0.05,
                 }}
                 className="h-full"

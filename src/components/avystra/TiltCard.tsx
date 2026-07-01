@@ -18,8 +18,8 @@ interface TiltCardProps {
 export default function TiltCard({
   children,
   className = "",
-  maxTilt = 8,
-  scale = 1.02,
+  maxTilt = 3,
+  scale = 1,
 }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   // Cached bounding rect — set on mouseenter, cleared on mouseleave.
@@ -42,13 +42,15 @@ export default function TiltCard({
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
 
+  // Soft spring — high damping, low stiffness = smooth, barely-perceptible
+  // tilt that feels premium (not bouncy/flashy). B2B consulting aesthetic.
   const rotateX = useSpring(useTransform(mouseY, [0, 1], [maxTilt, -maxTilt]), {
-    stiffness: 200,
-    damping: 20,
+    stiffness: 120,
+    damping: 28,
   });
   const rotateY = useSpring(useTransform(mouseX, [0, 1], [-maxTilt, maxTilt]), {
-    stiffness: 200,
-    damping: 20,
+    stiffness: 120,
+    damping: 28,
   });
 
   const handleMouseMove = useCallback(
@@ -103,7 +105,7 @@ export default function TiltCard({
         transformPerspective: 1000,
       }}
       animate={{ scale: isActive ? scale : 1 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      transition={{ type: "spring", stiffness: 150, damping: 30 }}
       className={className}
     >
       {children}

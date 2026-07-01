@@ -306,7 +306,7 @@ export default function StatsFounder() {
               {credentials.map((cred, i) => (
                 <div
                   key={i}
-                  className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-gold/30 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 shadow-sm flex flex-col"
+                  className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-gold/25 transition-[border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-sm flex flex-col"
                 >
                   {/* Icon */}
                   <div className="p-2 bg-gold/10 rounded-xl w-fit mb-3 shrink-0">
@@ -337,11 +337,11 @@ const StatCard = React.memo(function StatCard({
   stat: StatItemProps;
 }) {
   return (
-    <div className="relative rounded-2xl p-5 bg-navy-deep border border-red-500/15 flex flex-col items-center text-center group transition-all duration-300 hover:border-red-500/35 hover:shadow-[0_20px_40px_-15px_rgba(239,68,68,0.22)] hover:scale-[1.02] overflow-hidden h-full">
+    <div className="relative rounded-2xl p-5 bg-navy-deep border border-red-500/15 flex flex-col items-center text-center group transition-[border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-red-500/30 overflow-hidden h-full">
       {/* Red warning line at top */}
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-red-500/0 via-red-500 to-red-500/0" />
 
-      <div className="p-3 bg-red-500/10 rounded-full text-red-400 mb-4 shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+      <div className="p-3 bg-red-500/10 rounded-full text-red-400 mb-4 shrink-0">
         {stat.icon}
       </div>
 
