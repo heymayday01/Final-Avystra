@@ -21,7 +21,7 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
     <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-navy-deep">
       {/* Frustrated state */}
       <img
-        src="/founder-frustrated.png"
+        src="/founder-frustrated.webp"
         alt="Founder — frustrated, bottlenecked"
         referrerPolicy="no-referrer"
         loading="lazy"
@@ -46,7 +46,7 @@ function FounderImages({ isResolved }: { isResolved: boolean }) {
       />
       {/* Confident state */}
       <img
-        src="/founder-confident.png"
+        src="/founder-confident.webp"
         alt="Founder — confident, system in place"
         referrerPolicy="no-referrer"
         loading="lazy"

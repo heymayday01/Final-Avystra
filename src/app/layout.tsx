@@ -40,6 +40,9 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
     },
   },
+  alternates: {
+    canonical: "https://avystra.co.in",
+  },
 };
 
 export const viewport: Viewport = {

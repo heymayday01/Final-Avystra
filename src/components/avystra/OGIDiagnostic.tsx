@@ -367,6 +367,7 @@ export default function OGIDiagnostic() {
                 <div className="mt-4">
                   <button
                     onClick={() => setScreen("INFO_CAPTURE")}
+                    aria-label="Begin OGI assessment"
                     className="group inline-flex items-center gap-3 bg-[#2C3947] hover:bg-[#C2A56D] text-white font-display text-sm font-semibold tracking-wider uppercase px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
                     id="ogi-btn-start"
                   >
@@ -391,6 +392,7 @@ export default function OGIDiagnostic() {
                 <div>
                   <button
                     onClick={() => setScreen("INTRO")}
+                    aria-label="Back to intro"
                     className="inline-flex items-center gap-2 text-xs text-slate-400 hover:text-[#C5A059] font-mono tracking-wide mb-5 group cursor-pointer"
                   >
                     <ChevronLeft className="w-4 h-4 transform group-hover:-translate-x-0.5 transition-transform" />
@@ -503,6 +505,7 @@ export default function OGIDiagnostic() {
                 <div className="flex justify-end pt-8 mt-6 border-t border-slate-100">
                   <button
                     onClick={() => validateAndNextInfo()}
+                    aria-label="Continue to questions"
                     className="group inline-flex items-center gap-2.5 bg-[#0A192F] hover:bg-[#C5A059] text-white font-display text-xs font-bold tracking-wider uppercase px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
                     id="ogi-btn-info-continue"
                   >
@@ -539,6 +542,7 @@ export default function OGIDiagnostic() {
 
                     <button
                       onClick={handleBack}
+                      aria-label="Go back to previous question"
                       className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#C5A059] font-mono transition-colors group cursor-pointer"
                     >
                       <ChevronLeft className="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition-transform" />
@@ -1358,6 +1362,7 @@ export default function OGIDiagnostic() {
                           <button
                             onClick={handleSubmitResults}
                             disabled={isSubmitting}
+                            aria-label="Get my full OGI report"
                             className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 bg-[#C2A56D] hover:bg-[#D4B26A] disabled:opacity-60 disabled:cursor-not-allowed text-[#0A192F] font-display font-bold text-xs uppercase tracking-[0.16em] rounded-xl cursor-pointer transition-all active:scale-[0.98] shadow-md"
                           >
                             {isSubmitting ? (
@@ -1422,6 +1427,7 @@ export default function OGIDiagnostic() {
                           const msg = `Hi AVYSTRA, I completed the OGI. My name is ${name} (${role}). My OGI score was ${overallScorePct}/100. I would like to discuss a full organizational assessment.`;
                           window.open(`https://wa.me/918596059607?text=${encodeURIComponent(msg)}`);
                         }}
+                        aria-label="Discuss on WhatsApp"
                         className="w-full inline-flex items-center justify-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-display font-semibold text-xs uppercase tracking-wider rounded-xl cursor-pointer transition-all active:scale-[0.98] shadow-sm"
                       >
                         <MessageSquare className="w-4 h-4" />
@@ -1441,6 +1447,7 @@ export default function OGIDiagnostic() {
                   <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 mt-10 border-t border-slate-100">
                     <button
                       onClick={handleRestart}
+                      aria-label="Restart assessment"
                       className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-mono font-bold text-slate-400 hover:text-[#C2A56D] uppercase tracking-wider bg-slate-50 hover:bg-slate-100 border border-slate-200 px-6 py-3.5 rounded-xl cursor-pointer transition-all active:scale-95"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
