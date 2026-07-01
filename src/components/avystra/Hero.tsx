@@ -159,10 +159,11 @@ export default function Hero() {
             </span>
           </div>
 
-          {/* Main heading — CSS line reveals + animated gold gradient */}
+          {/* Main heading — CSS line reveals. Solid gold color (NOT background-clip
+              gradient) so the question mark descender never clips on iOS. */}
           <h1
-            className="font-display font-bold text-[clamp(2rem,7vw,5.5rem)] tracking-[-0.035em] text-navy-deep select-none heading-balance mb-6 sm:mb-8"
-            style={{ lineHeight: 1.3 }}
+            className="font-display font-bold text-[clamp(2rem,7vw,5.5rem)] tracking-[-0.035em] text-navy-deep select-none heading-balance mb-8 sm:mb-10"
+            style={{ lineHeight: 1.35 }}
           >
             <span className="block hero-line-1">
               You Built A Team.
@@ -171,12 +172,17 @@ export default function Hero() {
               So Why Does Everything Still
             </span>
             <span className="block text-center hero-line-3">
-              <span className="relative inline font-serif italic font-semibold whitespace-nowrap hero-gold-text">
+              <span className="inline font-serif italic font-semibold whitespace-nowrap text-gold">
                 Depend On You?
-                <UnderlineSquiggle className="absolute -bottom-2 left-0 w-full h-[6px] text-gold/60" delay={1.1} duration={1.0} />
               </span>
             </span>
           </h1>
+
+          {/* Gold underline doodle — now a sibling below the heading so it can
+              never overlap or clip the question mark. */}
+          <div className="hero-line-3 flex justify-center mb-8 sm:mb-10" aria-hidden="true">
+            <UnderlineSquiggle className="w-24 sm:w-32 h-[5px] text-gold/60" delay={1.0} duration={1.0} />
+          </div>
 
           {/* Feature chips — staggered pop-in */}
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-10 max-w-3xl mx-auto">
@@ -217,7 +223,7 @@ export default function Hero() {
             </p>
             <p className="text-navy-deep font-sans text-xs sm:text-sm font-bold tracking-wide uppercase">
               That&apos;s the gap{" "}
-              <span className="hero-gold-text font-black">AVYSTRA</span>{" "}
+              <span className="text-gold font-black">AVYSTRA</span>{" "}
               helps organizations close.
             </p>
           </div>

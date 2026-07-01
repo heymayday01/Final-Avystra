@@ -252,17 +252,10 @@
    All CSS-only (no Framer Motion, no blur). Uses opacity + transform only.
    No infinite autoplay animations (B2B consulting site, not a portfolio). */
 
-/* 1. Gold gradient text — static gradient (shimmer removed per request).
-   background-size: 200% auto is REQUIRED — without it, -webkit-background-clip
-   renders tighter on iOS and clips the question mark descender. */
-.hero-gold-text {
-  background: linear-gradient(90deg, #B8924E 0%, #D4B26A 25%, #F5E6C8 50%, #D4B26A 75%, #B8924E 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: #B8924E;
-}
+/* 1. Gold accent text — solid color (NOT background-clip gradient). The previous
+   -webkit-background-clip: text approach created a tight clip region that cut
+   the question mark descender on iOS. Solid color has no clip region = no
+   clipping, ever. The .text-gold Tailwind class (color: #B8924E) is used instead. */
 
 /* 2. Eyebrow badge — static (no infinite pulse). Hover-only glow. */
 .hero-badge-premium {
