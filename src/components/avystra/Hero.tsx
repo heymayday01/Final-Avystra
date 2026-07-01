@@ -3,8 +3,7 @@
 import React, { useRef, useEffect, useCallback, useState, useSyncExternalStore } from "react";
 import { ArrowRight, UserPlus, TrendingUp, Building2, Banknote, ClipboardList } from "lucide-react";
 import { motion, useMotionValue, useSpring } from "motion/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
-import { CustomEase } from "gsap/CustomEase";
+import { gsap } from "@/lib/gsap";
 import { UnderlineSquiggle } from "./DoodleWidgets";
 import { smoothScrollTo } from "@/lib/scroll";
 
@@ -20,7 +19,6 @@ const reducedMotionGetServerSnapshot = () => false;
 
 export default function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLButtonElement>(null);
 
   const reducedMotion = useSyncExternalStore(
     reducedMotionSubscribe,
@@ -56,22 +54,17 @@ export default function Hero() {
   useEffect(() => {
     if (reducedMotion) return;
 
-    try {
-      CustomEase.create("customExpo", "0.22, 1, 0.36, 1");
-    } catch (e) {
-      // Already created
-    }
-
-    // GSAP entrance for the marquee bar (only remaining gsap-hero-fade element)
+    // GSAP entrance for the marquee bar — single one-shot reveal.
+    // power2.out, 0.55s (under the 600ms ceiling), fires once.
     const ctx = gsap.context(() => {
       const marqueeBar = sectionRef.current?.querySelector(".gsap-hero-fade");
       if (marqueeBar) {
         gsap.from(marqueeBar, {
           opacity: 0,
           y: 20,
-          duration: 0.8,
-          ease: "expo.out",
-          delay: 1.4,
+          duration: 0.55,
+          ease: "power2.out",
+          delay: 1.2,
           clearProps: "all",
         });
       }
@@ -80,83 +73,9 @@ export default function Hero() {
     return () => ctx.revert();
   }, [reducedMotion]);
 
-  // Magnetic Spring-loaded CTA physics
-  useEffect(() => {
-    if (reducedMotion) return;
-    const cta = ctaRef.current;
-    if (!cta) return;
-
-    const xTo = gsap.quickTo(cta, "x", {
-      duration: 0.55,
-      ease: "elastic.out(1, 0.42)",
-    });
-    const yTo = gsap.quickTo(cta, "y", {
-      duration: 0.55,
-      ease: "elastic.out(1, 0.42)",
-    });
-
-    let pendingFrame: number | null = null;
-
-    const handleMouseMoveCTA = (e: MouseEvent) => {
-      // Throttle to one update per animation frame. mousemove can fire
-      // 100+ times/sec on fast machines; gsap.quickTo already smooths the
-      // motion, so we only need the latest position per frame.
-      if (pendingFrame !== null) return;
-      pendingFrame = requestAnimationFrame(() => {
-        pendingFrame = null;
-        const rect = cta.getBoundingClientRect();
-        const ctaX = rect.left + rect.width / 2;
-        const ctaY = rect.top + rect.height / 2;
-
-        const dx = e.clientX - ctaX;
-        const dy = e.clientY - ctaY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        const triggerRadius = Math.max(rect.width, rect.height) / 2 + 65;
-
-        if (distance < triggerRadius) {
-          const ratio = (triggerRadius - distance) / triggerRadius;
-          const targetX = (dx / distance) * 10 * ratio;
-          const targetY = (dy / distance) * 10 * ratio;
-          xTo(targetX);
-          yTo(targetY);
-        } else {
-          xTo(0);
-          yTo(0);
-        }
-      });
-    };
-
-    const handleMouseLeaveCTA = () => {
-      xTo(0);
-      yTo(0);
-    };
-
-    const handleMouseDownCTA = () => {
-      gsap.to(cta, { scale: 0.96, duration: 0.1, ease: "customExpo" });
-    };
-
-    const handleMouseUpCTA = () => {
-      gsap.to(cta, {
-        scale: 1,
-        duration: 0.4,
-        ease: "elastic.out(1.1, 0.35)",
-      });
-    };
-
-    window.addEventListener("mousemove", handleMouseMoveCTA);
-    cta.addEventListener("mouseleave", handleMouseLeaveCTA);
-    cta.addEventListener("mousedown", handleMouseDownCTA);
-    cta.addEventListener("mouseup", handleMouseUpCTA);
-
-    return () => {
-      if (pendingFrame !== null) cancelAnimationFrame(pendingFrame);
-      window.removeEventListener("mousemove", handleMouseMoveCTA);
-      cta.removeEventListener("mouseleave", handleMouseLeaveCTA);
-      cta.removeEventListener("mousedown", handleMouseDownCTA);
-      cta.removeEventListener("mouseup", handleMouseUpCTA);
-    };
-  }, [reducedMotion]);
+  // CTA micro-interactions are now handled purely in CSS (.hero-btn-primary
+  // / .hero-btn-secondary) — scale(1.02) + gold glow on hover with
+  // power1.inOut easing. No elastic, no JS mouse tracking.
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -309,9 +228,8 @@ export default function Hero() {
             style={{ animationDelay: "1.0s" }}
           >
             <button
-              ref={ctaRef}
               onClick={handleScrollToForm}
-              className="hero-btn-primary group relative cursor-pointer rounded-full px-8 py-3.5 flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 shadow-lg overflow-hidden"
+              className="hero-btn-primary group relative cursor-pointer rounded-full px-8 py-3.5 flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 shadow-lg overflow-hidden"
             >
               <span className="relative z-10 text-white font-mono text-[12px] font-bold tracking-[0.2em] uppercase">
                 Talk To Us
@@ -321,7 +239,7 @@ export default function Hero() {
 
             <button
               onClick={handleScrollToBento}
-              className="hero-btn-secondary group relative cursor-pointer rounded-full px-8 py-3.5 transition-all duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold shadow-sm overflow-hidden"
+              className="hero-btn-secondary group relative cursor-pointer rounded-full px-8 py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold shadow-sm overflow-hidden"
             >
               <span className="relative z-10 text-navy-deep font-mono text-[12px] font-bold tracking-[0.2em] uppercase">
                 See The Problem

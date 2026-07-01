@@ -1,8 +1,8 @@
 "use client";
 
 import { Quote, Star, MessageSquare } from "lucide-react";
-import { motion } from "motion/react";
 import TextReveal from "./TextReveal";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 interface Testimonial {
   id: string;
@@ -14,6 +14,12 @@ interface Testimonial {
 }
 
 export default function TestimonialsSection() {
+  const headerRef = useScrollReveal<HTMLDivElement>();
+  const gridRef = useScrollReveal<HTMLDivElement>({
+    stagger: 0.09,
+    child: "[data-reveal]",
+  });
+
   const testimonials: Testimonial[] = [
     {
       id: "testimonial-1",
@@ -51,11 +57,8 @@ export default function TestimonialsSection() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 select-none">
         {/* Section Heading Container */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          ref={headerRef}
           className="flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
         >
           {/* Aesthetic Capsule Badge */}
@@ -87,57 +90,34 @@ export default function TestimonialsSection() {
               wordClassName="inline-block"
             />
           </h2>
-        </motion.div>
+        </div>
 
         {/* Testimonials Grid Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 gsap-stagger-container">
-          {testimonials.map((testimonial, idx) => (
-            <motion.div
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 gsap-stagger-container"
+        >
+          {testimonials.map((testimonial) => (
+            <div
               key={testimonial.id}
-              initial={{ opacity: 0, y: 40, rotateX: -8 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.8,
-                delay: idx * 0.12,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-2xl p-6 sm:p-8 lg:p-10 transition-all duration-700 hover:border-gold/40 hover:shadow-[0_40px_80px_-20px_rgba(11,27,46,0.15)] flex flex-col justify-between will-change-transform overflow-hidden"
-              style={{ transformPerspective: 1000 }}
+              data-reveal
+              className="group relative bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-2xl p-6 sm:p-8 lg:p-10 transition-all duration-700 hover:border-gold/40 hover:shadow-[0_40px_80px_-20px_rgba(11,27,46,0.15)] hover:-translate-y-2 hover:scale-[1.02] flex flex-col justify-between will-change-transform overflow-hidden"
             >
               {/* Shimmer sweep on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
               <div className="relative z-10">
-                {/* Quote Icon Badge — animated entrance */}
-                <motion.div
-                  initial={{ scale: 0, rotate: -45 }}
-                  whileInView={{ scale: 1, rotate: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.12 + 0.3, type: "spring", stiffness: 200, damping: 15 }}
-                  className="w-9 h-9 rounded-full bg-gold/5 border border-gold/10 flex items-center justify-center mb-6 text-gold group-hover:bg-gold/10 group-hover:scale-110 transition-all duration-500"
-                >
+                {/* Quote Icon Badge */}
+                <div className="w-9 h-9 rounded-full bg-gold/5 border border-gold/10 flex items-center justify-center mb-6 text-gold group-hover:bg-gold/10 group-hover:scale-110 transition-all duration-500">
                   <Quote className="w-4 h-4 fill-gold/10" />
-                </motion.div>
+                </div>
 
-                {/* Star Ratings — staggered */}
+                {/* Star Ratings */}
                 <div className="flex items-center gap-1 mb-5">
                   {[...Array(5)].map((_, starIdx) => (
-                    <motion.span
-                      key={starIdx}
-                      initial={{ opacity: 0, scale: 0, rotate: -90 }}
-                      whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-                      viewport={{ once: true }}
-                      transition={{
-                        delay: idx * 0.12 + 0.4 + starIdx * 0.06,
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 12,
-                      }}
-                    >
+                    <span key={starIdx}>
                       <Star className="w-4 h-4 fill-gold text-gold stroke-[1.5] group-hover:scale-110 transition-transform duration-300" />
-                    </motion.span>
+                    </span>
                   ))}
                 </div>
 
@@ -169,7 +149,7 @@ export default function TestimonialsSection() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

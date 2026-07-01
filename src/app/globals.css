@@ -248,37 +248,24 @@
   animation: hero-fade-in 0.7s cubic-bezier(0.16,1,0.3,1) forwards;
 }
 
-/* ═══ PREMIUM HERO ELEMENTS — $10K WEBSITE FEEL ═══
-   All CSS-only (no Framer Motion, no blur, no GPU layers).
-   Performance-safe: uses opacity, transform, and background-position only. */
+/* ═══ PREMIUM HERO ELEMENTS — RESTRAINED MOTION SYSTEM ═══
+   All CSS-only (no Framer Motion, no blur). Uses opacity + transform only.
+   No infinite autoplay animations (B2B consulting site, not a portfolio). */
 
-/* 1. Animated gold gradient text — shimmering gold that slowly shifts.
+/* 1. Gold gradient text — static gradient (no shimmer autoplay).
    Applied to "Depend On You?" and "AVYSTRA" in the bridging card. */
-@keyframes gold-shimmer {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
 .hero-gold-text {
-  background: linear-gradient(90deg, #B8924E 0%, #D4B26A 25%, #F5E6C8 50%, #D4B26A 75%, #B8924E 100%);
-  background-size: 200% auto;
+  background: linear-gradient(90deg, #B8924E 0%, #D4B26A 50%, #B8924E 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: #B8924E;
-  animation: gold-shimmer 4s ease-in-out infinite;
 }
 
-/* 2. Premium eyebrow badge — subtle pulsing gold glow ring */
-@keyframes badge-glow-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(184, 146, 78, 0); }
-  50%      { box-shadow: 0 0 20px 4px rgba(184, 146, 78, 0.12); }
-}
-
+/* 2. Eyebrow badge — static (no infinite pulse). Hover-only glow. */
 .hero-badge-premium {
-  animation: badge-glow-pulse 3s ease-in-out infinite;
-  transition: all 0.3s ease;
+  transition: border-color 0.4s cubic-bezier(0.45, 0, 0.55, 1),
+              box-shadow 0.4s cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 .hero-badge-premium:hover {
@@ -297,43 +284,48 @@
   animation: chip-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* 4. Premium glass card — frosted glass with animated gold border glow */
-@keyframes card-glow {
-  0%, 100% { box-shadow: 0 8px 32px rgba(11, 27, 46, 0.04), 0 0 0 1px rgba(184, 146, 78, 0.10); }
-  50%      { box-shadow: 0 12px 40px rgba(11, 27, 46, 0.06), 0 0 24px 2px rgba(184, 146, 78, 0.08); }
-}
-
+/* 4. Premium glass card — frosted glass, static glow (no infinite pulse).
+   Entrance handled by .hero-fade-in; hover lift via transform only. */
 .hero-card-premium {
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(184, 146, 78, 0.15);
-  animation: hero-fade-in 0.8s cubic-bezier(0.16,1,0.3,1) forwards, card-glow 4s ease-in-out infinite 0.8s;
+  box-shadow: 0 8px 32px rgba(11, 27, 46, 0.04), 0 0 0 1px rgba(184, 146, 78, 0.10);
+  animation: hero-fade-in 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
   opacity: 0;
-  transition: transform 0.4s ease;
+  transition: transform 0.4s cubic-bezier(0.45, 0, 0.55, 1),
+              box-shadow 0.4s cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 .hero-card-premium:hover {
   transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(11, 27, 46, 0.06), 0 0 24px 2px rgba(184, 146, 78, 0.08);
 }
 
-/* 5. Animated gold divider — draws itself in */
-@keyframes divider-draw {
-  from { width: 0; opacity: 0; }
-  to   { width: 3rem; opacity: 1; }
-}
-
+/* 5. Gold divider — draws in with scaleX (transform-only, no width animation) */
 .hero-divider {
   background: linear-gradient(90deg, transparent, #B8924E, transparent);
-  animation: divider-draw 1s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
-  width: 0;
+  width: 3rem;
+  transform: scaleX(0);
+  transform-origin: center;
   opacity: 0;
+  animation: divider-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.1s forwards;
 }
 
-/* 6. Premium primary button — navy with gold sweep on hover */
+@keyframes divider-reveal {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+
+/* 6. Premium primary button — navy with gold sweep + scale(1.02) on hover.
+   Hover easing: power1.inOut ≈ cubic-bezier(0.45, 0, 0.55, 1). No elastic. */
 .hero-btn-primary {
   background: #0B1B2E;
   position: relative;
+  transition: transform 0.35s cubic-bezier(0.45, 0, 0.55, 1),
+              background-color 0.35s cubic-bezier(0.45, 0, 0.55, 1),
+              box-shadow 0.35s cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 .hero-btn-primary::before {
@@ -342,25 +334,34 @@
   inset: 0;
   background: linear-gradient(90deg, transparent, rgba(184, 146, 78, 0.25), transparent);
   transform: translateX(-100%);
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.5s cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+.hero-btn-primary:hover {
+  transform: scale(1.02);
+  background: #16263D;
+  box-shadow: 0 8px 32px rgba(11, 27, 46, 0.3), 0 0 0 1px rgba(184, 146, 78, 0.2);
 }
 
 .hero-btn-primary:hover::before {
   transform: translateX(100%);
 }
 
-.hero-btn-primary:hover {
-  background: #16263D;
-  box-shadow: 0 8px 32px rgba(11, 27, 46, 0.3), 0 0 0 1px rgba(184, 146, 78, 0.2);
+.hero-btn-primary:active {
+  transform: scale(0.99);
 }
 
-/* 7. Premium secondary button — outline with gold sweep */
+/* 7. Premium secondary button — outline with gold sweep + scale(1.02) */
 .hero-btn-secondary {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(203, 213, 225, 0.8);
   position: relative;
+  transition: transform 0.35s cubic-bezier(0.45, 0, 0.55, 1),
+              background-color 0.35s cubic-bezier(0.45, 0, 0.55, 1),
+              border-color 0.35s cubic-bezier(0.45, 0, 0.55, 1),
+              box-shadow 0.35s cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 .hero-btn-secondary::before {
@@ -369,17 +370,22 @@
   inset: 0;
   background: linear-gradient(90deg, transparent, rgba(184, 146, 78, 0.08), transparent);
   transform: translateX(-100%);
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.5s cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+.hero-btn-secondary:hover {
+  transform: scale(1.02);
+  background: white;
+  border-color: rgba(184, 146, 78, 0.4);
+  box-shadow: 0 8px 24px rgba(184, 146, 78, 0.08);
 }
 
 .hero-btn-secondary:hover::before {
   transform: translateX(100%);
 }
 
-.hero-btn-secondary:hover {
-  background: white;
-  border-color: rgba(184, 146, 78, 0.4);
-  box-shadow: 0 8px 24px rgba(184, 146, 78, 0.08);
+.hero-btn-secondary:active {
+  transform: scale(0.99);
 }
 
 @keyframes marquee {
@@ -503,30 +509,75 @@
   transform: translateX(200%) skewX(-15deg);
 }
 
-/* ─── PREMIUM CARD ELEVATION ───────────────────────────────── */
+/* ─── PREMIUM CARD ELEVATION ─────────────────────────────────
+   Hover easing standardized to power1.inOut. Subtle lift only. */
 .elevate-card {
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.45, 0, 0.55, 1),
+              box-shadow 0.4s cubic-bezier(0.45, 0, 0.55, 1),
+              border-color 0.4s cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 .elevate-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 30px 60px -20px rgba(11, 27, 46, 0.18);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px -20px rgba(11, 27, 46, 0.18);
 }
 
 /* ─── FLOATING BUTTON BACKDROP ─────────────────────────────── */
 .float-btn-glow {
   box-shadow: 0 8px 24px -4px rgba(11, 27, 46, 0.25),
               0 4px 8px -2px rgba(11, 27, 46, 0.12);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0.45, 0, 0.55, 1),
+              box-shadow 0.3s cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 .float-btn-glow:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px) scale(1.04);
   box-shadow: 0 14px 32px -4px rgba(11, 27, 46, 0.35),
               0 6px 12px -2px rgba(11, 27, 46, 0.18);
+}
+
+/* ═══ OGI FORM MICRO-INTERACTIONS ═══
+   Rule: checkmark animates in on valid input (power2.out), red-tinted
+   shake on invalid. Transform + opacity only. */
+
+/* Checkmark icon — scales + fades in when field becomes valid.
+   power2.out ≈ cubic-bezier(0.25, 0.46, 0.45, 0.94). */
+.ogi-field-check {
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+}
+
+.ogi-field-check.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Invalid shake — 400ms, transform-only (translateX). Red border tint. */
+@keyframes field-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+.ogi-input-shake {
+  animation: field-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+/* Valid input — green/gold accent border (static, no animation on border). */
+.ogi-input-valid {
+  border-color: rgba(184, 146, 78, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(184, 146, 78, 0.10) !important;
+}
+
+/* Invalid input — red tint border, held until corrected. */
+.ogi-input-invalid {
+  border-color: rgba(220, 80, 80, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(220, 80, 80, 0.10) !important;
 }
 
 /* ─── MOBILE / REDUCED MOTION DEGRADATION ──────────────────── */
@@ -540,13 +591,27 @@
 
 /* Marquee stays animated on all viewports — it's a lightweight transform-only animation */
 
-/* Respect reduced-motion preference — disable all animations */
+/* Respect reduced-motion preference — disable all animations + ensure
+   no element is left invisible by a base opacity:0 state. */
 @media (prefers-reduced-motion: reduce) {
   .animate-pulse-slow,
   .animate-glow-blob,
   .animate-glow-blob-reverse,
   .animate-marquee-slow {
     animation: none !important;
+  }
+  /* Force every reveal-style element visible so content is never hidden. */
+  .hero-fade-in,
+  .hero-line-1,
+  .hero-line-2,
+  .hero-line-3,
+  .hero-chip,
+  .hero-card-premium,
+  .hero-divider,
+  .ogi-field-check,
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 

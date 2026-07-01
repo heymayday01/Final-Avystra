@@ -2,10 +2,10 @@
 
 import React from "react";
 import { Compass, Target, Users, Landmark, Award, ChevronRight } from "lucide-react";
-import { motion } from "motion/react";
 import { DoodleSparkle, UnderlineSquiggle } from "./DoodleWidgets";
 import TextReveal from "./TextReveal";
 import TiltCard from "./TiltCard";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 interface Pillar {
   id: string;
@@ -17,6 +17,9 @@ interface Pillar {
 }
 
 export default function FourPillars() {
+  const headerRef = useScrollReveal<HTMLDivElement>();
+  const gridRef = useScrollReveal<HTMLDivElement>({ stagger: 0.09, child: "[data-reveal]" });
+
   const pillars: Pillar[] = [
     {
       id: "pillar-direction",
@@ -63,11 +66,8 @@ export default function FourPillars() {
     >
       <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 z-10">
         {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          ref={headerRef}
           className="max-w-4xl mb-6 md:mb-8"
         >
           <div className="inline-flex items-center gap-2 bg-gradient-to-br from-white to-slate-50 border border-slate-100 px-4 py-2 rounded-full mb-3 shadow-sm">
@@ -96,22 +96,14 @@ export default function FourPillars() {
             delay={0.8}
             blur={false}
           />
-        </motion.div>
+        </div>
 
         {/* Pillars Grid */}
-        <div className="pillar-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8">
+        <div ref={gridRef} className="pillar-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8">
           {pillars.map((pillar, idx) => (
-            <motion.div
+            <div
               key={pillar.id}
-              initial={{ opacity: 0, y: 30, rotateX: -10 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              whileHover={{ y: -6 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.8,
-                delay: idx * 0.1,
-                ease: [0.16, 1, 0.3, 1],
-              }}
+              data-reveal
               className="pillar-card group relative h-full flex flex-col"
               style={{ perspective: 1000 }}
             >
@@ -120,7 +112,7 @@ export default function FourPillars() {
                 scale={1.02}
                 className="group relative h-full will-change-transform"
               >
-                <div className="relative h-full bg-gradient-to-br from-white to-slate-50 border border-slate-100 transition-all duration-700 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 hover:shadow-[0_40px_80px_-20px_rgba(11,27,46,0.15)] hover:border-gold/40 group-hover:shadow-[0_40px_80px_-20px_rgba(11,27,46,0.15)] group-hover:border-gold/40 flex flex-col justify-between overflow-hidden">
+                <div className="relative h-full bg-gradient-to-br from-white to-slate-50 border border-slate-100 transition-all duration-500 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 hover:shadow-[0_40px_80px_-20px_rgba(11,27,46,0.15)] hover:border-gold/40 group-hover:shadow-[0_40px_80px_-20px_rgba(11,27,46,0.15)] group-hover:border-gold/40 flex flex-col justify-between overflow-hidden">
                   {/* Background Number Accent */}
                   <span className="absolute top-6 right-8 text-7xl font-serif font-black text-slate-200/30 group-hover:text-gold/20 transition-colors duration-700 select-none z-0">
                     {pillar.num}
@@ -167,7 +159,7 @@ export default function FourPillars() {
                   delay={0.2}
                 />
               )}
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

@@ -77,6 +77,30 @@ export default function OGIDiagnostic() {
   // Validation state
   const [infoError, setInfoError] = useState("");
 
+  // ── Per-field validation micro-interactions ──
+  // `invalidField` holds the field name that should shake (cleared after the
+  // shake animation completes so it can re-trigger on a subsequent bad submit).
+  const [invalidField, setInvalidField] = useState<string | null>(null);
+  const shakeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Derived validity — used to show the checkmark icon (power2.out scale-in)
+  // and the gold "valid" border as the user types.
+  const isNameValid = name.trim().length >= 2;
+  const isRoleValid = role.trim().length >= 2;
+  const isPhoneValid = phone.trim().replace(/[^0-9]/g, "").length >= 10;
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+  /** Trigger a 400ms red shake on a field, then clear so it can re-fire. */
+  const triggerShake = (field: string) => {
+    if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
+    setInvalidField(field);
+    shakeTimerRef.current = setTimeout(() => setInvalidField(null), 450);
+  };
+
+  const clearFieldError = () => {
+    if (invalidField) setInvalidField(null);
+  };
+
   // ── Submission state ──
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<{ emailSent: boolean } | null>(null);
@@ -177,22 +201,26 @@ export default function OGIDiagnostic() {
     e?.preventDefault();
     if (!name.trim()) {
       setInfoError("Please enter your name.");
+      triggerShake("name");
       return;
     }
     if (!role.trim()) {
       setInfoError("Please enter your professional role.");
+      triggerShake("role");
       return;
     }
     const cleanPhone = phone.trim();
     const digitsOnly = cleanPhone.replace(/[^0-9]/g, "");
     if (!cleanPhone || digitsOnly.length < 10) {
       setInfoError("Please enter a valid WhatsApp number (at least 10 digits).");
+      triggerShake("phone");
       return;
     }
     const cleanEmail = email.trim();
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail);
     if (!cleanEmail || !emailOk) {
       setInfoError("Please enter a valid business email address.");
+      triggerShake("email");
       return;
     }
     setInfoError("");
@@ -419,11 +447,13 @@ export default function OGIDiagnostic() {
                           onChange={(e) => {
                             setName(e.target.value);
                             if (infoError) setInfoError("");
+                            clearFieldError();
                           }}
                           placeholder="e.g. Kirankumar Pandey"
-                          className="w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-4 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all"
+                          className={`w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isNameValid ? "ogi-input-valid" : ""} ${invalidField === "name" ? "ogi-input-shake ogi-input-invalid" : ""}`}
                           id="ogi-input-name"
                         />
+                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-[#C5A059] ${isNameValid ? "is-visible" : ""}`} />
                       </div>
                     </div>
 
@@ -439,11 +469,13 @@ export default function OGIDiagnostic() {
                           onChange={(e) => {
                             setRole(e.target.value);
                             if (infoError) setInfoError("");
+                            clearFieldError();
                           }}
                           placeholder="e.g. Founder, CEO, VP of Operations"
-                          className="w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-4 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all"
+                          className={`w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isRoleValid ? "ogi-input-valid" : ""} ${invalidField === "role" ? "ogi-input-shake ogi-input-invalid" : ""}`}
                           id="ogi-input-role"
                         />
+                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-[#C5A059] ${isRoleValid ? "is-visible" : ""}`} />
                       </div>
                     </div>
 
@@ -459,12 +491,14 @@ export default function OGIDiagnostic() {
                           onChange={(e) => {
                             setPhone(e.target.value);
                             if (infoError) setInfoError("");
+                            clearFieldError();
                           }}
                           placeholder="e.g. +91 91234 56789"
-                          className="w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-4 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all"
+                          className={`w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isPhoneValid ? "ogi-input-valid" : ""} ${invalidField === "phone" ? "ogi-input-shake ogi-input-invalid" : ""}`}
                           id="ogi-input-phone"
                           autoComplete="tel"
                         />
+                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-[#C5A059] ${isPhoneValid ? "is-visible" : ""}`} />
                       </div>
                     </div>
 
@@ -480,12 +514,14 @@ export default function OGIDiagnostic() {
                           onChange={(e) => {
                             setEmail(e.target.value);
                             if (infoError) setInfoError("");
+                            clearFieldError();
                           }}
                           placeholder="e.g. contact@firm.com"
-                          className="w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-4 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all"
+                          className={`w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isEmailValid ? "ogi-input-valid" : ""} ${invalidField === "email" ? "ogi-input-shake ogi-input-invalid" : ""}`}
                           id="ogi-input-email"
                           autoComplete="email"
                         />
+                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-[#C5A059] ${isEmailValid ? "is-visible" : ""}`} />
                       </div>
                     </div>
 

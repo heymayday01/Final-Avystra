@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { BookOpen, Calendar, Users, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 import TextReveal from "./TextReveal";
 
 interface Program {
@@ -103,6 +104,14 @@ export default function ProgramsSection() {
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Two entrance-reveal groups: the section heading and the bottom banner.
+  // The desktop grid cards keep their motion.div wrappers because they need
+  // AnimatePresence + initial/animate/exit for tab-change transitions (a
+  // functional pattern, not a scroll reveal). The carousel logic and CSS
+  // classes are untouched per task constraints.
+  const headingRef = useScrollReveal<HTMLDivElement>();
+  const bannerRef = useScrollReveal<HTMLDivElement>();
 
   // Track viewport for mobile carousel behavior
   useEffect(() => {
@@ -294,11 +303,8 @@ export default function ProgramsSection() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 select-none">
         {/* Section Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          ref={headingRef}
           className="flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
         >
           <div className="border border-gold/20 bg-gradient-to-br from-white to-slate-50 border border-slate-100 px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-3 shadow-sm">
@@ -321,13 +327,9 @@ export default function ProgramsSection() {
                 blur={false}
                 wordClassName="inline-block"
               />
-              <motion.div
-                className="absolute -bottom-2 left-0 h-[3px] bg-gold/40"
-                initial={{ width: 0 }}
-                whileInView={{ width: "100%" }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-              />
+              {/* Static underline — previously an animated width draw, which
+                  violated the "no width animation" rule. Now always visible. */}
+              <div className="absolute -bottom-2 left-0 h-[3px] bg-gold/40 w-full" />
             </span>
           </h2>
           <TextReveal
@@ -337,7 +339,7 @@ export default function ProgramsSection() {
             delay={0.6}
             blur={false}
           />
-        </motion.div>
+        </div>
 
         {/* Categories Tab Navigation */}
         <div className="flex flex-nowrap overflow-x-auto scrollbar-none pb-4 lg:pb-0 lg:flex-wrap justify-start lg:justify-center gap-3 mb-6 select-none max-w-4xl mx-auto px-4 lg:px-0 lg:mx-auto" style={{ scrollPaddingRight: '2rem' }}>
@@ -392,10 +394,9 @@ export default function ProgramsSection() {
               <motion.div
                 key={prog.id}
                 initial={{ opacity: 0, y: 15, scale: 0.98 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 whileHover={{ scale: 1.01, y: -4 }}
-                viewport={{ once: true }}
                 transition={{
                   duration: 0.5,
                   ease: [0.23, 1, 0.32, 1],
@@ -524,11 +525,8 @@ export default function ProgramsSection() {
         </div>
 
         {/* Bottom Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+        <div
+          ref={bannerRef}
           className="mt-14 p-5 bg-navy-deep border border-slate-800 rounded-3xl text-center max-w-4xl mx-auto shadow-lg relative overflow-hidden"
         >
           <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
@@ -539,7 +537,7 @@ export default function ProgramsSection() {
             </span>{" "}
             — because clarity, accountability, and execution drive performance.
           </p>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -12,7 +12,7 @@ import {
   Award,
   Building2,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 import { UnderlineSquiggle } from "./DoodleWidgets";
 import CountUp from "./CountUp";
 import CumulativePenalty from "./CumulativePenalty";
@@ -32,6 +32,21 @@ interface StatItemProps {
 
 export default function StatsFounder() {
   const [photoFailed, setPhotoFailed] = useState(false);
+
+  // Five reveal groups — each fires once via GSAP ScrollTrigger.
+  // CountUp (inside StatCard) keeps its own motion/react useInView trigger,
+  // which is a counter trigger, not a reveal animation — left untouched.
+  const headerRef = useScrollReveal<HTMLDivElement>();
+  const statsRef = useScrollReveal<HTMLDivElement>({
+    stagger: 0.09,
+    child: "[data-reveal]",
+  });
+  const portraitRef = useScrollReveal<HTMLDivElement>();
+  const philosophyRef = useScrollReveal<HTMLDivElement>();
+  const credentialsRef = useScrollReveal<HTMLDivElement>({
+    stagger: 0.09,
+    child: "[data-reveal]",
+  });
 
   const stats: StatItemProps[] = [
     {
@@ -137,13 +152,7 @@ export default function StatsFounder() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* SECTION 1: STATS */}
         <div className="mb-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-8"
-          >
+          <div ref={headerRef} className="mb-8">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/60 border border-slate-200/50 rounded-full mb-3 shadow-sm">
               <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
               <span className="text-[10.5px] text-red-500 font-mono tracking-widest font-bold uppercase">
@@ -164,25 +173,17 @@ export default function StatsFounder() {
             <p className="text-slate-600 font-sans text-xs sm:text-sm max-w-lg mx-auto font-medium leading-relaxed">
               The cost of inaction is staggering. These are not opinions — they are research-backed realities every leader must confront.
             </p>
-          </motion.div>
+          </div>
 
           {/* Metrics Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
-            {stats.map((stat, idx) => (
-              <motion.div
-                key={stat.id}
-                initial={{ opacity: 0, scale: 0.95, y: 25 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.6,
-                  delay: idx * 0.08,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="h-full"
-              >
+          <div
+            ref={statsRef}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10"
+          >
+            {stats.map((stat) => (
+              <div key={stat.id} data-reveal className="h-full">
                 <StatCard stat={stat} />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -198,11 +199,8 @@ export default function StatsFounder() {
         <div id="about" className="border-t border-slate-100 pt-12 sm:pt-16 scroll-mt-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
             {/* Founder Portrait Column — premium framed card */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            <div
+              ref={portraitRef}
               className="lg:col-span-5 flex justify-center"
             >
               <div className="relative w-full max-w-[280px] sm:max-w-[320px]">
@@ -219,15 +217,6 @@ export default function StatsFounder() {
 
                 <div className="relative rounded-2xl p-2.5 shadow-[0_20px_50px_-15px_rgba(11,27,46,0.15)] bg-gradient-to-br from-white to-slate-50 border border-slate-200/60">
                   <div className="relative overflow-hidden rounded-xl aspect-[4/5] bg-slate-50/40 flex items-center justify-center border border-white/40 p-0.5">
-                    {/* Reveal mask overlay — sweeps away on view */}
-                    <motion.div
-                      className="absolute inset-0 z-20 bg-navy-deep pointer-events-none"
-                      initial={{ scaleY: 1 }}
-                      whileInView={{ scaleY: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                      style={{ transformOrigin: "top" }}
-                    />
                     {!photoFailed ? (
                       <img
                         src="/founder-portrait.jpg"
@@ -260,16 +249,10 @@ export default function StatsFounder() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Founder Philosophy Column — refined typography + premium quote */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-7"
-            >
+            <div ref={philosophyRef} className="lg:col-span-7">
               <div className="space-y-5 text-left">
                 {/* Eyebrow with decorative line */}
                 <div className="flex items-center gap-3">
@@ -324,7 +307,7 @@ export default function StatsFounder() {
                   organization-specific, and measured for outcomes.
                 </p>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Credentials Block */}
@@ -332,15 +315,15 @@ export default function StatsFounder() {
             <h4 className="text-[11.5px] font-mono font-bold text-gold uppercase tracking-widest text-center mb-6">
               — A DECADE OF BUILDING WHAT WORKS —
             </h4>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            <div
+              ref={credentialsRef}
+              className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
+            >
               {credentials.map((cred, i) => (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05, duration: 0.5 }}
-                  className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-gold/30 hover:-translate-y-1 transition-all duration-300 shadow-sm flex flex-col"
+                  data-reveal
+                  className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-gold/30 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 shadow-sm flex flex-col"
                 >
                   {/* Icon */}
                   <div className="p-2 bg-gold/10 rounded-xl w-fit mb-3 shrink-0">
@@ -355,7 +338,7 @@ export default function StatsFounder() {
                   <p className="text-slate-600 font-sans text-[11px] sm:text-[12.5px] leading-relaxed font-light mt-auto">
                     {cred.desc}
                   </p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -371,11 +354,7 @@ const StatCard = React.memo(function StatCard({
   stat: StatItemProps;
 }) {
   return (
-    <motion.div
-      whileHover={{ y: -6, scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className="relative rounded-2xl p-5 bg-navy-deep border border-red-500/15 flex flex-col items-center text-center group transition-all duration-300 hover:border-red-500/35 hover:shadow-[0_20px_40px_-15px_rgba(239,68,68,0.22)] overflow-hidden h-full"
-    >
+    <div className="relative rounded-2xl p-5 bg-navy-deep border border-red-500/15 flex flex-col items-center text-center group transition-all duration-300 hover:border-red-500/35 hover:shadow-[0_20px_40px_-15px_rgba(239,68,68,0.22)] hover:scale-[1.02] overflow-hidden h-full">
       {/* Red warning line at top */}
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-red-500/0 via-red-500 to-red-500/0" />
 
@@ -409,6 +388,6 @@ const StatCard = React.memo(function StatCard({
       <p className="text-slate-400 text-xs font-sans font-light leading-relaxed flex-1 flex items-end justify-center">
         <span>{stat.context}</span>
       </p>
-    </motion.div>
+    </div>
   );
 });

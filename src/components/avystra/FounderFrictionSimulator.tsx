@@ -11,6 +11,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { smoothScrollTo } from "@/lib/scroll";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 // ═══ Shared Founder Images — crossfade between frustrated (bottleneck)
 // and confident (AVYSTRA system) states. Defined at module scope so the
@@ -75,6 +76,23 @@ export default function FounderFrictionSimulator() {
   const [isResolved, setIsResolved] = useState<boolean>(false);
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
+
+  // ── Scroll-entrance reveals (AVYSTRA motion system: GSAP ScrollTrigger
+  //    via useScrollReveal; power2.out, opacity + translateY only) ──
+  const subtextRef = useScrollReveal<HTMLParagraphElement>();
+  const toggleRef = useScrollReveal<HTMLDivElement>();
+  const desktopCardsRef = useScrollReveal<HTMLDivElement>({
+    stagger: 0.09,
+    child: "[data-reveal]",
+  });
+  const desktopCenterNodeRef = useScrollReveal<HTMLDivElement>();
+  const desktopCenterLabelRef = useScrollReveal<HTMLDivElement>();
+  const mobileCenterNodeRef = useScrollReveal<HTMLDivElement>();
+  const mobileCardsRef = useScrollReveal<HTMLDivElement>({
+    stagger: 0.09,
+    child: "[data-reveal]",
+  });
+  const ctaRef = useScrollReveal<HTMLDivElement>();
 
   // Pause SVG animateMotion + CSS animations when section is off-screen
   useEffect(() => {
@@ -190,31 +208,27 @@ export default function FounderFrictionSimulator() {
             This section now leads directly with subtext + toggle. */}
         <div className="flex flex-col items-center text-center mb-12">
           {/* Subtext */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          <p
+            ref={subtextRef}
             className="text-white/50 font-sans text-sm sm:text-base max-w-[520px] leading-relaxed"
             style={{ letterSpacing: "0.02em" }}
           >
             Toggle between states to see exactly what AVYSTRA engineers.
-          </motion.p>
+          </p>
         </div>
 
         {/* ─── PREMIUM TOGGLE — red/green active pill ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          ref={toggleRef}
           className="relative mx-auto mb-12 flex items-center h-12 w-full max-w-[380px] rounded-full p-1 backdrop-blur-md"
           style={{
             background: "rgba(255,255,255,0.04)",
             border: "1px solid rgba(255,255,255,0.12)",
           }}
         >
-          {/* Sliding active pill — color matches active state */}
+          {/* Sliding active pill — color matches active state. This is a
+              STATE-DRIVEN transition (toggle), not a scroll reveal, so it
+              stays as motion. */}
           <motion.div
             className="absolute top-1 bottom-1 left-1 rounded-full"
             animate={{ x: isResolved ? "calc(100% + 0px)" : "0px" }}
@@ -247,10 +261,13 @@ export default function FounderFrictionSimulator() {
           >
             AVYSTRA SYSTEM
           </button>
-        </motion.div>
+        </div>
 
         {/* ═══ DIAGRAM — DESKTOP & TABLET (≥768px) ═══ */}
-        <div className="relative w-full max-w-[1000px] h-[480px] md:h-[520px] lg:h-[560px] mx-auto hidden md:block">
+        <div
+          ref={desktopCardsRef}
+          className="relative w-full max-w-[1000px] h-[480px] md:h-[520px] lg:h-[560px] mx-auto hidden md:block"
+        >
           {/* SVG Connector Lines — color matches active state */}
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none z-0"
@@ -314,19 +331,12 @@ export default function FounderFrictionSimulator() {
           </svg>
 
           {/* Outcome cards — glass panels at corners, accent border matches state */}
-          {outcomes.map((outcome, index) => {
+          {outcomes.map((outcome) => {
             const Icon = outcome.icon;
             return (
-              <motion.div
+              <div
                 key={outcome.id}
-                initial={{ opacity: 0, scale: 0.92 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.5,
-                  delay: index * 0.1,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
+                data-reveal
                 className="friction-card absolute w-[200px] md:w-[220px] lg:w-[240px] rounded-2xl p-4 sm:p-5 z-10 transition-colors duration-500 overflow-hidden"
                 style={{
                   ...outcome.desktopStyle,
@@ -414,17 +424,14 @@ export default function FounderFrictionSimulator() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
 
           {/* ─── CENTER NODE — founder portrait crossfade, accent ring, label ─── */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            <div
+              ref={desktopCenterNodeRef}
               className="relative w-[140px] h-[140px] rounded-full overflow-hidden flex flex-col items-center justify-center text-center transition-all duration-500"
               style={{
                 border: `1px solid ${accentFaint}`,
@@ -442,16 +449,10 @@ export default function FounderFrictionSimulator() {
                   animation: "centerPulse 2s ease-out infinite",
                 }}
               />
-            </motion.div>
+            </div>
 
             {/* Center node label — FOUNDER (bottlenecked) / AVYSTRA SYSTEM (resolved) */}
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-4 text-center"
-            >
+            <div ref={desktopCenterLabelRef} className="mt-4 text-center">
               <div
                 className="text-[13px] font-mono font-bold tracking-[0.18em] uppercase transition-colors duration-500"
                 style={{ color: accent }}
@@ -461,18 +462,15 @@ export default function FounderFrictionSimulator() {
               <div className="text-[11px] font-sans text-white/45 mt-1 transition-colors duration-500">
                 {isResolved ? "The system that holds" : "Single point of failure"}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
         {/* ═══ MOBILE STACKED VIEW (<768px) ═══ */}
         <div className="md:hidden flex flex-col items-center">
           {/* Center node — label BELOW circle to avoid clipping */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          <div
+            ref={mobileCenterNodeRef}
             className="relative w-[120px] h-[120px] rounded-full overflow-hidden transition-all duration-500"
             style={{
               border: `1px solid ${accentFaint}`,
@@ -487,7 +485,7 @@ export default function FounderFrictionSimulator() {
                 animation: "centerPulse 2s ease-out infinite",
               }}
             />
-          </motion.div>
+          </div>
 
           {/* Center node label — FOUNDER / AVYSTRA SYSTEM */}
           <div className="mt-4 mb-10 text-center">
@@ -503,20 +501,16 @@ export default function FounderFrictionSimulator() {
           </div>
 
           {/* Stacked outcome cards */}
-          <div className="w-full grid grid-cols-1 gap-4">
-            {outcomes.map((outcome, index) => {
+          <div
+            ref={mobileCardsRef}
+            className="w-full grid grid-cols-1 gap-4"
+          >
+            {outcomes.map((outcome) => {
               const Icon = outcome.icon;
               return (
-                <motion.div
+                <div
                   key={outcome.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.08,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
+                  data-reveal
                   className="rounded-2xl p-5 transition-colors duration-500"
                   style={{
                     background: "rgba(255,255,255,0.05)",
@@ -592,18 +586,15 @@ export default function FounderFrictionSimulator() {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
         </div>
 
         {/* ─── BOTTOM CTA STRIP ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          ref={ctaRef}
           className="mt-10 w-full max-w-[1000px] mx-auto rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"
           style={{
             background: "rgba(255,255,255,0.03)",
@@ -626,7 +617,7 @@ export default function FounderFrictionSimulator() {
               strokeWidth={2.5}
             />
           </button>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

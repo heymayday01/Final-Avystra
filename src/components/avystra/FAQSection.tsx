@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { HelpCircle, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
 import { getLenis } from "@/lib/scroll";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 
 interface FAQItem {
   question: string;
@@ -41,6 +41,8 @@ const faqData: FAQItem[] = [
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const headerRef = useScrollReveal<HTMLDivElement>();
+  const accordionsRef = useScrollReveal<HTMLDivElement>();
 
   const toggleIndex = useCallback((index: number) => {
     setOpenIndex((prev) => (prev === index ? null : index));
@@ -67,11 +69,8 @@ export default function FAQSection() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 select-none">
         {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          ref={headerRef}
           className="flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
         >
           {/* Aesthetic Badge */}
@@ -95,14 +94,11 @@ export default function FAQSection() {
             Clear answers to help you understand our approach, process, and what
             to expect from an AVYSTRA engagement.
           </p>
-        </motion.div>
+        </div>
 
         {/* Accordions Containment Block */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          ref={accordionsRef}
           className="bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 lg:p-10 divide-y divide-slate-300/20"
         >
           {faqData.map((faq, index) => {
@@ -182,7 +178,7 @@ export default function FAQSection() {
               </div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

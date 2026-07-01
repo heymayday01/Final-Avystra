@@ -1,7 +1,6 @@
 "use client";
 
 import { Linkedin, Instagram, MessageCircle, Facebook, Mail, Phone, ArrowUpRight } from "lucide-react";
-import { motion } from "motion/react";
 import AvystraLogo from "./AvystraLogo";
 import { smoothScrollTo } from "@/lib/scroll";
 
@@ -129,19 +128,16 @@ export default function Footer({ leadCount }: FooterProps) {
             </p>
             <div className="grid grid-cols-4 gap-2 max-w-[200px]">
               {socialLinks.map((link) => (
-                <motion.a
+                <a
                   key={link.name}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ y: -3, scale: 1.08, rotate: -3 }}
-                  whileTap={{ scale: 0.92 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                  className="aspect-square flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-gold hover:text-navy-deep hover:border-gold hover:shadow-[0_8px_20px_rgba(184,146,78,0.3)] transition-colors duration-300"
+                  className="aspect-square flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-gold hover:text-navy-deep hover:border-gold hover:shadow-[0_8px_20px_rgba(184,146,78,0.3)] hover:scale-[1.02] active:scale-95 transition-all duration-300 ease-in-out"
                   aria-label={link.name}
                 >
                   <link.icon size={16} />
-                </motion.a>
+                </a>
               ))}
             </div>
           </div>

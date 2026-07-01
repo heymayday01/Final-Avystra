@@ -13,7 +13,8 @@ import {
   ChevronDown,
   CheckCircle2,
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useScrollReveal } from "@/lib/useScrollReveal";
 import { DoodleSparkle, UnderlineSquiggle } from "./DoodleWidgets";
 
 interface StepData {
@@ -32,6 +33,19 @@ interface StepData {
 export default function Flowchart() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
+
+  // Three reveal groups: header (badge/h2/p), steps grid (4 cards), bottom banner.
+  // The flowing pulses and pulse ring/dot remain as motion.div since they
+  // are decorative infinite loops, not scroll reveals.
+  const headerRef = useScrollReveal<HTMLDivElement>({
+    stagger: 0.09,
+    child: "[data-reveal]",
+  });
+  const stepsRef = useScrollReveal<HTMLDivElement>({
+    stagger: 0.09,
+    child: "[data-reveal]",
+  });
+  const bannerRef = useScrollReveal<HTMLDivElement>();
 
   const steps: StepData[] = [
     {
@@ -141,12 +155,12 @@ export default function Flowchart() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          ref={headerRef}
+          className="text-center max-w-2xl mx-auto mb-8 sm:mb-10"
+        >
+          <div
+            data-reveal
             className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/60 border border-slate-200/50 rounded-full mb-3.5 relative shadow-sm"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
@@ -154,13 +168,10 @@ export default function Flowchart() {
               Our Implementation Methodology
             </span>
             <DoodleSparkle className="-top-4 -right-4 text-gold/30" />
-          </motion.div>
+          </div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          <h2
+            data-reveal
             className="font-display font-bold text-3xl sm:text-5xl text-navy-deep tracking-tight leading-tight uppercase"
           >
             Our Four-Step{" "}
@@ -172,22 +183,22 @@ export default function Flowchart() {
                 delay={0.4}
               />
             </span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          </h2>
+          <p
+            data-reveal
             className="text-slate-500 text-xs sm:text-sm font-sans font-light mt-4"
           >
             We don&apos;t run isolated motivational sessions. We design, deliver,
             and verify bespoke organizational systems that build true operational
             sovereignty.
-          </motion.p>
+          </p>
         </div>
 
         {/* The Steps Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8 relative items-stretch">
+        <div
+          ref={stepsRef}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8 relative items-stretch"
+        >
           {/* Connecting Arrows / Flowing Pulses for Desktop */}
           <div className="absolute top-[90px] left-[12.5%] right-[12.5%] h-px bg-slate-200 pointer-events-none hidden lg:block z-0">
             <motion.div
@@ -214,36 +225,21 @@ export default function Flowchart() {
             const isExpanded = expandedCard === idx;
 
             return (
-              <motion.div
+              <div
                 key={step.step}
-                initial={{ opacity: 0, y: 40, rotateX: -15 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{
-                  duration: 0.7,
-                  delay: idx * 0.12,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                whileHover={{ y: -8, scale: 1.02 }}
+                data-reveal
                 onMouseEnter={() => setHoveredCard(idx)}
                 onMouseLeave={() => setHoveredCard(null)}
-                className="group relative flex flex-col justify-between bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 hover:shadow-[0_30px_60px_rgba(11,27,46,0.08)] hover:border-gold/40 transition-all duration-500 z-10 overflow-hidden"
-                style={{ transformPerspective: 1000 }}
+                className="group relative flex flex-col justify-between bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 hover:shadow-[0_30px_60px_rgba(11,27,46,0.08)] hover:border-gold/40 hover:scale-[1.02] transition-all duration-500 z-10 overflow-hidden"
               >
                 {/* Gold gradient sweep on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
                 <div className="relative z-10">
-                  {/* Step Number Bubble — pop-in */}
-                  <motion.div
-                    initial={{ scale: 0, rotate: -45 }}
-                    whileInView={{ scale: 1, rotate: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.12 + 0.3, type: "spring", stiffness: 300, damping: 15 }}
-                    className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center justify-center w-7 h-7 rounded-full bg-navy-deep border border-gold/30 text-gold font-mono text-xs font-black shadow-md z-20 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300"
-                  >
+                  {/* Step Number Bubble */}
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center justify-center w-7 h-7 rounded-full bg-navy-deep border border-gold/30 text-gold font-mono text-xs font-black shadow-md z-20 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">
                     {step.step}
-                  </motion.div>
+                  </div>
 
                   {/* Main Icon Badge */}
                   <div className="flex justify-center mb-6 mt-2">
@@ -346,17 +342,14 @@ export default function Flowchart() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
         {/* Double Banner Message */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          ref={bannerRef}
           className="mt-6 bg-navy-deep border border-gold/30 rounded-[2rem] overflow-hidden shadow-2xl relative"
         >
           <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
@@ -402,7 +395,7 @@ export default function Flowchart() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
