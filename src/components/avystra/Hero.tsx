@@ -225,9 +225,9 @@ export default function Hero() {
       <div className="relative max-w-5xl lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 w-full select-none">
         <div className="flex flex-col items-center text-center w-full">
 
-          {/* Eyebrow badge — CSS fade-in */}
+          {/* Eyebrow badge — premium with pulsing glow ring */}
           <div className="mb-6 sm:mb-8 hero-fade-in" style={{ animationDelay: "0.1s" }}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-white/60 backdrop-blur-sm px-4 py-1.5 shadow-sm">
+            <span className="hero-badge-premium inline-flex items-center gap-2 rounded-full border border-gold/30 bg-white/60 backdrop-blur-sm px-4 py-1.5 shadow-sm">
               <span className="relative flex h-1.5 w-1.5">
                 {!reducedMotion && (
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75" />
@@ -240,10 +240,7 @@ export default function Hero() {
             </span>
           </div>
 
-          {/* Main heading — CSS-only animations (no Framer Motion per-word).
-              Previous version used 15+ motion.span with filter:blur() which
-              caused GPU layer thrashing + iOS ? clipping. Now uses CSS
-              keyframe animations (opacity + translateY only, no blur). */}
+          {/* Main heading — CSS line reveals + animated gold gradient */}
           <h1
             className="font-display font-bold text-[clamp(2rem,7vw,5.5rem)] tracking-[-0.035em] text-navy-deep select-none heading-balance mb-6 sm:mb-8"
             style={{ lineHeight: 1.3 }}
@@ -255,15 +252,15 @@ export default function Hero() {
               So Why Does Everything Still
             </span>
             <span className="block text-center hero-line-3">
-              <span className="relative inline text-gold font-serif italic font-semibold whitespace-nowrap">
+              <span className="relative inline font-serif italic font-semibold whitespace-nowrap hero-gold-text">
                 Depend On You?
                 <UnderlineSquiggle className="absolute -bottom-2 left-0 w-full h-[6px] text-gold/60" delay={1.1} duration={1.0} />
               </span>
             </span>
           </h1>
 
-          {/* Feature cards — CSS fade-in (no Framer Motion) */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-10 max-w-3xl mx-auto hero-fade-in" style={{ animationDelay: "0.6s" }}>
+          {/* Feature chips — staggered pop-in */}
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-10 max-w-3xl mx-auto">
             {[
               { label: "Hired experienced people", Icon: UserPlus },
               { label: "Promoted managers", Icon: TrendingUp },
@@ -273,9 +270,10 @@ export default function Hero() {
             ].map(({ label, Icon }, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-2 px-3 py-2 rounded-full border border-slate-200/80 bg-white/70 shadow-sm hover:border-gold/40 hover:bg-white transition-all duration-300"
+                className="hero-chip flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/80 bg-white/70 shadow-sm hover:border-gold/40 hover:bg-white hover:shadow-md transition-all duration-300"
+                style={{ animationDelay: `${0.6 + idx * 0.08}s` }}
               >
-                <Icon className="w-3.5 h-3.5 text-gold/70 shrink-0" />
+                <Icon className="w-3.5 h-3.5 text-gold/70 group-hover:text-gold shrink-0" />
                 <span className="text-navy-deep/80 font-sans text-[11px] sm:text-[12px] font-semibold whitespace-nowrap">
                   You {label}
                 </span>
@@ -283,15 +281,15 @@ export default function Hero() {
             ))}
           </div>
 
-          {/* Bridging content block */}
+          {/* Bridging content block — premium glass card with gold glow */}
           <div
-            className="mb-8 sm:mb-10 max-w-2xl mx-auto bg-white/60 border border-gold/15 rounded-2xl px-6 py-7 sm:px-10 sm:py-9 shadow-[0_8px_32px_rgba(11,27,46,0.04)] text-center hero-fade-in"
+            className="hero-card-premium mb-8 sm:mb-10 max-w-2xl mx-auto rounded-2xl px-6 py-7 sm:px-10 sm:py-9 text-center"
             style={{ animationDelay: "0.8s" }}
           >
             <p className="text-navy-deep font-sans text-base sm:text-lg font-bold leading-relaxed mb-4">
               So why does it still feel like the company slows down whenever you step away?
             </p>
-            <div className="w-12 h-px bg-gold/30 mx-auto mb-4" />
+            <div className="hero-divider w-12 h-px mx-auto mb-4" />
             <p className="text-navy-deep/90 font-sans text-sm sm:text-base leading-relaxed mb-1">
               Most organizations don&apos;t struggle because people don&apos;t know what to do.
             </p>
@@ -300,12 +298,12 @@ export default function Hero() {
             </p>
             <p className="text-navy-deep font-sans text-xs sm:text-sm font-bold tracking-wide uppercase">
               That&apos;s the gap{" "}
-              <span className="text-gold font-black">AVYSTRA</span>{" "}
+              <span className="hero-gold-text font-black">AVYSTRA</span>{" "}
               helps organizations close.
             </p>
           </div>
 
-          {/* CTAs */}
+          {/* CTAs — premium with gold sweep */}
           <div
             className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-10 sm:mb-14 hero-fade-in"
             style={{ animationDelay: "1.0s" }}
@@ -313,27 +311,27 @@ export default function Hero() {
             <button
               ref={ctaRef}
               onClick={handleScrollToForm}
-              className="group relative cursor-pointer rounded-full bg-navy-deep hover:bg-navy-soft px-8 py-3.5 flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 shadow-lg"
+              className="hero-btn-primary group relative cursor-pointer rounded-full px-8 py-3.5 flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 shadow-lg overflow-hidden"
             >
-              <span className="text-white font-mono text-[12px] font-bold tracking-[0.2em] uppercase">
+              <span className="relative z-10 text-white font-mono text-[12px] font-bold tracking-[0.2em] uppercase">
                 Talk To Us
               </span>
-              <ArrowRight className="w-4 h-4 text-gold group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="relative z-10 w-4 h-4 text-gold group-hover:translate-x-1 transition-transform" />
             </button>
 
             <button
               onClick={handleScrollToBento}
-              className="cursor-pointer rounded-full border border-slate-300 bg-white/70 backdrop-blur-sm px-8 py-3.5 transition-all duration-300 hover:bg-white hover:border-gold/50 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold shadow-sm"
+              className="hero-btn-secondary group relative cursor-pointer rounded-full px-8 py-3.5 transition-all duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold shadow-sm overflow-hidden"
             >
-              <span className="text-navy-deep font-mono text-[12px] font-bold tracking-[0.2em] uppercase">
+              <span className="relative z-10 text-navy-deep font-mono text-[12px] font-bold tracking-[0.2em] uppercase">
                 See The Problem
               </span>
             </button>
           </div>
 
-          {/* Trust indicators */}
+          {/* Trust indicators — premium with gold accent lines */}
           <div
-            className="flex flex-wrap justify-center gap-x-6 sm:gap-x-10 gap-y-3 pt-6 border-t border-slate-200/60 w-full max-w-2xl hero-fade-in"
+            className="flex flex-wrap justify-center gap-x-8 sm:gap-x-12 gap-y-3 pt-6 border-t border-slate-200/60 w-full max-w-2xl hero-fade-in"
             style={{ animationDelay: "1.2s" }}
           >
             {[
@@ -342,9 +340,9 @@ export default function Hero() {
               "Team Accountability",
               "Execution Systems",
             ].map((label, i) => (
-              <div key={i} className="flex items-center gap-2 group">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold group-hover:scale-150 transition-transform duration-500" />
-                <span className="font-mono text-[10px] sm:text-[11px] font-bold text-navy-deep/50 uppercase tracking-[0.15em] group-hover:text-navy-deep transition-colors duration-500">
+              <div key={i} className="flex items-center gap-2.5 group cursor-default">
+                <span className="w-1 h-1 rounded-full bg-gold/50 group-hover:bg-gold group-hover:scale-150 transition-all duration-500" />
+                <span className="font-mono text-[10px] sm:text-[11px] font-bold text-navy-deep/40 uppercase tracking-[0.15em] group-hover:text-navy-deep transition-colors duration-500">
                   {label}
                 </span>
               </div>
