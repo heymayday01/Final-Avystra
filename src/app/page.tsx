@@ -261,7 +261,7 @@ export default function Home() {
 
           {/* WhatsApp circle button — below the OGI button */}
           <motion.a
-            href="https://wa.me/918596059607"
+            href={`https://wa.me/918596059607?text=${encodeURIComponent("Hi AVYSTRA, I visited your website and would like to know more. Can we connect?")}`}
             target="_blank"
             rel="noopener noreferrer"
             initial={{ opacity: 0, scale: 0.8 }}

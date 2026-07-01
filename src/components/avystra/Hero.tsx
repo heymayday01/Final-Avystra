@@ -216,7 +216,8 @@ export default function Hero() {
   const handleScrollToForm = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      smoothScrollTo("consult");
+      const message = "Hi AVYSTRA, I visited your website and would like to know more. Can we connect?";
+      window.open(`https://wa.me/918596059607?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
     },
     []
   );

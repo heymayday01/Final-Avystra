@@ -1418,13 +1418,13 @@ export default function OGIDiagnostic() {
                         </div>
 
                         <div className="bg-white/60 p-4 rounded-xl border border-emerald-100/85 text-xs font-mono text-[#0F5132] italic leading-relaxed">
-                          &ldquo;Hi AVYSTRA, I completed the OGI. My name is {name} ({role}). My OGI score was {overallScorePct}/100. I would like to discuss a full organizational assessment.&rdquo;
+                          &ldquo;Hi AVYSTRA, I completed the OGI. My name is {name} ({role}). My OGI score was {overallScorePct}/100. I'd like to discuss what this means for my organization.&rdquo;
                         </div>
                       </div>
 
                       <button
                         onClick={() => {
-                          const msg = `Hi AVYSTRA, I completed the OGI. My name is ${name} (${role}). My OGI score was ${overallScorePct}/100. I would like to discuss a full organizational assessment.`;
+                          const msg = `Hi AVYSTRA, I completed the OGI. My name is ${name} (${role}). My OGI score was ${overallScorePct}/100. I'd like to discuss what this means for my organization.`;
                           window.open(`https://wa.me/918596059607?text=${encodeURIComponent(msg)}`);
                         }}
                         aria-label="Discuss on WhatsApp"
