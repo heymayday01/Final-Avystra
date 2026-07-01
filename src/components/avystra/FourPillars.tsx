@@ -94,7 +94,7 @@ export default function FourPillars() {
             as="p"
             className="text-slate-500 font-sans text-lg md:text-xl font-light leading-relaxed max-w-2xl"
             delay={0.8}
-            blur={true}
+            blur={false}
           />
         </motion.div>
 

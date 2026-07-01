@@ -311,14 +311,14 @@ export default function ProgramsSection() {
             <TextReveal
               text="Where Most "
               delay={0.2}
-              blur={true}
+              blur={false}
               wordClassName="inline-block"
             />
             <span className="font-serif italic font-light text-gold relative inline-block">
               <TextReveal
                 text="Organizations Start"
                 delay={0.4}
-                blur={true}
+                blur={false}
                 wordClassName="inline-block"
               />
               <motion.div
@@ -335,7 +335,7 @@ export default function ProgramsSection() {
             as="p"
             className="text-slate-500 font-sans text-base sm:text-lg font-light leading-relaxed max-w-2xl"
             delay={0.6}
-            blur={true}
+            blur={false}
           />
         </motion.div>
 

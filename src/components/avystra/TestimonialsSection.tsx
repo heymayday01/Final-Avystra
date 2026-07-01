@@ -71,19 +71,19 @@ export default function TestimonialsSection() {
             <TextReveal
               text="Trusted by "
               delay={0.2}
-              blur={true}
+              blur={false}
               wordClassName="inline-block"
             />
             <TextReveal
               text="Industry"
               delay={0.4}
-              blur={true}
+              blur={false}
               wordClassName="font-serif italic font-light text-gold inline-block"
             />
             <TextReveal
               text="Leaders"
               delay={0.5}
-              blur={true}
+              blur={false}
               wordClassName="inline-block"
             />
           </h2>
