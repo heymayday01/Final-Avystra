@@ -263,11 +263,8 @@ export default function Hero() {
                 </motion.span>
               ))}
             </span>
-            {/* Line 2: "So Why Does Everything Still Depend On You?" —
-                On lg+ screens this is ONE line (whitespace-nowrap).
-                On mobile it wraps naturally. No flex — pure inline flow
-                so the gold text sits on the same baseline as the navy text. */}
-            <span className="block lg:whitespace-nowrap text-center">
+            {/* Line 2: "So Why Does Everything Still" */}
+            <span className="block text-center">
               {["So", "Why", "Does", "Everything", "Still"].map((word, i) => (
                 <motion.span
                   key={`w2-${i}`}
@@ -279,11 +276,14 @@ export default function Hero() {
                   {word}{" "}
                 </motion.span>
               ))}
+            </span>
+            {/* Line 3: "Depend On You?" (gold, own line) */}
+            <span className="block text-center">
               <motion.span
                 initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 transition={{ duration: 1.0, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="relative inline text-gold font-serif italic font-semibold"
+                className="relative inline text-gold font-serif italic font-semibold whitespace-nowrap"
                 style={{ overflow: "visible" }}
               >
                 Depend On You?
