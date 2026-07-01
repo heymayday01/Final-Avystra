@@ -60,7 +60,6 @@ server.log
 worklog.md
 tool-results/
 upload/
-.zscripts/dev.logpublic/ogi-submissions.xlsx
 
 # Runtime database (each deployment creates its own)
 
@@ -68,11 +67,5 @@ upload/
 public/ogi-submissions.xlsx
 
 # Unused directories (not part of the app)
-/examples/
-/mini-services/
-/download/
 
 # z.ai deployment artifacts (scripts are tracked, logs/pids are not)
-.zscripts/dev.pid
-.zscripts/dev.log
-.zscripts/mini-service-dev-server.log
