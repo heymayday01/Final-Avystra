@@ -124,7 +124,7 @@ export default function FAQSection() {
                 {/* Accordion Toggle Header */}
                 <button
                   onClick={() => toggleIndex(index)}
-                  className="w-full flex items-center justify-between text-left gap-4 sm:gap-6 group cursor-pointer focus-ring"
+                  className="w-full min-h-[48px] flex items-center justify-between text-left gap-4 sm:gap-6 group cursor-pointer focus-ring"
                   aria-expanded={isOpen}
                   aria-label={`Question ${index + 1}: ${faq.question}`}
                 >

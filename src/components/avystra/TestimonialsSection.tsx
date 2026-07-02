@@ -125,7 +125,7 @@ export default function TestimonialsSection() {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className="card-premium group relative bg-gradient-to-br from-white to-slate-50 rounded-2xl p-6 sm:p-8 lg:p-10 flex flex-col justify-between overflow-hidden"
+              className="card-premium group relative bg-gradient-to-br from-white to-slate-50 rounded-2xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between overflow-hidden"
             >
               {/* Shimmer sweep on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />

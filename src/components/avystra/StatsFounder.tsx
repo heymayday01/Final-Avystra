@@ -179,7 +179,7 @@ export default function StatsFounder() {
           {/* Metrics Grid */}
           <div
             ref={statsGridRef}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-10"
           >
             {stats.map((stat) => (
               <div key={stat.id} className="h-full">
@@ -318,7 +318,7 @@ export default function StatsFounder() {
             </p>
             <div
               ref={credentialsGridRef}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
+              className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6"
             >
               {credentials.map((cred, i) => (
                 <div

@@ -474,7 +474,7 @@ export default function FounderFrictionSimulator() {
             </div>
 
             {/* Center node label — FOUNDER / AVYSTRA SYSTEM */}
-            <div className="mt-5 mb-12 text-center">
+            <div className="mt-5 mb-10 text-center">
               <div
                 className="text-[12px] font-mono font-bold tracking-[0.18em] uppercase transition-colors duration-500"
                 style={{ color: accent }}
@@ -490,7 +490,7 @@ export default function FounderFrictionSimulator() {
           {/* Stacked outcome cards */}
           <div
             ref={mobileCardsRef}
-            className="w-full grid grid-cols-1 gap-4"
+            className="w-full grid grid-cols-1 gap-3"
           >
             {outcomes.map((outcome) => {
               const Icon = outcome.icon;

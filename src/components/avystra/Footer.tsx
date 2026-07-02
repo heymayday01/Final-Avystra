@@ -64,7 +64,7 @@ export default function Footer({ leadCount }: FooterProps) {
         className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10 w-full"
       >
         {/* Main Footer Content — compact 3-column grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 sm:gap-8 lg:gap-12 mb-10">
           {/* Brand & Description */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-6">
             {/* Logo in footer */}

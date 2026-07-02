@@ -459,7 +459,7 @@ export default function ProgramsSection() {
               role="region"
               aria-roledescription="carousel"
               aria-label="Programs carousel — swipe or use arrow keys to navigate"
-              className="program-carousel-track flex gap-3 overflow-x-auto scrollbar-none snap-x snap-mandatory scroll-pl-5 scroll-pr-5 px-5 pb-5 -mx-4 will-change-transform"
+              className="program-carousel-track flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory scroll-pl-5 scroll-pr-5 px-5 pb-5 -mx-4 will-change-transform"
               style={{
                 WebkitOverflowScrolling: "touch",
                 scrollBehavior: "smooth",
