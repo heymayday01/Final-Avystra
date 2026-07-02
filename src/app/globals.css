@@ -346,35 +346,49 @@ body::-webkit-scrollbar {
    Buttons: 180ms, bg/color + glow.
    Nav links: 150ms, opacity + underline. */
 
-/* Premium card hover — border does the work at rest, shadow on hover */
-.card-premium {
-  transition: border-color var(--dur-micro) var(--ease-sine),
-              box-shadow var(--dur-micro) var(--ease-sine);
+/* Premium card hover — smooth layered interaction.
+   Transform (GPU-composited) creates physical lift, border + shadow
+   follow at slightly different durations for a refined, non-mechanical feel.
+   NOTE: Doubled class selector (.card-premium.card-premium) boosts specificity
+   to 0-2-0 so it beats .js .reveal (also 0-2-0) — without this, the reveal
+   system's transition/transform overrides the hover interaction. */
+.card-premium.card-premium {
+  transition: transform var(--dur-standard) var(--ease-out),
+              border-color var(--dur-micro) var(--ease-sine),
+              box-shadow var(--dur-standard) var(--ease-out);
   border: 1px solid rgba(var(--navy-rgb), 0.08);
+  will-change: transform;
 }
-.card-premium:hover {
+.card-premium.card-premium:hover {
+  transform: translateY(-4px);
   border-color: rgba(var(--gold-rgb), 0.4);
   box-shadow: var(--shadow-card-hover);
 }
 
 /* Premium card hover — dark section variant (heavier shadow) */
-.card-premium-dark {
-  transition: border-color var(--dur-micro) var(--ease-sine),
-              box-shadow var(--dur-micro) var(--ease-sine);
+.card-premium-dark.card-premium-dark {
+  transition: transform var(--dur-standard) var(--ease-out),
+              border-color var(--dur-micro) var(--ease-sine),
+              box-shadow var(--dur-standard) var(--ease-out);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  will-change: transform;
 }
-.card-premium-dark:hover {
+.card-premium-dark.card-premium-dark:hover {
+  transform: translateY(-4px);
   border-color: rgba(var(--gold-rgb), 0.4);
   box-shadow: var(--shadow-card-hover-dark);
 }
 
-/* Premium button hover — bg shift + gold glow */
-.btn-premium {
-  transition: background-color calc(var(--dur-micro) * 1.2) var(--ease-sine),
-              color calc(var(--dur-micro) * 1.2) var(--ease-sine),
-              box-shadow calc(var(--dur-micro) * 1.2) var(--ease-sine);
+/* Premium button hover — smooth bg shift + gold glow.
+   Doubled specificity to beat .js .reveal. */
+.btn-premium.btn-premium {
+  transition: background-color var(--dur-standard) var(--ease-sine),
+              color var(--dur-standard) var(--ease-sine),
+              box-shadow var(--dur-standard) var(--ease-out),
+              transform var(--dur-standard) var(--ease-out);
 }
-.btn-premium:hover {
+.btn-premium.btn-premium:hover {
+  transform: translateY(-1px);
   box-shadow: var(--shadow-btn-glow);
 }
 

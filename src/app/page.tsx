@@ -44,6 +44,15 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Disable browser scroll restoration — on reload the browser remembers
+    // the scroll position, but with lazy-loaded components + the loading
+    // screen, the page height changes after load and the restored position
+    // lands in the wrong place. Force scroll to top on every page load.
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
