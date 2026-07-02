@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, useScroll, useSpring, useMotionValueEvent } from "motion/react";
 
 /**

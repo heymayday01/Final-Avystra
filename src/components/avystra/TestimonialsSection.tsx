@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Quote, Star, MessageSquare } from "lucide-react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { usePageReady } from "@/lib/pageReady";

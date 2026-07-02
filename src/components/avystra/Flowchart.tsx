@@ -140,7 +140,7 @@ export default function Flowchart() {
   return (
     <section
       id="process"
-      className="relative py-8 bg-transparent border-t border-slate-100 overflow-hidden select-none scroll-mt-24"
+      className="relative py-8 md:py-12 bg-transparent border-t border-slate-100 overflow-hidden select-none scroll-mt-24"
     >
       {/* Dynamic Background Spotlights */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">

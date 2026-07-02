@@ -84,7 +84,7 @@ export default function Home() {
     };
   }, []);
 
-  const [leadCount] = useState(0);
+  const leadCount = 0;
 
   // Set up smooth scrolling
   useSmoothScroll();
@@ -200,11 +200,9 @@ export default function Home() {
             </Suspense>
 
             {/* Interactive systems flowchart timeline */}
-            <div className="pb-8">
-              <Suspense fallback={<div className="min-h-[40vh]" />}>
-                <Flowchart />
-              </Suspense>
-            </div>
+            <Suspense fallback={<div className="min-h-[40vh]" />}>
+              <Flowchart />
+            </Suspense>
 
             {/* Four Pillars alignment methodology */}
             <Suspense fallback={<div className="min-h-[50vh]" />}>
@@ -227,11 +225,9 @@ export default function Home() {
             </Suspense>
 
             {/* Frequently Asked Questions */}
-            <div className="py-6 mt-6">
-              <Suspense fallback={<div className="min-h-[30vh]" />}>
-                <FAQSection />
-              </Suspense>
-            </div>
+            <Suspense fallback={<div className="min-h-[30vh]" />}>
+              <FAQSection />
+            </Suspense>
 
             {/* OGI Growth Index Diagnostic assessment portal */}
             <Suspense
@@ -241,9 +237,7 @@ export default function Home() {
                 </div>
               }
             >
-              <div className="mt-6 py-8 relative z-20">
-                <OGIDiagnostic />
-              </div>
+              <OGIDiagnostic />
             </Suspense>
           </main>
 

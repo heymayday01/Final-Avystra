@@ -201,7 +201,7 @@ export default function Hero() {
             ].map((label, i) => (
               <div key={i} className="flex items-center gap-2.5 group cursor-default">
                 <span className="w-1 h-1 rounded-full bg-gold/40 group-hover:bg-gold transition-colors duration-500" />
-                <span className="font-mono text-[10px] sm:text-[11px] font-bold text-navy-deep/35 uppercase tracking-[0.16em] group-hover:text-navy-deep/70 transition-colors duration-500">
+                <span className="font-mono text-[10px] sm:text-[11px] font-bold text-navy-deep/50 uppercase tracking-[0.16em] group-hover:text-navy-deep/70 transition-colors duration-500">
                   {label}
                 </span>
               </div>
@@ -213,6 +213,7 @@ export default function Hero() {
       {/* Marquee Ticker */}
       <div ref={marqueeRef} className="mt-12 w-full border-y border-navy-deep/10 bg-navy-deep py-4 flex items-center relative z-10 overflow-hidden">
         <div
+          aria-hidden="true"
           className="animate-marquee-slow flex whitespace-nowrap gap-x-24 select-none"
           style={{
             animationPlayState:

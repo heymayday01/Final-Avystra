@@ -335,7 +335,7 @@ export default function OGIDiagnostic() {
   const progressPercent = ((currentQuestionIndex + 1) / 16) * 100;
 
   return (
-    <section id="consult" className="relative py-4 bg-transparent border-none overflow-hidden md:py-6 scroll-mt-20">
+    <section id="consult" className="relative py-8 bg-transparent border-none overflow-hidden md:py-12 scroll-mt-20">
       {/* Decorative overlays */}
       <div className="absolute top-0 right-1/4 w-[400px] h-[400px] rounded-full bg-gold/[0.02] blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-blue-500/[0.01] blur-[120px] pointer-events-none" />
@@ -691,7 +691,7 @@ export default function OGIDiagnostic() {
 
                 <div className="w-24 h-[1px] bg-slate-200 my-4" />
 
-                <p className="text-gold-deep font-mono text-[11.5px] tracking-widest uppercase font-bold flex items-center gap-1.5 animate-bounce">
+                <p className="text-gold font-mono text-[11.5px] tracking-widest uppercase font-bold flex items-center gap-1.5 animate-bounce">
                   Next Dimension: Team Accountability
                   <ChevronRight className="w-3.5 h-3.5" />
                 </p>

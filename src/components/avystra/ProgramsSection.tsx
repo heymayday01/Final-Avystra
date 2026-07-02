@@ -326,7 +326,7 @@ export default function ProgramsSection() {
         >
           <div
             ref={eyebrowRef}
-            className="border border-gold/20 bg-gradient-to-br from-white to-slate-50 border border-slate-100 px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-3 shadow-sm"
+            className="border border-gold/20 bg-gradient-to-br from-white to-slate-50 px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-3 shadow-sm"
           >
             <BookOpen className="w-3.5 h-3.5 text-gold" />
             <span className="text-[11.5px] text-gold font-mono tracking-[0.18em] font-medium uppercase">

@@ -85,6 +85,9 @@
   --gold-light-rgb: 212, 178, 106;
   --navy-rgb: 11, 27, 46;
   --white-rgb: 251, 249, 244;
+  --success-rgb: 16, 185, 129;
+  --danger-rgb: 239, 68, 68;
+  --info-rgb: 84, 122, 149;
 
   /* ── SPACING SCALE (8px grid: 4/8/16/24/32/48/64/96) ── */
   --space-1: 0.25rem;   /* 4px */
@@ -136,21 +139,6 @@
   /* These exist so existing var() references don't break during migration.
      Will be removed after all components use the new token names. */
   --color-gold-hover: var(--color-gold-deep);
-  --color-gold-legacy: var(--color-gold);
-  --color-gold-ogi: var(--color-gold);
-  --color-gold-dark: var(--color-gold);
-  --color-gold-hover-dark: var(--color-gold-deep);
-  --color-navy-legacy: var(--color-navy-deep);
-  --color-navy-ogi: var(--color-navy-soft);
-  --color-navy-sphere: var(--color-navy-soft);
-  --color-navy-loading: var(--color-navy-deep);
-  --color-navy-gradient-end: var(--color-navy-soft);
-  --color-friction-bg: var(--color-navy-deep);
-  --color-friction-bg-dark: var(--color-navy-deep);
-  --color-friction-bg-darkest: var(--color-navy-deep);
-  --color-emerald-accent: var(--color-success);
-  --color-steel-blue: var(--color-info);
-  --color-amber-warm: var(--color-ivory);
 }
 
 :root {
@@ -326,7 +314,6 @@ body::-webkit-scrollbar {
               border-color var(--dur-micro) var(--ease-sine),
               box-shadow var(--dur-standard) var(--ease-out);
   border: 1px solid rgba(var(--navy-rgb), 0.08);
-  will-change: transform;
 }
 .card-premium.card-premium:hover {
   transform: translateY(-4px);
@@ -340,7 +327,6 @@ body::-webkit-scrollbar {
               border-color var(--dur-micro) var(--ease-sine),
               box-shadow var(--dur-standard) var(--ease-out);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  will-change: transform;
 }
 .card-premium-dark.card-premium-dark:hover {
   transform: translateY(-4px);

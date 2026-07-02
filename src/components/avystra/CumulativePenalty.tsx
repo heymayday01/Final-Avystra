@@ -47,7 +47,7 @@ export default function CumulativePenalty() {
   return (
     <section
       id="penalty"
-      className="relative py-12 sm:py-16 lg:py-20 overflow-hidden scroll-mt-24"
+      className="relative py-8 md:py-12 overflow-hidden scroll-mt-24"
     >
       {/* Ambient glow */}
       <div

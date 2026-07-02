@@ -234,7 +234,7 @@ export default function FounderFrictionSimulator() {
             className={`toggle-pill-btn relative z-10 w-1/2 text-center text-[12px] font-mono tracking-[0.14em] font-bold h-full transition-colors duration-500 ease-out-expo focus-ring ${
               !isResolved
                 ? "text-white"
-                : "text-white/45 hover:text-white/75"
+                : "text-white/60 hover:text-white/75"
             }`}
           >
             BOTTLENECKED STATE
@@ -245,7 +245,7 @@ export default function FounderFrictionSimulator() {
             className={`toggle-pill-btn relative z-10 w-1/2 text-center text-[12px] font-mono tracking-[0.14em] font-bold h-full transition-colors duration-500 ease-out-expo focus-ring ${
               isResolved
                 ? "text-white"
-                : "text-white/45 hover:text-white/75"
+                : "text-white/60 hover:text-white/75"
             }`}
           >
             AVYSTRA SYSTEM

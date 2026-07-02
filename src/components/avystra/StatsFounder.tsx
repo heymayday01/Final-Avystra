@@ -127,7 +127,7 @@ export default function StatsFounder() {
   return (
     <section
       id="team"
-      className="relative py-10 bg-transparent border-none overflow-hidden animate-fade-in scroll-mt-24"
+      className="relative py-8 md:py-12 bg-transparent border-none overflow-hidden animate-fade-in scroll-mt-24"
     >
       {/* Background radial spotlights */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden">

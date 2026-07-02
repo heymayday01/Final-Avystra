@@ -183,13 +183,6 @@ export default function Footer({ leadCount }: FooterProps) {
               Begin Assessment
               <ArrowUpRight className="w-3 h-3" />
             </a>
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              className="cursor-pointer hover:text-gold transition-colors inline-flex items-center gap-1 focus-ring"
-            >
-              Privacy
-            </a>
             {leadCount > 0 && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-gold/20 bg-gold/5 text-[11.5px] text-gold">
                 <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
