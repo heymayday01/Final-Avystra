@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { ScrollTrigger } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { usePageReady } from "@/lib/pageReady";
 import AvystraLogo from "./AvystraLogo";
 import { smoothScrollTo, scrollToTop } from "@/lib/scroll";
-import { EASE } from "@/lib/motion";
 
 interface NavItem {
   name: string;
@@ -22,6 +22,68 @@ export default function Header() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const activeSectionRef = useRef("bottlenecks");
+  const pageReady = usePageReady();
+
+  // GSAP refs for navbar entrance animation
+  const headerRef = useRef<HTMLElement>(null);
+  const logoRef = useRef<HTMLAnchorElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+
+  // GSAP navbar entrance — fires after pageReady (loading screen done)
+  useEffect(() => {
+    if (!pageReady) return;
+    if (shouldReduceMotion) return;
+
+    const ctx = gsap.context(() => {
+      // Header slides down from top
+      gsap.fromTo(
+        headerRef.current,
+        { y: -30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          delay: 0.1,
+          clearProps: "all",
+        }
+      );
+
+      // Logo fades in
+      gsap.fromTo(
+        logoRef.current,
+        { y: -10, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          ease: "power3.out",
+          delay: 0.3,
+          clearProps: "all",
+        }
+      );
+
+      // Nav links stagger in
+      if (navRef.current) {
+        const links = navRef.current.querySelectorAll("a");
+        gsap.fromTo(
+          links,
+          { y: -10, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.4,
+            ease: "power3.out",
+            stagger: 0.08,
+            delay: 0.5,
+            clearProps: "all",
+          }
+        );
+      }
+    }, headerRef);
+
+    return () => ctx.revert();
+  }, [pageReady, shouldReduceMotion]);
 
   useEffect(() => {
     // ── Header "scrolled" state — native scroll listener (works on all devices) ──
@@ -126,25 +188,6 @@ export default function Header() {
     []
   );
 
-  const headerTransition = useMemo(
-    () =>
-      shouldReduceMotion
-        ? { duration: 0 }
-        : {
-            opacity: {
-              duration: 1.2,
-              ease: EASE,
-              delay: 0.1,
-            },
-            y: {
-              duration: 1.2,
-              ease: EASE,
-              delay: 0.1,
-            },
-          },
-    [shouldReduceMotion]
-  );
-
   const navActivePillTransition = useMemo(
     () => ({
       type: "spring" as const,
@@ -161,14 +204,8 @@ export default function Header() {
       }`}
       style={{ pointerEvents: "none" }}
     >
-      <motion.header
-        initial={{ y: -30, opacity: 0 }}
-        animate={{
-          y: 0,
-          opacity: 1,
-          borderRadius: isOpen ? "24px" : "100px",
-        }}
-        transition={headerTransition}
+      <header
+        ref={headerRef}
         className={`w-full max-w-6xl pointer-events-auto transition-all duration-500 ease-out-expo ${
           scrolled || isOpen
             ? "py-2 px-4 sm:px-5 lg:py-1.5 lg:px-5 border border-white/50 bg-white/75 shadow-[0_8px_32px_-8px_rgba(var(--navy-rgb),0.18)] backdrop-blur-xl backdrop-saturate-150"
@@ -180,15 +217,9 @@ export default function Header() {
               Added pl-1 on mobile for extra corner padding so the
               "Consulting" subtitle text has breathing room from the edge. */}
           <div className="flex items-center min-w-0 flex-1 pl-1 sm:pl-0">
-            <motion.a
+            <a
+              ref={logoRef}
               href="#"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: 0.8,
-                duration: 0.4,
-                ease: EASE,
-              }}
               onClick={(e) => {
                 e.preventDefault();
                 setIsOpen(false);
@@ -198,11 +229,12 @@ export default function Header() {
               aria-label="AVYSTRA home"
             >
               <AvystraLogo size="sm" showSubtitle={true} className="scale-110 sm:scale-100" />
-            </motion.a>
+            </a>
           </div>
 
           {/* Desktop Navigation — shows on lg+ (1024px) instead of xl (1280px) */}
           <nav
+            ref={navRef}
             aria-label="Main navigation"
             className="hidden lg:flex items-center gap-0.5 relative bg-white/80 px-1 py-1 rounded-full border border-white/40 shadow-sm"
             onMouseLeave={() => setHoveredIndex(null)}
@@ -210,16 +242,9 @@ export default function Header() {
             {navItems.map((item, i) => {
               const isActive = activeSection === item.href.substring(1);
               return (
-                <motion.a
+                <a
                   key={item.name}
                   href={item.href}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: 1.0 + i * 0.1,
-                    duration: 0.4,
-                    ease: EASE,
-                  }}
                   aria-current={isActive ? "true" : undefined}
                   onMouseEnter={() => setHoveredIndex(i)}
                   onClick={(e) => {
@@ -249,7 +274,7 @@ export default function Header() {
                       transition={{ type: "spring", stiffness: 450, damping: 28 }}
                     />
                   )}
-                </motion.a>
+                </a>
               );
             })}
           </nav>
@@ -354,7 +379,7 @@ export default function Header() {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.header>
+      </header>
     </div>
   );
 }
