@@ -323,7 +323,7 @@ export default function StatsFounder() {
               {credentials.map((cred, i) => (
                 <div
                   key={i}
-                  className="card-premium p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 shadow-sm flex flex-col"
+                  className="card-premium p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 flex flex-col"
                 >
                   {/* Icon */}
                   <div className="p-2 bg-gold/10 rounded-xl w-fit mb-3 shrink-0">

@@ -728,16 +728,6 @@ body::-webkit-scrollbar {
   }
 }
 
-/* Glass card hover — subtle gold glow only (no lift) */
-.friction-card {
-  transition: box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.friction-card:hover {
-  box-shadow: 0 0 24px rgba(201, 168, 76, 0.10);
-}
-
 /* Gold toggle pill — smooth color transition */
 .toggle-pill-btn {
   transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -902,12 +892,7 @@ html, body {
    height shifted and the scroll landed at the wrong position. The GPU
    layer promotions below provide enough scroll perf without content-visibility. */
 
-/* GPU-promote elements that animate during scroll to their own layer.
-   This prevents repaint from propagating to parent layers.
-   NOTE: .pillar-card is excluded — will-change: transform on the group
-   container breaks Tailwind's group-hover cascade. TiltCard (the child)
-   handles its own GPU promotion. */
-.friction-card,
+/* GPU-promote elements that animate during scroll to their own layer. */
 .program-carousel-card {
   will-change: transform;
   backface-visibility: hidden;

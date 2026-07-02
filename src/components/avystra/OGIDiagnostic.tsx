@@ -399,7 +399,7 @@ export default function OGIDiagnostic() {
                   <button
                     onClick={() => setScreen("INFO_CAPTURE")}
                     aria-label="Begin OGI assessment"
-                    className="group inline-flex items-center gap-3 bg-navy-soft hover:bg-gold text-white font-display text-sm font-semibold tracking-wider uppercase px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus-ring cursor-pointer"
+                    className="btn-premium group inline-flex items-center gap-3 bg-navy-soft hover:bg-gold text-white font-display text-sm font-semibold tracking-wider uppercase px-10 py-4 rounded-xl shadow-lg focus-ring cursor-pointer"
                     id="ogi-btn-start"
                   >
                     <span>Begin Assessment</span>
@@ -545,7 +545,7 @@ export default function OGIDiagnostic() {
                   <button
                     onClick={() => validateAndNextInfo()}
                     aria-label="Continue to questions"
-                    className="group inline-flex items-center gap-2.5 bg-navy-deep hover:bg-gold text-white font-display text-xs font-bold tracking-wider uppercase px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 focus-ring cursor-pointer"
+                    className="btn-premium group inline-flex items-center gap-2.5 bg-navy-deep hover:bg-gold text-white font-display text-xs font-bold tracking-wider uppercase px-7 py-3.5 rounded-xl shadow-md focus-ring cursor-pointer"
                     id="ogi-btn-info-continue"
                   >
                     <span>Continue to Questions</span>
@@ -630,7 +630,7 @@ export default function OGIDiagnostic() {
                           className={`relative py-4 px-3 text-xs sm:text-sm text-center rounded-xl font-display font-semibold transition-all duration-300 border cursor-pointer select-none focus-ring ${
                             isSelected
                               ? "bg-navy-deep border-navy-deep text-white shadow-md shadow-slate-900/10"
-                              : "bg-slate-50 border-slate-200/80 hover:border-gold hover:bg-white text-slate-600 hover:text-navy-deep hover:shadow-sm"
+                              : "bg-slate-50 border-slate-200/80 hover:border-gold hover:bg-white text-slate-600 hover:text-navy-deep"
                           }`}
                           id={`ogi-q-${currentQ.id}-opt-${opt.label}`}
                         >
@@ -1169,7 +1169,7 @@ export default function OGIDiagnostic() {
                               whileInView={{ opacity: 1, y: 0 }}
                               viewport={{ once: true }}
                               transition={{ duration: 0.6, ease: EASE, delay: 0.1 + idx * 0.08 }}
-                              className={`p-6 rounded-2xl border transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:shadow-md ${statusObj.statusStyle.split(" ")[2]} flex flex-col justify-between space-y-4`}
+                              className={`p-6 rounded-2xl border transition-[border-color] duration-300 bg-gradient-to-br from-white to-slate-50/50 ${statusObj.statusStyle.split(" ")[2]} flex flex-col justify-between space-y-4`}
                             >
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between gap-2">

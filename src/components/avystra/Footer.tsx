@@ -152,7 +152,7 @@ export default function Footer({ leadCount }: FooterProps) {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="aspect-square flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-gold hover:text-navy-deep hover:border-gold hover:shadow-[var(--shadow-btn-glow)] hover:scale-[1.02] active:scale-95 transition-all duration-300 ease-in-out focus-ring"
+                  className="btn-premium aspect-square flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-gold hover:text-navy-deep hover:border-gold focus-ring"
                   aria-label={link.name}
                 >
                   <link.icon size={16} />

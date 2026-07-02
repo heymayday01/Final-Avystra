@@ -28,7 +28,7 @@ interface Program {
 function ProgramCard({ prog }: { prog: Program }) {
   return (
     <article
-      className="program-card card-premium group relative bg-gradient-to-br from-white to-slate-50/80 border border-slate-100 rounded-3xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between transition-[box-shadow,border-color] duration-500 ease-out-expo h-full overflow-hidden"
+      className="program-card card-premium group relative bg-gradient-to-br from-white to-slate-50/80 rounded-3xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between h-full overflow-hidden"
     >
       {/* Subtle Glow Reflection Layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
