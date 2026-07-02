@@ -148,14 +148,14 @@ export default function Flowchart() {
           className="absolute top-[10%] right-[-10%] w-[500px] h-[500px] rounded-full"
           style={{
             background:
-              "radial-gradient(circle, rgba(197, 160, 89, 0.03) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(var(--gold-rgb), 0.03) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute bottom-[10%] left-[-15%] w-[550px] h-[550px] rounded-full"
           style={{
             background:
-              "radial-gradient(circle, rgba(147, 197, 253, 0.02) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(var(--info-rgb), 0.02) 0%, transparent 70%)",
           }}
         />
       </div>
@@ -208,13 +208,13 @@ export default function Flowchart() {
           {/* Connecting Arrows / Flowing Pulses for Desktop */}
           <div className="absolute top-[90px] left-[12.5%] right-[12.5%] h-px bg-slate-200 pointer-events-none hidden lg:block z-0">
             <motion.div
-              className="absolute top-[-2px] h-[5px] w-12 bg-gradient-to-r from-transparent via-gold to-transparent rounded-full shadow-[0_0_10px_#B8924E]"
+              className="absolute top-[-2px] h-[5px] w-12 bg-gradient-to-r from-transparent via-gold to-transparent rounded-full shadow-[0_0_10px_var(--color-gold)]"
               whileInView={{ x: ["0vw", "calc(75vw - 48px)"] }}
               viewport={{ once: false }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />
             <motion.div
-              className="absolute top-[-2px] h-[5px] w-12 bg-gradient-to-r from-transparent via-emerald-400 to-transparent rounded-full shadow-[0_0_10px_#10b981]"
+              className="absolute top-[-2px] h-[5px] w-12 bg-gradient-to-r from-transparent via-emerald-400 to-transparent rounded-full shadow-[0_0_10px_var(--color-success)]"
               whileInView={{ x: ["0vw", "calc(75vw - 48px)"] }}
               viewport={{ once: false }}
               transition={{
@@ -295,7 +295,7 @@ export default function Flowchart() {
                       onClick={() => toggleExpand(idx)}
                       aria-label={`Toggle key activities for ${step.title} step`}
                       aria-expanded={isExpanded}
-                      className="w-full flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-slate-50 text-[11.5px] font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-navy-deep transition-all duration-300 focus-ring"
+                      className="w-full flex items-center justify-between min-h-[44px] py-3 px-3 rounded-lg hover:bg-slate-50 text-[11.5px] font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-navy-deep transition-all duration-300 focus-ring"
                     >
                       <span>Key Activities</span>
                       <ChevronDown

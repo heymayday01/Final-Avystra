@@ -34,7 +34,7 @@ function useIsIOS() {
  *  iOS Safari can fail to trigger whileInView for SVG <path> elements. */
 export function UnderlineSquiggle({
   className = "",
-  color = "#C5A059",
+  color = "var(--color-gold)",
   duration = 1.4,
   delay = 0.3,
 }: DoodleProps) {
@@ -77,7 +77,7 @@ export function UnderlineSquiggle({
  *  which can fail to trigger. */
 export function DoodleSparkle({
   className = "",
-  color = "#C5A059",
+  color = "var(--color-gold)",
   duration = 1.2,
   delay = 0,
 }: DoodleProps) {

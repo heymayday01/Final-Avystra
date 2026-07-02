@@ -106,6 +106,12 @@ export default function ProgramsSection() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
 
+  // Cache of card centers (offsetLeft + offsetWidth/2) so handleCarouselScroll
+  // doesn't have to read layout on every card on every scroll frame (which
+  // causes layout thrashing — ~12 forced reflows per frame during a swipe).
+  // Invalidated + rebuilt on mount, resize, and tab change.
+  const cardCentersRef = useRef<number[]>([]);
+
   const eyebrowRef = useGsapReveal<HTMLDivElement>("fade", {
     duration: 0.6,
   });
@@ -120,24 +126,45 @@ export default function ProgramsSection() {
   });
   const gridRef = useGsapCards<HTMLDivElement>();
 
+  // Rebuild the cached card centers. Reads layout once per call instead of
+  // once per card per scroll frame. Stable identity so it can be safely
+  // used as a dependency in useCallback/useEffect below.
+  const recalcCenters = useCallback(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const cards = carousel.querySelectorAll("[data-carousel-card]");
+    cardCentersRef.current = Array.from(cards).map((card) => {
+      const el = card as HTMLElement;
+      return el.offsetLeft + el.offsetWidth / 2;
+    });
+  }, []);
+
   // Track viewport for mobile carousel behavior
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
+    // Initial center cache — built once on mount after the carousel DOM
+    // is committed. Subsequent rebuilds happen on resize (below) and on
+    // tab change (the activeTab effect).
+    recalcCenters();
     // Debounce resize — fires up to once per 180ms during a drag-resize
     // instead of on every tick. Matches the createResizeHandler pattern
     // in src/hooks/useSmoothScroll.ts.
     let timer: ReturnType<typeof setTimeout> | null = null;
     const debouncedCheckMobile = () => {
       if (timer) clearTimeout(timer);
-      timer = setTimeout(checkMobile, 180);
+      timer = setTimeout(() => {
+        checkMobile();
+        // Layout shifted (cards may have reflowed) — rebuild the cache.
+        recalcCenters();
+      }, 180);
     };
     window.addEventListener("resize", debouncedCheckMobile);
     return () => {
       window.removeEventListener("resize", debouncedCheckMobile);
       if (timer) clearTimeout(timer);
     };
-  }, []);
+  }, [recalcCenters]);
 
   const categories = [
     { key: "ALL", label: "All Catalog" },
@@ -231,54 +258,58 @@ export default function ProgramsSection() {
     if (carouselRef.current) {
       carouselRef.current.scrollTo({ left: 0, behavior: "auto" });
     }
-  }, [activeTab]);
+    // Cards changed (different filteredPrograms) — invalidate + rebuild the
+    // cached centers so handleCarouselScroll sees fresh layout.
+    recalcCenters();
+  }, [activeTab, recalcCenters]);
 
   // Debounce timer ref — so we only commit the final active index after
   // scrolling settles (avoids flicker during smooth-scroll animations)
   const scrollDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Track which card is centered in the carousel on mobile.
-  // Reads activeIndexRef so the callback identity stays stable.
+  // Reads activeIndexRef + the cached card centers so the callback identity
+  // stays stable and we avoid per-frame layout reads during swipe.
   const handleCarouselScroll = useCallback(() => {
     if (!carouselRef.current || !isMobile) return;
-    const container = carouselRef.current;
-    const cards = container.querySelectorAll("[data-carousel-card]");
-    if (!cards.length) return;
+    const carousel = carouselRef.current;
 
-    const computeClosest = () => {
-      const containerCenter =
-        container.scrollLeft + container.clientWidth / 2;
-      let closestIndex = 0;
-      let closestDistance = Infinity;
-
-      cards.forEach((card, idx) => {
-        const cardEl = card as HTMLElement;
-        const cardCenter = cardEl.offsetLeft + cardEl.offsetWidth / 2;
-        const distance = Math.abs(containerCenter - cardCenter);
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestIndex = idx;
+    // Compute the closest card index from the cached centers (no per-card
+    // offsetLeft/offsetWidth reads here — those are batched in recalcCenters).
+    const computeClosestFromCache = () => {
+      const centers = cardCentersRef.current;
+      if (centers.length === 0) return activeIndexRef.current;
+      const scrollCenter = carousel.scrollLeft + carousel.offsetWidth / 2;
+      let closestIdx = 0;
+      let closestDist = Infinity;
+      centers.forEach((center, i) => {
+        const dist = Math.abs(center - scrollCenter);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closestIdx = i;
         }
       });
-      return closestIndex;
+      return closestIdx;
     };
 
     // Immediate update for responsive feel during drag
-    const closestIndex = computeClosest();
+    const closestIndex = computeClosestFromCache();
     if (closestIndex !== activeIndexRef.current) {
       setActiveCarouselIndex(closestIndex);
     }
 
-    // Debounced final commit — catches the settled position after smooth scroll
+    // Debounced final commit — recomputes centers in case layout shifted
+    // during the swipe, then catches the settled position after smooth scroll.
     if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
     scrollDebounceRef.current = setTimeout(() => {
-      const finalIndex = computeClosest();
+      recalcCenters();
+      const finalIndex = computeClosestFromCache();
       if (finalIndex !== activeIndexRef.current) {
         activeIndexRef.current = finalIndex;
         setActiveCarouselIndex(finalIndex);
       }
     }, 120);
-  }, [isMobile]);
+  }, [isMobile, recalcCenters]);
 
   // Smooth-scroll a specific card into the center of the carousel
   const scrollToCard = useCallback((index: number) => {
@@ -484,7 +515,7 @@ export default function ProgramsSection() {
                   <button
                     key={prog.id}
                     onClick={() => scrollToCard(index)}
-                    className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 group/dot focus-ring"
+                    className="min-w-[44px] min-h-[44px] flex items-center justify-center p-1.5 group/dot focus-ring"
                     role="tab"
                     aria-selected={isActive}
                     aria-label={`Go to program ${index + 1}: ${prog.title}`}

@@ -82,6 +82,10 @@ export default function OGIDiagnostic() {
   const [invalidField, setInvalidField] = useState<string | null>(null);
   const shakeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Timer for the auto-advance delay in handleAnswerSelect. Tracked so we
+  // can clear it on unmount (prevents setState-on-unmounted leak).
+  const answerAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Derived validity — used to show the checkmark icon (power2.out scale-in)
   // and the gold "valid" border as the user types.
   const isNameValid = name.trim().length >= 2;
@@ -172,8 +176,11 @@ export default function OGIDiagnostic() {
       [questions[currentQuestionIndex].id]: score,
     }));
 
-    // Auto-advance with 300ms visual delay
-    setTimeout(() => {
+    // Auto-advance with 300ms visual delay. Clear any pending timer first so
+    // rapid taps don't stack multiple advances, and track the timer in a ref
+    // so the unmount cleanup below can cancel it.
+    if (answerAdvanceTimerRef.current) clearTimeout(answerAdvanceTimerRef.current);
+    answerAdvanceTimerRef.current = setTimeout(() => {
       setSelectedOptionTemp(null);
       const nextIndex = currentQuestionIndex + 1;
 
@@ -188,6 +195,14 @@ export default function OGIDiagnostic() {
       }
     }, 300);
   };
+
+  // Cancel any pending auto-advance timer if the component unmounts before
+  // it fires (prevents setState-on-unmounted-component leak).
+  useEffect(() => {
+    return () => {
+      if (answerAdvanceTimerRef.current) clearTimeout(answerAdvanceTimerRef.current);
+    };
+  }, []);
 
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
@@ -1163,12 +1178,8 @@ export default function OGIDiagnostic() {
                           if (p.code === "T") PillarIcon = User;
 
                           return (
-                            <motion.div
+                            <div
                               key={p.code}
-                              initial={{ opacity: 0, y: 16 }}
-                              whileInView={{ opacity: 1, y: 0 }}
-                              viewport={{ once: true }}
-                              transition={{ duration: 0.6, ease: EASE, delay: 0.1 + idx * 0.08 }}
                               className={`p-6 rounded-2xl border transition-[border-color] duration-300 bg-gradient-to-br from-white to-slate-50/50 ${statusObj.statusStyle.split(" ")[2]} flex flex-col justify-between space-y-4`}
                             >
                               <div className="space-y-3">
@@ -1199,7 +1210,7 @@ export default function OGIDiagnostic() {
                                   {insight}
                                 </p>
                               </div>
-                            </motion.div>
+                            </div>
                           );
                         })}
                       </div>
@@ -1224,12 +1235,8 @@ export default function OGIDiagnostic() {
 
                           <ul className="space-y-4">
                             {keyFindings.map((finding, idx) => (
-                              <motion.li
+                              <li
                                 key={idx}
-                                initial={{ opacity: 0, x: -10 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, ease: EASE, delay: 0.15 + idx * 0.1 }}
                                 className="flex items-start gap-3"
                               >
                                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-rose-50 border border-rose-100 text-rose-600 text-xs font-mono font-bold flex items-center justify-center mt-0.5">
@@ -1238,7 +1245,7 @@ export default function OGIDiagnostic() {
                                 <p className="text-xs sm:text-sm text-slate-600 font-sans font-light leading-relaxed">
                                   {finding}
                                 </p>
-                              </motion.li>
+                              </li>
                             ))}
                           </ul>
                         </div>
@@ -1261,12 +1268,8 @@ export default function OGIDiagnostic() {
 
                           <ul className="space-y-4">
                             {priorityActions.map((action, idx) => (
-                              <motion.li
+                              <li
                                 key={idx}
-                                initial={{ opacity: 0, x: -10 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, ease: EASE, delay: 0.15 + idx * 0.1 }}
                                 className="flex items-start gap-3"
                               >
                                 <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-mono font-bold flex items-center justify-center mt-0.5">
@@ -1275,7 +1278,7 @@ export default function OGIDiagnostic() {
                                 <p className="text-xs sm:text-sm text-slate-600 font-sans font-light leading-relaxed">
                                   {action}
                                 </p>
-                              </motion.li>
+                              </li>
                             ))}
                           </ul>
                         </div>
@@ -1284,11 +1287,7 @@ export default function OGIDiagnostic() {
 
                     {/* 2.6 Contradiction Detector */}
                     {detectedContradictions.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 16 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, ease: EASE }}
+                      <div
                         className="bg-amber-50/40 border border-amber-100 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm"
                       >
                         <div className="space-y-1 text-left">
@@ -1328,7 +1327,7 @@ export default function OGIDiagnostic() {
                             </div>
                           ))}
                         </div>
-                      </motion.div>
+                      </div>
                     )}
 
                     {/* 2.7 Recommended Programs */}
@@ -1344,12 +1343,8 @@ export default function OGIDiagnostic() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {recommendedPrograms.map((prog, idx) => (
-                          <motion.div
+                          <div
                             key={idx}
-                            initial={{ opacity: 0, y: 16 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, ease: EASE, delay: idx * 0.1 }}
                             className="bg-gradient-to-br from-navy-deep to-navy-soft rounded-2xl p-6 text-white border border-blue-900/40 relative overflow-hidden shadow-md"
                           >
                             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
@@ -1380,7 +1375,7 @@ export default function OGIDiagnostic() {
                                 <ArrowRight className="w-3.5 h-3.5" />
                               </a>
                             </div>
-                          </motion.div>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -1459,7 +1454,7 @@ export default function OGIDiagnostic() {
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full text-[10.5px] font-mono tracking-wider font-bold uppercase mb-2">
                             Fast-Track Action
                           </span>
-                          <h4 className="font-display font-semibold text-lg text-[#0F5132]">
+                          <h4 className="font-display font-semibold text-lg text-[#065F46]">
                             Discuss on WhatsApp
                           </h4>
                           <p className="text-xs sm:text-sm text-emerald-800 font-sans font-light leading-relaxed">
@@ -1467,7 +1462,7 @@ export default function OGIDiagnostic() {
                           </p>
                         </div>
 
-                        <div className="bg-white/60 p-4 rounded-xl border border-emerald-100/85 text-xs font-mono text-[#0F5132] italic leading-relaxed">
+                        <div className="bg-white/60 p-4 rounded-xl border border-emerald-100/85 text-xs font-mono text-[#065F46] italic leading-relaxed">
                           &ldquo;Hi AVYSTRA, I completed the OGI. My name is {name} ({role}). My OGI score was {overallScorePct}/100. I'd like to discuss what this means for my organization.&rdquo;
                         </div>
                       </div>

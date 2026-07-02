@@ -135,14 +135,14 @@ export default function StatsFounder() {
           className="absolute top-[10%] right-[-10%] w-[500px] h-[500px] rounded-full"
           style={{
             background:
-              "radial-gradient(circle, rgba(197, 160, 89, 0.04) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(var(--gold-rgb), 0.04) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute bottom-[20%] left-[-15%] w-[550px] h-[550px] rounded-full"
           style={{
             background:
-              "radial-gradient(circle, rgba(147, 197, 253, 0.03) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(var(--info-rgb), 0.03) 0%, transparent 70%)",
           }}
         />
       </div>

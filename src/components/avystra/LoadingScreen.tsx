@@ -63,7 +63,8 @@ export default function LoadingScreen() {
           className="h-full rounded-full"
           style={{
             width: `${progress}%`,
-            background: "linear-gradient(90deg, #B8924E, #D4B26A)",
+            background:
+              "linear-gradient(90deg, var(--color-gold), var(--color-gold-light))",
             transition: "width 0.3s cubic-bezier(0.16,1,0.3,1)",
           }}
         />

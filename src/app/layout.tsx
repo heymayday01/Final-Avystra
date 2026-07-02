@@ -89,7 +89,26 @@ export default function RootLayout({
               url: "https://avystra.co.in",
               description:
                 "AVYSTRA helps Indian organizations close the gap between knowing and doing — through leadership development, manager effectiveness, and execution systems.",
-              areaServed: "Worldwide",
+              email: "info.avystra@gmail.com",
+              telephone: "+91-85960-59607",
+              address: {
+                "@type": "PostalAddress",
+                addressCountry: "IN",
+              },
+              founder: {
+                "@type": "Person",
+                name: "Kirankumar Pandey",
+              },
+              sameAs: [
+                "https://www.linkedin.com/company/avystra",
+                "https://www.instagram.com/avystra.consulting",
+                "https://www.facebook.com/avystra.consulting",
+              ],
+              priceRange: "$$",
+              areaServed: {
+                "@type": "Country",
+                name: "India",
+              },
             }),
           }}
         />
