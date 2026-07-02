@@ -160,3 +160,33 @@ https://nextjs.org/telemetry
 ✓ Compiled in 677ms
  GET / 200 in 109ms (compile: 6ms, render: 103ms)
  GET / 200 in 152ms (compile: 4ms, render: 148ms)
+ GET / 200 in 258ms (compile: 4ms, render: 253ms)
+ GET / 200 in 133ms (compile: 4ms, render: 129ms)
+ GET / 200 in 100ms (compile: 4ms, render: 96ms)
+ GET / 200 in 93ms (compile: 3ms, render: 90ms)
+ GET / 200 in 106ms (compile: 5ms, render: 101ms)
+ GET / 200 in 91ms (compile: 3ms, render: 88ms)
+ GET / 200 in 114ms (compile: 5ms, render: 110ms)
+ GET / 200 in 97ms (compile: 5ms, render: 92ms)
+ GET / 200 in 105ms (compile: 4ms, render: 101ms)
+ POST /api/ogi/save 200 in 2.0s (compile: 1972ms, render: 66ms)
+ GET / 200 in 134ms (compile: 5ms, render: 129ms)
+✓ Compiled in 330ms
+✓ Compiled in 304ms
+ GET / 200 in 303ms (compile: 52ms, render: 251ms)
+ GET / 200 in 151ms (compile: 4ms, render: 147ms)
+ GET / 200 in 136ms (compile: 3ms, render: 133ms)
+ GET /apple-touch-icon-precomposed.png 404 in 801ms (compile: 672ms, render: 129ms)
+ GET /apple-touch-icon.png 404 in 499ms (compile: 454ms, render: 45ms)
+ GET /apple-touch-icon-120x120-precomposed.png 404 in 60ms (compile: 14ms, render: 46ms)
+ GET /apple-touch-icon-120x120.png 404 in 81ms (compile: 34ms, render: 47ms)
+ GET /apple-touch-icon-precomposed.png 404 in 63ms (compile: 10ms, render: 52ms)
+ GET /apple-touch-icon.png 404 in 51ms (compile: 10ms, render: 41ms)
+ GET /apple-touch-icon-120x120-precomposed.png 404 in 53ms (compile: 10ms, render: 43ms)
+✓ Compiled in 294ms
+ GET /apple-touch-icon-120x120.png 404 in 268ms (compile: 197ms, render: 71ms)
+ GET /apple-touch-icon-precomposed.png 404 in 82ms (compile: 26ms, render: 56ms)
+ GET /apple-touch-icon.png 404 in 55ms (compile: 11ms, render: 44ms)
+✓ Compiled in 276ms
+ GET / 200 in 351ms (compile: 54ms, render: 297ms)
+ GET / 200 in 129ms (compile: 5ms, render: 124ms)
