@@ -418,7 +418,7 @@ body::-webkit-scrollbar {
    opacity + translateY only = GPU-cheap, no compositing layer, no iOS clipping.
    Delays account for 800ms loading screen (add 800ms to spec delays). */
 @keyframes hero-line-reveal {
-  from { opacity: 0; transform: translateY(32px); }
+  from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -429,7 +429,7 @@ body::-webkit-scrollbar {
 /* Generic fade-in for hero sub-elements (chips, card, CTAs, trust indicators).
    Uses animationDelay inline style for stagger. */
 @keyframes hero-fade-in {
-  from { opacity: 0; transform: translateY(15px); }
+  from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -438,29 +438,24 @@ body::-webkit-scrollbar {
   animation: hero-fade-in 0.7s cubic-bezier(0.16,1,0.3,1) forwards;
 }
 
-/* ═══ PREMIUM HERO ELEMENTS — RESTRAINED MOTION SYSTEM ═══
+/* ═══ PREMIUM HERO ELEMENTS — REFINED ═══
    All CSS-only (no Framer Motion, no blur). Uses opacity + transform only.
    No infinite autoplay animations (B2B consulting site, not a portfolio). */
 
-/* 1. Gold accent text — solid color (NOT background-clip gradient). The previous
-   -webkit-background-clip: text approach created a tight clip region that cut
-   the question mark descender on iOS. Solid color has no clip region = no
-   clipping, ever. The .text-gold Tailwind class (color: #B8924E) is used instead. */
-
-/* 2. Eyebrow badge — static (no infinite pulse). Hover-only glow. */
+/* 2. Eyebrow badge — subtle hover glow using design tokens */
 .hero-badge-premium {
-  transition: border-color 0.4s cubic-bezier(0.45, 0, 0.55, 1),
-              box-shadow 0.4s cubic-bezier(0.45, 0, 0.55, 1);
+  transition: border-color var(--dur-standard) var(--ease-sine),
+              box-shadow var(--dur-standard) var(--ease-out);
 }
 
 .hero-badge-premium:hover {
-  border-color: rgba(184, 146, 78, 0.5);
-  box-shadow: 0 0 24px 6px rgba(184, 146, 78, 0.15);
+  border-color: rgba(var(--gold-rgb), 0.5);
+  box-shadow: 0 0 24px 6px rgba(var(--gold-rgb), 0.12);
 }
 
 /* 3. Feature chips — staggered pop-in (scale + opacity) */
 @keyframes chip-pop {
-  from { opacity: 0; transform: scale(0.85) translateY(10px); }
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
@@ -469,27 +464,27 @@ body::-webkit-scrollbar {
   animation: chip-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* 4. Premium card — semi-transparent solid bg (no backdrop-filter).
-   backdrop-filter: blur(20px) was removed for performance — it forced a
-   per-frame backdrop re-sample on every scroll frame while Hero was in view. */
+/* 4. Premium card — clean, refined. No backdrop-filter (perf). Uses tokens. */
 .hero-card-premium {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(184, 146, 78, 0.15);
-  box-shadow: 0 8px 32px rgba(11, 27, 46, 0.04), 0 0 0 1px rgba(184, 146, 78, 0.10);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(var(--gold-rgb), 0.12);
+  box-shadow: 0 4px 24px -8px rgba(var(--navy-rgb), 0.06), 0 0 0 1px rgba(var(--gold-rgb), 0.08);
   animation: hero-fade-in 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
   opacity: 0;
-  transition: transform 0.4s cubic-bezier(0.45, 0, 0.55, 1),
-              box-shadow 0.4s cubic-bezier(0.45, 0, 0.55, 1);
+  transition: transform var(--dur-standard) var(--ease-out),
+              box-shadow var(--dur-standard) var(--ease-out),
+              border-color var(--dur-standard) var(--ease-sine);
 }
 
 .hero-card-premium:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 40px rgba(11, 27, 46, 0.06), 0 0 24px 2px rgba(184, 146, 78, 0.08);
+  transform: translateY(-3px);
+  border-color: rgba(var(--gold-rgb), 0.25);
+  box-shadow: 0 12px 36px -10px rgba(var(--navy-rgb), 0.08), 0 0 0 1px rgba(var(--gold-rgb), 0.12);
 }
 
 /* 5. Gold divider — draws in with scaleX (transform-only, no width animation) */
 .hero-divider {
-  background: linear-gradient(90deg, transparent, #B8924E, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
   width: 3rem;
   transform: scaleX(0);
   transform-origin: center;
@@ -502,44 +497,45 @@ body::-webkit-scrollbar {
   to   { transform: scaleX(1); opacity: 1; }
 }
 
-/* 6. Primary button — navy. Smooth background + shadow on hover.
-   expo-out easing (cubic-bezier(0.16,1,0.3,1)) for a premium feel. */
-.hero-btn-primary {
-  background: #0B1B2E;
+/* 6. Primary button — navy. Smooth, layered hover using design tokens. */
+.hero-btn-primary.hero-btn-primary {
+  background: var(--color-navy-deep);
   position: relative;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform var(--dur-standard) var(--ease-out),
+              background-color var(--dur-standard) var(--ease-sine),
+              box-shadow var(--dur-standard) var(--ease-out);
 }
 
-.hero-btn-primary:hover {
-  background: #16263D;
-  box-shadow: 0 12px 28px -8px rgba(11, 27, 46, 0.35);
+.hero-btn-primary.hero-btn-primary:hover {
+  background: var(--color-navy-soft);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -8px rgba(var(--navy-rgb), 0.4), var(--shadow-btn-glow);
 }
 
-.hero-btn-primary:active {
-  transform: scale(0.98);
+.hero-btn-primary.hero-btn-primary:active {
+  transform: translateY(0) scale(0.98);
 }
 
 /* 7. Secondary button — outline. Smooth border + bg on hover. */
-.hero-btn-secondary {
+.hero-btn-secondary.hero-btn-secondary {
   background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(203, 213, 225, 0.8);
+  border: 1px solid rgba(203, 213, 225, 0.7);
   position: relative;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform var(--dur-standard) var(--ease-out),
+              background-color var(--dur-standard) var(--ease-sine),
+              border-color var(--dur-standard) var(--ease-sine),
+              box-shadow var(--dur-standard) var(--ease-out);
 }
 
-.hero-btn-secondary:hover {
+.hero-btn-secondary.hero-btn-secondary:hover {
   background: white;
-  border-color: rgba(184, 146, 78, 0.35);
-  box-shadow: 0 8px 20px -8px rgba(184, 146, 78, 0.12);
+  transform: translateY(-2px);
+  border-color: rgba(var(--gold-rgb), 0.35);
+  box-shadow: 0 8px 24px -8px rgba(var(--gold-rgb), 0.15);
 }
 
-.hero-btn-secondary:active {
-  transform: scale(0.98);
+.hero-btn-secondary.hero-btn-secondary:active {
+  transform: translateY(0) scale(0.98);
 }
 
 @keyframes marquee {
