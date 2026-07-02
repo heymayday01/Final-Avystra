@@ -86,7 +86,7 @@ export default function TestimonialsSection() {
 
         {/* Testimonials Grid Row */}
         <div
-          className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 gsap-stagger-container"
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8"
         >
           {testimonials.map((testimonial) => (
             <div

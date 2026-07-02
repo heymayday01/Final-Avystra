@@ -2,7 +2,6 @@
 
 import React, { useRef, useEffect, useCallback, useState, useSyncExternalStore } from "react";
 import { ArrowRight, UserPlus, TrendingUp, Building2, Banknote, ClipboardList } from "lucide-react";
-import { gsap } from "@/lib/gsap";
 import { UnderlineSquiggle } from "./DoodleWidgets";
 import { smoothScrollTo } from "@/lib/scroll";
 
@@ -27,32 +26,19 @@ export default function Hero() {
   const [isVisible, setIsVisible] = useState(true);
 
   // Single lightweight scroll listener for marquee visibility only.
-  // The mouse spotlight (useMotionValue + useSpring + per-mousemove
-  // getBoundingClientRect) was removed for performance — it forced a
-  // sync layout read on every mousemove + 2 always-running springs on
-  // a 600px GPU layer. The ambient background orbs provide enough depth.
+  // The mouse spotlight was removed for performance — ambient orbs
+  // provide enough depth.
 
   useEffect(() => {
-    if (reducedMotion) return;
-
-    // GSAP entrance for the marquee bar — single one-shot reveal.
-    // power2.out, 0.55s (under the 600ms ceiling), fires once.
-    const ctx = gsap.context(() => {
-      const marqueeBar = sectionRef.current?.querySelector(".gsap-hero-fade");
-      if (marqueeBar) {
-        gsap.from(marqueeBar, {
-          opacity: 0,
-          y: 20,
-          duration: 0.55,
-          ease: "power2.out",
-          delay: 1.2,
-          clearProps: "all",
-        });
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [reducedMotion]);
+    const handleScroll = () => {
+      const rect = sectionRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setIsVisible(rect.bottom > 0 && rect.top < window.innerHeight);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // CTA micro-interactions are handled purely in CSS (.hero-btn-primary
   // / .hero-btn-secondary) — scale(1.02) + gold glow on hover with
@@ -213,7 +199,7 @@ export default function Hero() {
       </div>
 
       {/* Marquee Ticker */}
-      <div className="mt-8 w-full border-y border-navy-deep/10 bg-navy-deep py-4 flex items-center relative z-10 overflow-hidden gsap-hero-fade">
+      <div className="mt-8 w-full border-y border-navy-deep/10 bg-navy-deep py-4 flex items-center relative z-10 overflow-hidden hero-fade-in" style={{ animationDelay: "1.0s" }}>
         <div
           className="animate-marquee-slow flex whitespace-nowrap gap-x-24 select-none"
           style={{

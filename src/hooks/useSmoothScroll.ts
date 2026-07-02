@@ -10,7 +10,9 @@ function getPrefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-/** Detect touch/mobile devices — Lenis is desktop-only for smooth wheel */
+/** Detect touch/mobile devices — Lenis is desktop-only for smooth wheel.
+ *  On touch devices, native scrolling is already smooth and Lenis's
+ *  touch handling can interfere with native momentum scrolling. */
 function isTouchDevice(): boolean {
   if (typeof window === "undefined") return false;
   return (
@@ -20,7 +22,7 @@ function isTouchDevice(): boolean {
   );
 }
 
-/** Debounced resize handler factory — used by both mobile + desktop branches. */
+/** Debounced resize handler factory. */
 function createResizeHandler(callback: () => void) {
   let timer: ReturnType<typeof setTimeout> | null = null;
   const handler = () => {
@@ -30,7 +32,7 @@ function createResizeHandler(callback: () => void) {
   return { handler, cleanup: () => { if (timer) clearTimeout(timer); } };
 }
 
-/** Hash-link click handler factory — returns a handler + cleanup. */
+/** Hash-link click handler factory — intercepts <a href="#..."> clicks. */
 function createHashClickHandler(
   scrollFn: (targetId: string) => void
 ) {
@@ -48,7 +50,7 @@ function createHashClickHandler(
   return handler;
 }
 
-/** Native smooth scroll to an element ID (mobile fallback). */
+/** Native smooth scroll to an element ID (mobile + reduced-motion fallback). */
 function nativeScrollToId(targetId: string, offset = -100) {
   if (targetId === "") {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -64,36 +66,32 @@ function nativeScrollToId(targetId: string, offset = -100) {
 /**
  * Unified smooth-scroll orchestration for the entire site.
  *
- * Architecture:
- * - Desktop: Lenis owns the scroll position (wheel → smoothed scroll).
- *   Lenis drives GSAP's ticker (single rAF loop). ScrollTrigger reads
- *   from Lenis via `scrollerProxy` so triggers stay in sync.
+ * Architecture (simplified for reliability + performance):
+ * - Desktop (non-touch): Lenis owns the scroll position (wheel → smoothed
+ *   scroll). Lenis drives GSAP's ticker (single rAF loop). ScrollTrigger
+ *   reads from Lenis via `scrollerProxy` so triggers stay in sync.
  * - Mobile/Touch: Lenis is NOT initialized. Native touch scrolling works
- *   exactly as the browser intends (no interference, no jank). ScrollTrigger
- *   reads from native scroll. Hash-link clicks use native smooth scroll.
- * - Reduced motion: skip Lenis entirely, just reveal content.
+ *   exactly as the browser intends — no interference, no jank. A lenis-like
+ *   shim is installed so smoothScrollTo() + Header scroll tracking work.
+ * - Reduced motion: skip Lenis entirely, just install the shim for
+ *   smoothScrollTo() to work.
  * - Hash-link clicks are intercepted on ALL devices for consistent
  *   anchor navigation with header-offset.
+ *
+ * NOTE: The previous version installed scrollerProxy on touch devices too,
+ * which broke native touch momentum scrolling on some browsers. Now
+ * scrollerProxy is desktop-only.
  */
 export function useSmoothScroll() {
   useEffect(() => {
     const prefersReducedMotion = getPrefersReducedMotion();
     const isTouch = isTouchDevice();
 
-    // ── Reduced motion: skip Lenis entirely, just reveal content ──
-    if (prefersReducedMotion) {
-      gsap.set(
-        ".gsap-stagger-card, .pillar-card, .gsap-hero-fade",
-        { opacity: 1, y: 0, scaleX: 1, scale: 1, filter: "none", rotateX: 0 }
-      );
-      return;
-    }
-
-    // ── Mobile/Touch: skip Lenis, use native scroll ──
-    // Lenis's scrollerProxy breaks native touch scrolling on Chrome mobile.
-    // On touch devices we let the browser handle scrolling natively (which
-    // is already smooth on mobile) and just wire up ScrollTrigger normally.
-    if (isTouch) {
+    // ── Mobile/Touch OR Reduced motion: native scroll + lenis shim ──
+    // No Lenis instance, no scrollerProxy. Native touch scrolling works
+    // perfectly. The shim lets smoothScrollTo() + Header scroll tracking
+    // work without a real Lenis instance.
+    if (isTouch || prefersReducedMotion) {
       const hashHandler = createHashClickHandler((targetId) =>
         nativeScrollToId(targetId)
       );
@@ -103,13 +101,10 @@ export function useSmoothScroll() {
         createResizeHandler(() => ScrollTrigger.refresh());
       window.addEventListener("resize", resizeHandler, { passive: true });
 
-      // Provide a lenis-like shim so smoothScrollTo() works on mobile.
-      // The `on("scroll", cb)` hook actually attaches a real window scroll
-      // listener so consumers like Header can track scroll position on touch
-      // devices (without this, the header never transitions to its compact
-      // "scrolled" state on mobile).
+      // Lenis-like shim so smoothScrollTo() + getLenis().on("scroll") work.
+      // The `on("scroll", cb)` attaches a real window scroll listener so
+      // Header can track scroll position on touch devices.
       const scrollListeners: Array<() => void> = [];
-      const velocityListeners: Array<() => void> = [];
       (window as unknown as { lenis: unknown }).lenis = {
         scrollTo: (
           target: number | HTMLElement,
@@ -127,8 +122,6 @@ export function useSmoothScroll() {
           if (event === "scroll") {
             scrollListeners.push(cb);
             window.addEventListener("scroll", cb, { passive: true });
-          } else if (event === "velocity") {
-            velocityListeners.push(cb);
           }
         },
         off: (event: string, cb: () => void) => {
@@ -136,16 +129,12 @@ export function useSmoothScroll() {
             const idx = scrollListeners.indexOf(cb);
             if (idx >= 0) scrollListeners.splice(idx, 1);
             window.removeEventListener("scroll", cb);
-          } else if (event === "velocity") {
-            const idx = velocityListeners.indexOf(cb);
-            if (idx >= 0) velocityListeners.splice(idx, 1);
           }
         },
         resize: () => {},
         destroy: () => {
           scrollListeners.forEach((cb) => window.removeEventListener("scroll", cb));
           scrollListeners.length = 0;
-          velocityListeners.length = 0;
         },
         scroll: 0,
         velocity: 0,
@@ -167,9 +156,8 @@ export function useSmoothScroll() {
     // ═══ DESKTOP ONLY: Full Lenis + scrollerProxy setup ═══
 
     const lenis = new Lenis({
-      // lerp 0.1 = snappy but smooth. Lower values (0.08) felt laggy on long
-      // pages; 0.1 responds quickly while still smoothing trackpad jitter.
-      lerp: 0.1,
+      // lerp 0.09 = smooth but responsive. Lower = smoother but laggier.
+      lerp: 0.09,
       smoothWheel: true,
       syncTouch: false,
       infinite: false,
@@ -177,7 +165,7 @@ export function useSmoothScroll() {
       wheelMultiplier: 1,
       touchMultiplier: 1.5,
       // Prevent Lenis from intercepting clicks on elements that need native
-      // behavior (e.g. links with target=_blank, file downloads).
+      // behavior (e.g. links with target=_blank, file downloads, form fields).
       prevent: (node) =>
         node.closest("[data-lenis-prevent]") !== null ||
         node.tagName === "VIDEO" ||
@@ -188,7 +176,9 @@ export function useSmoothScroll() {
 
     (window as unknown as { lenis: typeof lenis }).lenis = lenis;
 
-    // Wire Lenis as the ScrollTrigger scroller (desktop only)
+    // Wire Lenis as the ScrollTrigger scroller (desktop only).
+    // This is the key fix: scrollerProxy is NOT installed on touch devices,
+    // which was breaking native touch momentum scrolling.
     ScrollTrigger.scrollerProxy(document.body, {
       scrollTop(value) {
         if (arguments.length && value !== undefined) {
@@ -208,7 +198,6 @@ export function useSmoothScroll() {
     });
 
     // Single scroll listener — Lenis drives ScrollTrigger updates.
-    // Throttle via Lenis's own rAF (no separate rAF needed here).
     lenis.on("scroll", () => {
       ScrollTrigger.update();
     });
@@ -221,8 +210,7 @@ export function useSmoothScroll() {
     gsap.ticker.add(tickerCallback);
     gsap.ticker.lagSmoothing(0);
 
-    // Refresh Lenis dimensions when ScrollTrigger refreshes (e.g. on resize
-    // or when images load and change layout).
+    // Refresh Lenis dimensions when ScrollTrigger refreshes.
     const onRefresh = () => lenis.resize();
     ScrollTrigger.addEventListener("refresh", onRefresh);
 

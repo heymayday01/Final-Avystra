@@ -5,7 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { ScrollTrigger } from "@/lib/gsap";
 import AvystraLogo from "./AvystraLogo";
-import { smoothScrollTo, scrollToTop, getLenis } from "@/lib/scroll";
+import { smoothScrollTo, scrollToTop } from "@/lib/scroll";
 
 interface NavItem {
   name: string;
@@ -23,22 +23,19 @@ export default function Header() {
   const activeSectionRef = useRef("bottlenecks");
 
   useEffect(() => {
-    // ── Header "scrolled" state via Lenis scroll event (single subscription) ──
+    // ── Header "scrolled" state — native scroll listener (works on all devices) ──
+    // A single passive window scroll listener is cheaper and more reliable than
+    // subscribing to Lenis (which may not be ready yet on mobile, requiring a
+    // fallback anyway). Lenis on desktop writes to the native scroll position,
+    // so this listener fires on both desktop + mobile.
     const handleScrollState = () => {
       const isScrolled = window.scrollY > 15;
       setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
     };
     handleScrollState();
+    window.addEventListener("scroll", handleScrollState, { passive: true });
 
-    const lenisInstance = getLenis();
-    if (lenisInstance) {
-      lenisInstance.on("scroll", handleScrollState);
-    } else {
-      // Fallback: native passive listener if Lenis isn't ready yet
-      window.addEventListener("scroll", handleScrollState, { passive: true });
-    }
-
-    // ── Active-section tracking via ScrollTrigger (synced with Lenis) ──
+    // ── Active-section tracking via ScrollTrigger (synced with Lenis on desktop) ──
     const sections = ["bottlenecks", "process", "programs", "team", "consult"];
     const triggers: ScrollTrigger[] = [];
 
@@ -55,18 +52,6 @@ export default function Header() {
               setActiveSection(id);
             }
           },
-          onEnter: () => {
-            if (activeSectionRef.current !== id) {
-              activeSectionRef.current = id;
-              setActiveSection(id);
-            }
-          },
-          onEnterBack: () => {
-            if (activeSectionRef.current !== id) {
-              activeSectionRef.current = id;
-              setActiveSection(id);
-            }
-          },
         });
         triggers.push(trigger);
       }
@@ -76,11 +61,7 @@ export default function Header() {
     ScrollTrigger.refresh();
 
     return () => {
-      if (lenisInstance) {
-        lenisInstance.off("scroll", handleScrollState);
-      } else {
-        window.removeEventListener("scroll", handleScrollState);
-      }
+      window.removeEventListener("scroll", handleScrollState);
       triggers.forEach((t) => t.kill());
     };
   }, []);

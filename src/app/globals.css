@@ -206,18 +206,19 @@
   color: #0B1B2E;
 }
 
-/* ─── SCROLLBAR ─────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: rgba(11, 27, 46, 0.04); }
-::-webkit-scrollbar-thumb {
-  background: rgba(184, 146, 78, 0.35);
-  border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: content-box;
+/* ─── SCROLLBAR — hidden globally, scroll still functional ───
+   The site uses Lenis (desktop) / native (mobile) smooth scroll, so the
+   browser scrollbar is hidden for a cleaner, app-like feel. Scroll is
+   preserved via overflow:auto/scroll on html/body. */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(184, 146, 78, 0.55);
-  background-clip: content-box;
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
@@ -397,12 +398,6 @@
 .animate-glow-blob-reverse {
   animation: glow-blob-reverse 18s ease-in-out infinite;
   will-change: transform;
-}
-
-.gsap-hero-fade,
-.gsap-stagger-card {
-  transform: translateZ(0);
-  will-change: transform, opacity;
 }
 
 /* NOTE: .pillar-card intentionally does NOT have will-change or translateZ.
@@ -754,10 +749,10 @@ button, a, [role="button"], input, select, textarea {
   touch-action: manipulation;
 }
 
-/* 12. iOS overscroll — prevent the whole page from bouncing (rubber-band
-   effect) which can cause layout shifts. */
+/* 12. iOS overscroll — use 'contain' (not 'none') so touch scrolling stays
+   responsive. 'none' can break touch momentum on some mobile browsers. */
 html, body {
-  overscroll-behavior: none;
+  overscroll-behavior: contain;
 }
 
 /* 13. iOS momentum scrolling — ensure smooth scrolling on overflow containers. */

@@ -43,3 +43,25 @@ https://nextjs.org/telemetry
  GET / 200 in 148ms (compile: 5ms, render: 143ms)
  GET / 200 in 140ms (compile: 4ms, render: 136ms)
  GET / 200 in 166ms (compile: 4ms, render: 162ms)
+ GET / 200 in 200ms (compile: 4ms, render: 196ms)
+ GET / 200 in 109ms (compile: 3ms, render: 106ms)
+ GET / 200 in 92ms (compile: 3ms, render: 89ms)
+✓ Compiled in 652ms
+ GET / 200 in 339ms (compile: 59ms, render: 280ms)
+✓ Compiled in 278ms
+ GET / 200 in 409ms (compile: 52ms, render: 357ms)
+✓ Compiled in 780ms
+✓ Compiled in 636ms
+ GET / 200 in 146ms (compile: 5ms, render: 141ms)
+✓ Compiled in 211ms
+✓ Compiled in 194ms
+ GET / 200 in 321ms (compile: 48ms, render: 273ms)
+✓ Compiled in 636ms
+✓ Compiled in 230ms
+✓ Compiled in 222ms
+✓ Compiled in 202ms
+✓ Compiled in 215ms
+ GET / 200 in 331ms (compile: 54ms, render: 277ms)
+ GET / 200 in 144ms (compile: 6ms, render: 138ms)
+ GET / 200 in 105ms (compile: 3ms, render: 101ms)
+ GET / 200 in 99ms (compile: 4ms, render: 95ms)

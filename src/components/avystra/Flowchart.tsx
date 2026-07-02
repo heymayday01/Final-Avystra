@@ -187,14 +187,14 @@ export default function Flowchart() {
           <div className="absolute top-[90px] left-[12.5%] right-[12.5%] h-px bg-slate-200 pointer-events-none hidden lg:block z-0">
             <motion.div
               className="absolute top-[-2px] h-[5px] w-12 bg-gradient-to-r from-transparent via-gold to-transparent rounded-full shadow-[0_0_10px_#B8924E]"
-              style={{ willChange: "transform" }}
-              animate={{ x: ["0vw", "calc(75vw - 48px)"] }}
+              whileInView={{ x: ["0vw", "calc(75vw - 48px)"] }}
+              viewport={{ once: false }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />
             <motion.div
               className="absolute top-[-2px] h-[5px] w-12 bg-gradient-to-r from-transparent via-emerald-400 to-transparent rounded-full shadow-[0_0_10px_#10b981]"
-              style={{ willChange: "transform" }}
-              animate={{ x: ["0vw", "calc(75vw - 48px)"] }}
+              whileInView={{ x: ["0vw", "calc(75vw - 48px)"] }}
+              viewport={{ once: false }}
               transition={{
                 duration: 3,
                 repeat: Infinity,
@@ -235,14 +235,16 @@ export default function Flowchart() {
                         {idx === 0 && (
                           <motion.div
                             className="absolute inset-0 rounded-full border border-gold/20 pointer-events-none"
-                            animate={{ scale: [1, 1.25, 1], opacity: [0.8, 0, 0.8] }}
+                            whileInView={{ scale: [1, 1.25, 1], opacity: [0.8, 0, 0.8] }}
+                            viewport={{ once: false }}
                             transition={{ duration: 2, repeat: Infinity }}
                           />
                         )}
                         {idx === 1 && isHovered && (
                           <motion.div
                             className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-gold rounded-full flex items-center justify-center"
-                            animate={{ scale: [1, 1.4, 1] }}
+                            whileInView={{ scale: [1, 1.4, 1] }}
+                            viewport={{ once: false }}
                             transition={{ duration: 1, repeat: Infinity }}
                           />
                         )}

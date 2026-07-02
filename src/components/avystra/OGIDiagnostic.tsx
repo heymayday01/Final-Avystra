@@ -340,11 +340,11 @@ export default function OGIDiagnostic() {
       <div className="absolute top-0 right-1/4 w-[400px] h-[400px] rounded-full bg-[#C5A059]/[0.02] blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-blue-500/[0.01] blur-[120px] pointer-events-none" />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 gsap-stagger-container">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Content Box */}
         <div
           ref={contentBoxRef}
-          className="bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-3xl overflow-hidden min-h-[420px] flex flex-col justify-between gsap-stagger-card"
+          className="bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-3xl overflow-hidden min-h-[420px] flex flex-col justify-between"
         >
           <AnimatePresence mode="wait">
             {/* INTRO SCREEN */}
