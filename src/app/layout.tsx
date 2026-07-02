@@ -61,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en-IN" suppressHydrationWarning>
       <head>
         {/* Add .js class BEFORE paint so the reveal system's hidden initial
             state only applies when JS is enabled. No-JS users see content

@@ -22,17 +22,17 @@ export default function Hero() {
   // GSAP ScrollTrigger reveals for hero entrance (eyebrow / chips / card /
   // CTAs / trust / marquee). The H1 heading stays on CSS animations
   // (hero-line-1/2/3) per design — GSAP is not applied to it.
-  // Timing (all delays from pageReady at T=1.3s):
+  // Timing (all delays from pageReady at T=0.8s):
   // H1 lines: 0.1/0.25/0.4s delays, 0.5s each (finishes at ~0.9s)
-  // Eyebrow fires at 0s (above heading). Chips at 0.5s (overlaps H1 line 3).
-  // Card at 0.7s. CTAs at 0.9s. Trust at 1.1s. Marquee at 1.2s.
-  // Tight sequence, flows top-to-bottom without gaps.
-  const eyebrowRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0, duration: 0.5 });
-  const chipsRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0.5, duration: 0.45 });
-  const cardRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0.7, duration: 0.5 });
-  const ctaRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0.9, duration: 0.45 });
-  const trustRef = useGsapReveal<HTMLDivElement>("fade", { delay: 1.1, duration: 0.45 });
-  const marqueeRef = useGsapReveal<HTMLDivElement>("fade", { delay: 1.2, duration: 0.45 });
+  // Eyebrow fires at 0s (above heading, simultaneous with H1 line 1).
+  // Chips at 0.35s (overlaps H1 line 2-3). Card at 0.5s. CTAs at 0.65s.
+  // Trust at 0.8s. Marquee at 0.9s — flows seamlessly, no dead air.
+  const eyebrowRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0, duration: 0.45 });
+  const chipsRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0.35, duration: 0.4 });
+  const cardRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0.5, duration: 0.45 });
+  const ctaRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0.65, duration: 0.4 });
+  const trustRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0.8, duration: 0.4 });
+  const marqueeRef = useGsapReveal<HTMLDivElement>("fade", { delay: 0.9, duration: 0.4 });
 
   const reducedMotion = useSyncExternalStore(
     reducedMotionSubscribe,

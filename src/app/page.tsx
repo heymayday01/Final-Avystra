@@ -68,19 +68,17 @@ export default function Home() {
       lenisInstance.scrollTo(0, { immediate: true });
     }
 
-    // Hide loading screen at 800ms, then mark page ready at 1300ms
-    // (after the 500ms fade transition completes).
-    const loadTimer = setTimeout(() => setIsLoading(false), 800);
-    const readyTimer = setTimeout(() => {
+    // Hide loading screen AND mark page ready at 600ms — simultaneously.
+    // No ghost screen: loading screen starts fading (0.4s transition)
+    // while hero animations begin immediately — no gap.
+    const loadTimer = setTimeout(() => {
+      setIsLoading(false);
       setPageReady(true);
-      // Add .page-ready class to <html> so Hero CSS animations can start
       document.documentElement.classList.add("page-ready");
-      // Double-check scroll is at top (Lenis may have moved it)
       window.scrollTo(0, 0);
-    }, 1300);
+    }, 600);
     return () => {
       clearTimeout(loadTimer);
-      clearTimeout(readyTimer);
     };
   }, []);
 
@@ -106,7 +104,7 @@ export default function Home() {
           shift from 0px to full page height, briefly showing a scrollbar. */}
       <div
         className={isLoading ? "opacity-0 pointer-events-none" : "opacity-100"}
-        style={{ transition: "opacity 0.5s ease" }}
+        style={{ transition: "opacity 0.4s ease" }}
       >
           {/* ═══ LIVELY AMBIENT BACKGROUND — ENHANCED + GPU-SAFE ═══
               4 drifting orbs with GPU-only animations (transform/opacity).
