@@ -380,3 +380,22 @@ Import traces:
  GET / 200 in 130ms (compile: 4ms, render: 126ms)
  GET / 200 in 110ms (compile: 4ms, render: 106ms)
  GET / 200 in 99ms (compile: 3ms, render: 95ms)
+ GET / 200 in 189ms (compile: 3ms, render: 186ms)
+ GET / 200 in 102ms (compile: 5ms, render: 97ms)
+ GET / 200 in 108ms (compile: 3ms, render: 105ms)
+ GET / 200 in 110ms (compile: 3ms, render: 107ms)
+ GET / 200 in 106ms (compile: 4ms, render: 102ms)
+ GET / 200 in 96ms (compile: 3ms, render: 93ms)
+✓ Compiled in 744ms
+✓ Compiled in 592ms
+✓ Compiled in 645ms
+ GET / 200 in 102ms (compile: 4ms, render: 98ms)
+ GET / 200 in 122ms (compile: 10ms, render: 112ms)
+ GET / 200 in 111ms (compile: 4ms, render: 107ms)
+ GET / 200 in 102ms (compile: 3ms, render: 99ms)
+ GET / 200 in 98ms (compile: 3ms, render: 95ms)
+ GET / 200 in 104ms (compile: 3ms, render: 101ms)
+ GET / 200 in 108ms (compile: 4ms, render: 104ms)
+ GET / 200 in 103ms (compile: 4ms, render: 100ms)
+ GET / 200 in 332ms (compile: 5ms, render: 327ms)
+ GET / 200 in 216ms (compile: 7ms, render: 208ms)

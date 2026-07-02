@@ -116,18 +116,21 @@
   /* Floating elements: header, modals */
   --shadow-floating: 0 8px 32px -8px rgba(var(--navy-rgb), 0.18);
 
-  /* ── MOTION TOKENS ── */
-  /* Durations */
-  --dur-micro: 150ms;      /* Hover, state change */
-  --dur-standard: 280ms;   /* Reveal, toggle */
-  --dur-entrance: 600ms;   /* Scroll-triggered entrance */
-  --dur-ambient: 3000ms;   /* Pulse, float */
-  /* Easings */
+  /* ── MOTION TOKENS (tuned for premium smoothness) ── */
+  /* Durations — shorter = snappier but still smooth. Previous 600ms felt laggy. */
+  --dur-micro: 120ms;      /* Hover, state change — instant feel */
+  --dur-standard: 240ms;   /* Reveal, toggle — quick but visible */
+  --dur-entrance: 480ms;   /* Scroll-triggered entrance — premium, not slow */
+  --dur-ambient: 3000ms;   /* Pulse, float — ambient loops */
+  /* Easings — expo-out for entrances (decelerate), sine for hovers (symmetric) */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);           /* Expo-out — entrances */
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);       /* Material standard — toggles */
   --ease-sine: cubic-bezier(0.45, 0, 0.55, 1);         /* Sine in-out — hovers */
-  /* Stagger */
-  --stagger: 80ms;         /* Per-child delay */
+  /* Stagger — 60ms is premium-feel (80ms was slightly too slow) */
+  --stagger: 60ms;         /* Per-child delay */
+  /* Reveal distances — smaller = less jumpy, more refined */
+  --reveal-distance: 16px; /* Block reveal translateY (was 24px) */
+  --word-distance: 12px;   /* Word reveal translateY (was 20px) */
 
   /* ── BACKWARD-COMPATIBLE ALIASES (map old token names → new) ── */
   /* These exist so existing var() references don't break during migration.
@@ -310,7 +313,7 @@ body::-webkit-scrollbar {
 
 .js.page-ready .reveal {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(var(--reveal-distance));
   transition: opacity var(--dur-entrance) var(--ease-out),
               transform var(--dur-entrance) var(--ease-out);
   transition-delay: var(--reveal-delay, 0ms);
@@ -320,6 +323,9 @@ body::-webkit-scrollbar {
 .js.page-ready .reveal.is-revealed {
   opacity: 1;
   transform: none;
+  /* Remove will-change after animation completes to free GPU layers.
+     1s delay = enough for transition (480ms) + stagger to finish. */
+  transition-delay: 0ms;
 }
 
 /* Safety fallback: force visible after 30s (only if observer truly fails) */
@@ -350,7 +356,7 @@ body::-webkit-scrollbar {
 .js.page-ready .reveal-words .word {
   display: inline-block;
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(var(--word-distance));
   transition: opacity var(--dur-entrance) var(--ease-out),
               transform var(--dur-entrance) var(--ease-out);
   transition-delay: calc(var(--word-index, 0) * var(--stagger));
