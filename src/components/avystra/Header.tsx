@@ -263,7 +263,7 @@ export default function Header() {
                   {isActive && !shouldReduceMotion && (
                     <motion.span
                       layoutId="nav-active-pill"
-                      className="absolute inset-0 bg-white/80 shadow-sm rounded-full -z-10"
+                      className="absolute inset-0 bg-white/80 rounded-full -z-10"
                       transition={navActivePillTransition}
                     />
                   )}
@@ -271,7 +271,7 @@ export default function Header() {
                   {hoveredIndex === i && !isActive && !shouldReduceMotion && (
                     <motion.span
                       layoutId="nav-hover-pill"
-                      className="absolute inset-0 bg-white/50 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04)] rounded-full -z-10"
+                      className="absolute inset-0 bg-white/50 rounded-full -z-10"
                       transition={{ type: "spring", stiffness: 450, damping: 28 }}
                     />
                   )}
