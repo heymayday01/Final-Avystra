@@ -153,7 +153,7 @@ export default function Home() {
           <Header />
 
           {/* Hero Block Container */}
-          <main className="relative z-10 pb-4 flex-1">
+          <main id="main" className="relative z-10 pb-4 flex-1">
             {/* Intro Hero with gold back-glowing radial gradients */}
             <Hero />
 

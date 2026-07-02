@@ -25,19 +25,18 @@ export default function Hero() {
   );
   const [isVisible, setIsVisible] = useState(true);
 
-  // Single lightweight scroll listener for marquee visibility only.
-  // The mouse spotlight was removed for performance — ambient orbs
-  // provide enough depth.
-
+  // IntersectionObserver for marquee visibility — replaces the per-scroll
+  // getBoundingClientRect() call which forced a sync layout read on every
+  // frame. IO is zero-cost when the section is offscreen.
   useEffect(() => {
-    const handleScroll = () => {
-      const rect = sectionRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      setIsVisible(rect.bottom > 0 && rect.top < window.innerHeight);
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   // CTA micro-interactions are handled purely in CSS (.hero-btn-primary
@@ -71,7 +70,7 @@ export default function Hero() {
         <div className="flex flex-col items-center text-center w-full">
 
           {/* Eyebrow badge — premium with pulsing glow ring */}
-          <div className="mb-6 sm:mb-8 hero-fade-in" style={{ animationDelay: "0.1s" }}>
+          <div className="mb-6 sm:mb-8 hero-fade-in" style={{ animationDelay: "1.2s" }}>
             <span className="hero-badge-premium inline-flex items-center gap-2 rounded-full border border-gold/30 bg-white/60 backdrop-blur-sm px-4 py-1.5 shadow-sm">
               <span className="relative flex h-1.5 w-1.5">
                 {!reducedMotion && (
@@ -119,7 +118,7 @@ export default function Hero() {
               <div
                 key={idx}
                 className="hero-chip flex items-center gap-2 px-3.5 py-2 rounded-full border border-slate-200/80 bg-white/70 shadow-sm hover:border-gold/30 hover:bg-white transition-[border-color,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                style={{ animationDelay: `${0.6 + idx * 0.08}s` }}
+                style={{ animationDelay: `${1.7 + idx * 0.08}s` }}
               >
                 <Icon className="w-3.5 h-3.5 text-gold/70 group-hover:text-gold shrink-0" />
                 <span className="text-navy-deep/80 font-sans text-[11px] sm:text-[12px] font-semibold whitespace-nowrap">
@@ -132,7 +131,7 @@ export default function Hero() {
           {/* Bridging content block — premium glass card with gold glow */}
           <div
             className="hero-card-premium mb-8 sm:mb-10 max-w-2xl mx-auto rounded-2xl px-6 py-7 sm:px-10 sm:py-9 text-center"
-            style={{ animationDelay: "0.8s" }}
+            style={{ animationDelay: "1.7s" }}
           >
             <p className="text-navy-deep font-sans text-base sm:text-lg font-bold leading-relaxed mb-4">
               So why does it still feel like the company slows down whenever you step away?
@@ -154,7 +153,7 @@ export default function Hero() {
           {/* CTAs — premium with gold sweep */}
           <div
             className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-10 sm:mb-14 hero-fade-in"
-            style={{ animationDelay: "1.0s" }}
+            style={{ animationDelay: "1.9s" }}
           >
             <button
               onClick={handleScrollToForm}
@@ -179,7 +178,7 @@ export default function Hero() {
           {/* Trust indicators — premium with gold accent lines */}
           <div
             className="flex flex-wrap justify-center gap-x-8 sm:gap-x-12 gap-y-3 pt-6 border-t border-slate-200/60 w-full max-w-2xl hero-fade-in"
-            style={{ animationDelay: "1.2s" }}
+            style={{ animationDelay: "2.1s" }}
           >
             {[
               "Leadership Development",
@@ -199,7 +198,7 @@ export default function Hero() {
       </div>
 
       {/* Marquee Ticker */}
-      <div className="mt-8 w-full border-y border-navy-deep/10 bg-navy-deep py-4 flex items-center relative z-10 overflow-hidden hero-fade-in" style={{ animationDelay: "1.0s" }}>
+      <div className="mt-8 w-full border-y border-navy-deep/10 bg-navy-deep py-4 flex items-center relative z-10 overflow-hidden hero-fade-in" style={{ animationDelay: "2.2s" }}>
         <div
           className="animate-marquee-slow flex whitespace-nowrap gap-x-24 select-none"
           style={{

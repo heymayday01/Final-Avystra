@@ -2,6 +2,7 @@
 
 import { Quote, Star, MessageSquare } from "lucide-react";
 import TextReveal from "./TextReveal";
+import { useReveal } from "@/lib/useReveal";
 
 interface Testimonial {
   id: string;
@@ -13,6 +14,9 @@ interface Testimonial {
 }
 
 export default function TestimonialsSection() {
+  const headerRef = useReveal<HTMLDivElement>();
+  const gridRef = useReveal<HTMLDivElement>({ stagger: true });
+
   const testimonials: Testimonial[] = [
     {
       id: "testimonial-1",
@@ -51,7 +55,8 @@ export default function TestimonialsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 select-none">
         {/* Section Heading Container */}
         <div
-          className="flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
+          ref={headerRef}
+          className="reveal flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
         >
           {/* Aesthetic Capsule Badge */}
           <div className="border border-gold/20 bg-gradient-to-br from-white to-slate-50 px-4 py-1.5 rounded-full inline-flex items-center gap-2.5 mb-3 shadow-sm">
@@ -86,12 +91,14 @@ export default function TestimonialsSection() {
 
         {/* Testimonials Grid Row */}
         <div
+          ref={gridRef}
           className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 lg:gap-8"
         >
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className="group relative bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-2xl p-6 sm:p-8 lg:p-10 transition-[border-color,box-shadow,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-gold/30 hover:shadow-[0_16px_32px_-16px_rgba(11,27,46,0.10)] flex flex-col justify-between overflow-hidden"
+              className="reveal card-premium group relative bg-gradient-to-br from-white to-slate-50 rounded-2xl p-6 sm:p-8 lg:p-10 flex flex-col justify-between overflow-hidden"
+              data-reveal
             >
               {/* Shimmer sweep on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -103,7 +110,10 @@ export default function TestimonialsSection() {
                 </div>
 
                 {/* Star Ratings */}
-                <div className="flex items-center gap-1 mb-5">
+                <div
+                  className="flex items-center gap-1 mb-5"
+                  aria-label="5 out of 5 stars"
+                >
                   {[...Array(5)].map((_, starIdx) => (
                     <span key={starIdx}>
                       <Star className="w-4 h-4 fill-gold text-gold stroke-[1.5]" />

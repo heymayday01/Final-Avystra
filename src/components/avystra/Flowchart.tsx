@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { DoodleSparkle, UnderlineSquiggle } from "./DoodleWidgets";
+import { useReveal } from "@/lib/useReveal";
 
 interface StepData {
   step: number;
@@ -33,8 +34,13 @@ export default function Flowchart() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
+  const headerRef = useReveal<HTMLDivElement>();
+  const gridRef = useReveal<HTMLDivElement>({ stagger: true });
+  const bannerRef = useReveal<HTMLDivElement>();
+
   // The flowing pulses and pulse ring/dot remain as motion.div since they
-  // are decorative infinite loops, not scroll reveals.
+  // are decorative infinite loops now gated behind whileInView (pause when
+  // offscreen), not scroll reveals.
 
   const steps: StepData[] = [
     {
@@ -145,7 +151,8 @@ export default function Flowchart() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         {/* Section Header */}
         <div
-          className="text-center max-w-2xl mx-auto mb-8 sm:mb-10"
+          ref={headerRef}
+          className="reveal text-center max-w-2xl mx-auto mb-8 sm:mb-10"
         >
           <div
             className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/60 border border-slate-200/50 rounded-full mb-3.5 relative shadow-sm"
@@ -181,6 +188,7 @@ export default function Flowchart() {
 
         {/* The Steps Grid */}
         <div
+          ref={gridRef}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8 relative items-stretch"
         >
           {/* Connecting Arrows / Flowing Pulses for Desktop */}
@@ -213,7 +221,8 @@ export default function Flowchart() {
                 key={step.step}
                 onMouseEnter={() => setHoveredCard(idx)}
                 onMouseLeave={() => setHoveredCard(null)}
-                className="group relative flex flex-col justify-between bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 hover:shadow-[0_16px_32px_-16px_rgba(11,27,46,0.08)] hover:border-gold/30 transition-[box-shadow,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-10 overflow-hidden"
+                data-reveal
+                className="reveal card-premium group relative flex flex-col justify-between bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 transition-[box-shadow,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] z-10 overflow-hidden"
               >
                 {/* Gold gradient sweep on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-gold/0 via-gold/5 to-gold/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -273,7 +282,7 @@ export default function Flowchart() {
                       onClick={() => toggleExpand(idx)}
                       aria-label={`Toggle key activities for ${step.title} step`}
                       aria-expanded={isExpanded}
-                      className="w-full flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-slate-50 text-[11.5px] font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-navy-deep transition-all duration-300"
+                      className="w-full flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-slate-50 text-[11.5px] font-mono font-bold uppercase tracking-wider text-slate-500 hover:text-navy-deep transition-all duration-300 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
                     >
                       <span>Key Activities</span>
                       <ChevronDown
@@ -334,7 +343,8 @@ export default function Flowchart() {
 
         {/* Double Banner Message */}
         <div
-          className="mt-6 bg-navy-deep border border-gold/30 rounded-[2rem] overflow-hidden shadow-2xl relative"
+          ref={bannerRef}
+          className="reveal mt-6 bg-navy-deep border border-gold/30 rounded-[2rem] overflow-hidden shadow-2xl relative"
         >
           <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
 

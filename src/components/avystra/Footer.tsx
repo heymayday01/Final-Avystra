@@ -3,12 +3,15 @@
 import { Linkedin, Instagram, MessageCircle, Facebook, Mail, Phone, ArrowUpRight } from "lucide-react";
 import AvystraLogo from "./AvystraLogo";
 import { smoothScrollTo } from "@/lib/scroll";
+import { useReveal } from "@/lib/useReveal";
 
 interface FooterProps {
   leadCount: number;
 }
 
 export default function Footer({ leadCount }: FooterProps) {
+  const mainRef = useReveal<HTMLDivElement>();
+
   const scrollTo = (href: string) => {
     const elementId = href.substring(1);
     smoothScrollTo(elementId);
@@ -52,7 +55,10 @@ export default function Footer({ leadCount }: FooterProps) {
       <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-gold/[0.04] blur-[140px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-gold/[0.02] blur-[120px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10 w-full">
+      <div
+        ref={mainRef}
+        className="reveal max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10 w-full"
+      >
         {/* Main Footer Content — compact 3-column grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-10">
           {/* Brand & Description */}
@@ -76,14 +82,14 @@ export default function Footer({ leadCount }: FooterProps) {
             <div className="flex flex-wrap gap-2.5">
               <a
                 href="mailto:info@avystra.co.in"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/5 border border-white/10 text-slate-200 hover:bg-gold/10 hover:border-gold/30 hover:text-gold transition-all duration-300 text-[13px] font-medium"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/5 border border-white/10 text-slate-200 hover:bg-gold/10 hover:border-gold/30 hover:text-gold transition-all duration-300 text-[13px] font-medium focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
               >
                 <Mail className="w-3.5 h-3.5 text-gold" />
                 <span>info@avystra.co.in</span>
               </a>
               <a
                 href="tel:+918596059607"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/5 border border-white/10 text-slate-200 hover:bg-gold/10 hover:border-gold/30 hover:text-gold transition-all duration-300 text-[13px] font-medium"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/5 border border-white/10 text-slate-200 hover:bg-gold/10 hover:border-gold/30 hover:text-gold transition-all duration-300 text-[13px] font-medium focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
               >
                 <Phone className="w-3.5 h-3.5 text-gold" />
                 <span>+91 85960 59607</span>
@@ -105,7 +111,7 @@ export default function Footer({ leadCount }: FooterProps) {
                       e.preventDefault();
                       scrollTo(item.href);
                     }}
-                    className="text-slate-300 hover:text-gold transition-colors cursor-pointer inline-flex items-center gap-2 group text-[14px]"
+                    className="text-slate-300 hover:text-gold transition-colors cursor-pointer inline-flex items-center gap-2 group text-[14px] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
                   >
                     <span className="w-0 group-hover:w-3 h-px bg-gold transition-all duration-300" />
                     <span className="group-hover:translate-x-0.5 transition-transform duration-300">
@@ -133,7 +139,7 @@ export default function Footer({ leadCount }: FooterProps) {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="aspect-square flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-gold hover:text-navy-deep hover:border-gold hover:shadow-[0_8px_20px_rgba(184,146,78,0.3)] hover:scale-[1.02] active:scale-95 transition-all duration-300 ease-in-out"
+                  className="aspect-square flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:bg-gold hover:text-navy-deep hover:border-gold hover:shadow-[var(--shadow-btn-glow)] hover:scale-[1.02] active:scale-95 transition-all duration-300 ease-in-out focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
                   aria-label={link.name}
                 >
                   <link.icon size={16} />
@@ -156,14 +162,18 @@ export default function Footer({ leadCount }: FooterProps) {
                 e.preventDefault();
                 scrollTo("#consult");
               }}
-              className="cursor-pointer text-gold hover:text-gold-light transition-colors inline-flex items-center gap-1"
+              className="cursor-pointer text-gold hover:text-gold-light transition-colors inline-flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               Begin Assessment
               <ArrowUpRight className="w-3 h-3" />
             </a>
-            <span className="cursor-pointer hover:text-gold transition-colors">
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="cursor-pointer hover:text-gold transition-colors inline-flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
               Privacy
-            </span>
+            </a>
             {leadCount > 0 && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-gold/20 bg-gold/5 text-[11.5px] text-gold">
                 <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />

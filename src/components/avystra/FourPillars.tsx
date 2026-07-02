@@ -5,6 +5,7 @@ import { Compass, Target, Users, Landmark, Award, ChevronRight } from "lucide-re
 import { DoodleSparkle, UnderlineSquiggle } from "./DoodleWidgets";
 import TextReveal from "./TextReveal";
 import TiltCard from "./TiltCard";
+import { useReveal } from "@/lib/useReveal";
 
 interface Pillar {
   id: string;
@@ -16,6 +17,9 @@ interface Pillar {
 }
 
 export default function FourPillars() {
+  const headerRef = useReveal<HTMLDivElement>();
+  const gridRef = useReveal<HTMLDivElement>({ stagger: true });
+
   const pillars: Pillar[] = [
     {
       id: "pillar-direction",
@@ -63,7 +67,8 @@ export default function FourPillars() {
       <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 z-10">
         {/* Header Section */}
         <div
-          className="max-w-4xl mb-6 md:mb-8"
+          ref={headerRef}
+          className="reveal max-w-4xl mb-6 md:mb-8"
         >
           <div className="inline-flex items-center gap-2 bg-gradient-to-br from-white to-slate-50 border border-slate-100 px-4 py-2 rounded-full mb-3 shadow-sm">
             <Award className="w-4 h-4 text-gold" />
@@ -94,17 +99,18 @@ export default function FourPillars() {
         </div>
 
         {/* Pillars Grid */}
-        <div className="pillar-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8">
+        <div ref={gridRef} className="pillar-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-8">
           {pillars.map((pillar, idx) => (
             <div
               key={pillar.id}
-              className="pillar-card group relative h-full flex flex-col"
+              className="reveal pillar-card group relative h-full flex flex-col"
+              data-reveal
               style={{ perspective: 1000 }}
             >
               <TiltCard
                 className="group relative h-full will-change-transform"
               >
-                <div className="relative h-full bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 hover:border-gold/40 group-hover:border-gold/40 flex flex-col justify-between overflow-hidden transition-[border-color,box-shadow] duration-500 hover:shadow-[0_20px_40px_-20px_rgba(11,27,46,0.12)] group-hover:shadow-[0_20px_40px_-20px_rgba(11,27,46,0.12)]">
+                <div className="card-premium relative h-full bg-gradient-to-br from-white to-slate-50 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 flex flex-col justify-between overflow-hidden">
                   {/* Background Number Accent */}
                   <span className="absolute top-6 right-8 text-7xl font-serif font-black text-slate-200/30 group-hover:text-gold/20 transition-colors duration-700 select-none z-0">
                     {pillar.num}

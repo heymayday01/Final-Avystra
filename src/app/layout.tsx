@@ -63,6 +63,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Add .js class BEFORE paint so the reveal system's hidden initial
+            state only applies when JS is enabled. No-JS users see content
+            immediately (progressive enhancement). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('js');",
+          }}
+        />
         {/* Preconnect to font hosts for faster font loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -87,6 +95,13 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased bg-background text-foreground">
+        {/* Skip-to-content link — first focusable element for keyboard users */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[10001] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-navy-deep focus:text-gold focus:text-sm focus:font-mono focus:shadow-lg"
+        >
+          Skip to content
+        </a>
         {children}
         <Toaster />
       </body>

@@ -45,42 +45,109 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* ═══ AVYSTRA REFINED DESIGN TOKENS ═══
-     Warm, luxurious palette inspired by high-end consulting brands.
-     Navy = authority, Gold = premium accent, Ivory = warmth/cleanliness. */
+  /* ── PREMIUM DESIGN SYSTEM THEME EXTENSIONS ── */
+  /* Semantic colors → generates text-success, bg-danger, border-info, etc. */
+  --color-success: var(--color-success);
+  --color-danger: var(--color-danger);
+  --color-info: var(--color-info);
+  --color-gold-deep: var(--color-gold-deep);
 
-  /* Primary Navy — deep, authoritative, slightly warm */
-  --color-gold: #B8924E;
-  --color-gold-light: #D4B26A;
-  --color-gold-hover: #A07E3E;
-  --color-navy-deep: #0B1B2E;
-  --color-navy-soft: #16263D;
-  --color-slate-text: #4A5568;
-  --color-slate-muted: #718096;
-  --color-cream-bg: #F7F4ED;
-  --color-ivory: #FBF9F4;
+  /* Custom easings → generates ease-out-expo, ease-standard, ease-sine */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-sine: cubic-bezier(0.45, 0, 0.55, 1);
 
-  /* Extended brand palette — referenced by all components */
-  --color-gold-legacy: #C5A059;       /* Original gold (Hero, marquee) */
-  --color-gold-ogi: #C2A56D;          /* OGI diagnostic gold */
-  --color-gold-dark: #C9A84C;         /* Founder friction gold */
-  --color-gold-hover-dark: #A68449;   /* Hover state in dark sections */
-  --color-navy-legacy: #0A192F;       /* Original navy (used in OGI) */
-  --color-navy-ogi: #2C3947;          /* OGI navy */
-  --color-navy-sphere: #162033;       /* Sphere gradient start */
-  --color-navy-loading: #0D1640;      /* OGI loading bg */
-  --color-navy-gradient-end: #12205C; /* Results header gradient */
-  --color-friction-bg: #0D1220;       /* Friction section bg */
-  --color-friction-bg-dark: #060810;  /* Friction section bg dark */
-  --color-friction-bg-darkest: #04060C;/* Friction section bg darkest */
-  --color-emerald-accent: #10B981;    /* Execution dimension / success */
-  --color-steel-blue: #547A95;        /* Accountability dimension */
-  --color-amber-warm: #F5F2EB;        /* Loading screen white variant */
+  /* ═══════════════════════════════════════════════════════════════
+     AVYSTRA DESIGN SYSTEM — $10K PREMIUM TOKENS
+     ═══════════════════════════════════════════════════════════════
+     A single source of truth for all visual decisions.
+     Navy = authority | Gold = premium accent | Ivory = warmth
+     No hardcoded hex in components — everything references these tokens. */
 
+  /* ── COLOR PALETTE (collapsed: 8 golds → 3, 9 navies → 2) ── */
+  --color-gold: #B8924E;           /* Primary gold */
+  --color-gold-light: #D4B26A;     /* Bright gold (hover, accents) */
+  --color-gold-deep: #A07E3E;      /* Deep gold (pressed, dark bg hover) */
+  --color-navy-deep: #0B1B2E;      /* Primary navy */
+  --color-navy-soft: #16263D;      /* Soft navy (gradients, hover) */
+  --color-slate-text: #4A5568;     /* Body text */
+  --color-slate-muted: #718096;    /* Muted text */
+  --color-cream-bg: #F7F4ED;       /* Page background */
+  --color-ivory: #FBF9F4;          /* Card background */
+
+  /* ── SEMANTIC COLORS ── */
+  --color-success: #10B981;        /* Success / execution dimension */
+  --color-danger: #EF4444;         /* Danger / warning */
+  --color-info: #547A95;           /* Info / accountability dimension */
+
+  /* ── RGB TRIPLETS (for rgba() with opacity) ── */
   --gold-rgb: 184, 146, 78;
   --gold-light-rgb: 212, 178, 106;
   --navy-rgb: 11, 27, 46;
   --white-rgb: 251, 249, 244;
+
+  /* ── SPACING SCALE (8px grid: 4/8/16/24/32/48/64/96) ── */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.5rem;    /* 24px */
+  --space-6: 2rem;      /* 32px */
+  --space-7: 3rem;      /* 48px */
+  --space-8: 4rem;      /* 64px */
+  --space-9: 6rem;      /* 96px */
+
+  /* Section vertical rhythm */
+  --section-y-sm: 4rem;    /* 64px — tight sections */
+  --section-y-md: 6rem;    /* 96px — standard sections */
+  --section-y-lg: 8rem;    /* 128px — hero/feature sections */
+
+  /* ── SHADOW / GLOW SYSTEM ── */
+  /* Card default: none (let border do the work) */
+  --shadow-card-rest: none;
+  /* Card hover: dramatic lift + gold ring */
+  --shadow-card-hover: 0 8px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(var(--gold-rgb), 0.2);
+  /* Card hover on dark sections: heavier shadow */
+  --shadow-card-hover-dark: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(var(--gold-rgb), 0.2);
+  /* Gold glow: ambient accent */
+  --shadow-gold-glow: 0 0 32px rgba(var(--gold-rgb), 0.18);
+  /* Button glow: on hover */
+  --shadow-btn-glow: 0 0 20px rgba(var(--gold-rgb), 0.3);
+  /* Floating elements: header, modals */
+  --shadow-floating: 0 8px 32px -8px rgba(var(--navy-rgb), 0.18);
+
+  /* ── MOTION TOKENS ── */
+  /* Durations */
+  --dur-micro: 150ms;      /* Hover, state change */
+  --dur-standard: 280ms;   /* Reveal, toggle */
+  --dur-entrance: 600ms;   /* Scroll-triggered entrance */
+  --dur-ambient: 3000ms;   /* Pulse, float */
+  /* Easings */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);           /* Expo-out — entrances */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);       /* Material standard — toggles */
+  --ease-sine: cubic-bezier(0.45, 0, 0.55, 1);         /* Sine in-out — hovers */
+  /* Stagger */
+  --stagger: 80ms;         /* Per-child delay */
+
+  /* ── BACKWARD-COMPATIBLE ALIASES (map old token names → new) ── */
+  /* These exist so existing var() references don't break during migration.
+     Will be removed after all components use the new token names. */
+  --color-gold-hover: var(--color-gold-deep);
+  --color-gold-legacy: var(--color-gold);
+  --color-gold-ogi: var(--color-gold);
+  --color-gold-dark: var(--color-gold);
+  --color-gold-hover-dark: var(--color-gold-deep);
+  --color-navy-legacy: var(--color-navy-deep);
+  --color-navy-ogi: var(--color-navy-soft);
+  --color-navy-sphere: var(--color-navy-soft);
+  --color-navy-loading: var(--color-navy-deep);
+  --color-navy-gradient-end: var(--color-navy-soft);
+  --color-friction-bg: var(--color-navy-deep);
+  --color-friction-bg-dark: var(--color-navy-deep);
+  --color-friction-bg-darkest: var(--color-navy-deep);
+  --color-emerald-accent: var(--color-success);
+  --color-steel-blue: var(--color-info);
+  --color-amber-warm: var(--color-ivory);
 }
 
 :root {
@@ -233,16 +300,117 @@ body::-webkit-scrollbar {
 
 /* ─── ANIMATIONS ───────────────────────────────────────────── */
 
+/* ═══ SCROLL REVEAL SYSTEM (Premium, IntersectionObserver-driven) ═══
+   Progressive enhancement: hidden initial state ONLY applies when
+   <html> has `.js` class. No JS = no hiding = content always visible.
+   3s CSS safety fallback guarantees visibility even if observer fails.
+   Spec: 600ms expo-out, 24px translateY, 80ms stagger, threshold 0.15. */
+
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--dur-entrance) var(--ease-out),
+              transform var(--dur-entrance) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.js .reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Safety fallback: force visible after 3s */
+@keyframes reveal-safety {
+  to { opacity: 1; transform: none; }
+}
+.js .reveal {
+  animation: reveal-safety 0.01s 3s forwards;
+}
+.js .reveal.is-revealed {
+  animation: none;
+}
+
+/* Reduced motion: skip transforms, keep opacity only */
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal {
+    opacity: 0;
+    transform: none;
+    transition: opacity var(--dur-entrance) var(--ease-out);
+  }
+}
+
+/* ═══ PREMIUM HOVER UTILITIES ═══
+   Consistent hover language across the entire site.
+   Cards: 200ms, border → gold, shadow upgrade.
+   Buttons: 180ms, bg/color + glow.
+   Nav links: 150ms, opacity + underline. */
+
+/* Premium card hover — border does the work at rest, shadow on hover */
+.card-premium {
+  transition: border-color var(--dur-micro) var(--ease-sine),
+              box-shadow var(--dur-micro) var(--ease-sine);
+  border: 1px solid rgba(var(--navy-rgb), 0.08);
+}
+.card-premium:hover {
+  border-color: rgba(var(--gold-rgb), 0.4);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Premium card hover — dark section variant (heavier shadow) */
+.card-premium-dark {
+  transition: border-color var(--dur-micro) var(--ease-sine),
+              box-shadow var(--dur-micro) var(--ease-sine);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.card-premium-dark:hover {
+  border-color: rgba(var(--gold-rgb), 0.4);
+  box-shadow: var(--shadow-card-hover-dark);
+}
+
+/* Premium button hover — bg shift + gold glow */
+.btn-premium {
+  transition: background-color calc(var(--dur-micro) * 1.2) var(--ease-sine),
+              color calc(var(--dur-micro) * 1.2) var(--ease-sine),
+              box-shadow calc(var(--dur-micro) * 1.2) var(--ease-sine);
+}
+.btn-premium:hover {
+  box-shadow: var(--shadow-btn-glow);
+}
+
+/* Premium nav link hover — opacity + underline */
+.nav-premium {
+  position: relative;
+  transition: opacity var(--dur-micro) var(--ease-sine);
+}
+.nav-premium::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-gold);
+  transition: width var(--dur-micro) var(--ease-sine);
+}
+.nav-premium:hover {
+  opacity: 0.8;
+}
+.nav-premium:hover::after {
+  width: 100%;
+}
+
 /* Hero heading line reveal — CSS only (no Framer Motion, no blur).
-   opacity + translateY only = GPU-cheap, no compositing layer, no iOS clipping. */
+   opacity + translateY only = GPU-cheap, no compositing layer, no iOS clipping.
+   Delays account for 800ms loading screen (add 800ms to spec delays). */
 @keyframes hero-line-reveal {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(32px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.hero-line-1 { animation: hero-line-reveal 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
-.hero-line-2 { animation: hero-line-reveal 0.8s cubic-bezier(0.16,1,0.3,1) 0.35s both; }
-.hero-line-3 { animation: hero-line-reveal 0.8s cubic-bezier(0.16,1,0.3,1) 0.55s both; }
+.hero-line-1 { animation: hero-line-reveal var(--dur-entrance) var(--ease-out) 1.4s both; }
+.hero-line-2 { animation: hero-line-reveal var(--dur-entrance) var(--ease-out) 1.6s both; }
+.hero-line-3 { animation: hero-line-reveal var(--dur-entrance) var(--ease-out) 1.8s both; }
 
 /* Generic fade-in for hero sub-elements (chips, card, CTAs, trust indicators).
    Uses animationDelay inline style for stagger. */
@@ -312,7 +480,7 @@ body::-webkit-scrollbar {
   transform: scaleX(0);
   transform-origin: center;
   opacity: 0;
-  animation: divider-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.1s forwards;
+  animation: divider-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.9s forwards;
 }
 
 @keyframes divider-reveal {

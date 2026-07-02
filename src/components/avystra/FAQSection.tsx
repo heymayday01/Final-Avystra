@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { HelpCircle, ChevronDown } from "lucide-react";
 import { getLenis } from "@/lib/scroll";
+import { useReveal } from "@/lib/useReveal";
 
 interface FAQItem {
   question: string;
@@ -41,16 +42,19 @@ const faqData: FAQItem[] = [
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  const headerRef = useReveal<HTMLDivElement>();
+  const accordionsRef = useReveal<HTMLDivElement>();
+
   const toggleIndex = useCallback((index: number) => {
     setOpenIndex((prev) => (prev === index ? null : index));
 
-    // Refresh scroll after the accordion animation settles using
-    // a debounced rAF — waits for paint, then refreshes Lenis/ScrollTrigger
+    // Refresh Lenis after the accordion animation settles using
+    // a debounced rAF — waits for paint, then notifies Lenis of the
+    // height change. ScrollTrigger.refresh() is already handled by the
+    // resize listener in useSmoothScroll.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (typeof window === "undefined") return;
-        const st = (window as unknown as { ScrollTrigger?: { refresh: () => void } }).ScrollTrigger;
-        st?.refresh();
         getLenis()?.resize();
       });
     });
@@ -67,7 +71,8 @@ export default function FAQSection() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 select-none">
         {/* Section Header */}
         <div
-          className="flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
+          ref={headerRef}
+          className="reveal flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
         >
           {/* Aesthetic Badge */}
           <div className="border border-gold/20 bg-gradient-to-br from-white to-slate-50 px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-3 shadow-sm">
@@ -94,7 +99,8 @@ export default function FAQSection() {
 
         {/* Accordions Containment Block */}
         <div
-          className="bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 lg:p-10 divide-y divide-slate-300/20"
+          ref={accordionsRef}
+          className="reveal bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 lg:p-10 divide-y divide-slate-300/20"
         >
           {faqData.map((faq, index) => {
             const isOpen = openIndex === index;
@@ -111,7 +117,7 @@ export default function FAQSection() {
                 {/* Accordion Toggle Header */}
                 <button
                   onClick={() => toggleIndex(index)}
-                  className="w-full flex items-center justify-between text-left gap-4 sm:gap-6 group cursor-pointer focus:outline-none"
+                  className="w-full flex items-center justify-between text-left gap-4 sm:gap-6 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
                   aria-expanded={isOpen}
                   aria-label={`Question ${index + 1}: ${faq.question}`}
                 >

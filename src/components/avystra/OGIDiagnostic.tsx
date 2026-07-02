@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, type FormEvent } from "react";
+import { useReveal } from "@/lib/useReveal";
 import {
   User,
   Briefcase,
@@ -110,7 +111,7 @@ export default function OGIDiagnostic() {
   const [autoSaved, setAutoSaved] = useState(false);
 
   // Ref to the content box — used to auto-scroll into view on screen changes
-  const contentBoxRef = useRef<HTMLDivElement>(null);
+  const contentBoxRef = useReveal<HTMLDivElement>();
   // Track whether this is the first render — we don't auto-scroll on mount
   const isFirstRender = useRef(true);
 
@@ -337,14 +338,14 @@ export default function OGIDiagnostic() {
   return (
     <section id="consult" className="relative py-4 bg-transparent border-none overflow-hidden md:py-6 scroll-mt-20">
       {/* Decorative overlays */}
-      <div className="absolute top-0 right-1/4 w-[400px] h-[400px] rounded-full bg-[#C5A059]/[0.02] blur-[100px] pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-[400px] h-[400px] rounded-full bg-gold/[0.02] blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-blue-500/[0.01] blur-[120px] pointer-events-none" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Content Box */}
         <div
           ref={contentBoxRef}
-          className="bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-3xl overflow-hidden min-h-[420px] flex flex-col justify-between"
+          className="reveal card-premium bg-gradient-to-br from-white to-slate-50 border border-slate-100 rounded-3xl overflow-hidden min-h-[420px] flex flex-col justify-between"
         >
           <AnimatePresence mode="wait">
             {/* INTRO SCREEN */}
@@ -360,15 +361,15 @@ export default function OGIDiagnostic() {
               >
                 <div className="max-w-3xl">
                   <div className="flex justify-center mb-5">
-                    <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#C2A56D]/5 rounded-full border border-[#C2A56D]/10 text-[12.5px] text-[#C2A56D] font-mono tracking-widest font-bold uppercase relative">
-                      <Zap className="w-3.5 h-3.5 text-[#C2A56D]" />
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-gold/5 rounded-full border border-gold/10 text-[12.5px] text-gold font-mono tracking-widest font-bold uppercase relative">
+                      <Zap className="w-3.5 h-3.5 text-gold" />
                       Organizational Assessment
-                      <DoodleSparkle className="-top-3 -right-4 text-[#C2A56D] w-5 h-5 animate-pulse" delay={0.1} />
+                      <DoodleSparkle className="-top-3 -right-4 text-gold w-5 h-5 animate-pulse" delay={0.1} />
                     </span>
                   </div>
 
-                  <h2 className="font-display font-medium text-3xl sm:text-5xl text-[#2C3947] tracking-tighter leading-[1.15] mb-5">
-                    OGI — <span className="font-serif italic text-[#C2A56D]">Organizational Growth Index</span>
+                  <h2 className="font-display font-medium text-3xl sm:text-5xl text-navy-soft tracking-tighter leading-[1.15] mb-5">
+                    OGI — <span className="font-serif italic text-gold">Organizational Growth Index</span>
                   </h2>
 
                   <p className="text-slate-600 font-sans text-base sm:text-lg max-w-xl mx-auto leading-relaxed font-light mb-8">
@@ -377,16 +378,16 @@ export default function OGIDiagnostic() {
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
                     {[
-                      { name: "Leadership", code: "L", color: "bg-[#2C3947]" },
-                      { name: "Managers", code: "M", color: "bg-[#C2A56D]" },
-                      { name: "Accountability", code: "T", color: "bg-[#547A95]" },
-                      { name: "Execution", code: "E", color: "bg-[#10B981]" },
+                      { name: "Leadership", code: "L", color: "bg-navy-soft" },
+                      { name: "Managers", code: "M", color: "bg-gold" },
+                      { name: "Accountability", code: "T", color: "bg-info" },
+                      { name: "Execution", code: "E", color: "bg-success" },
                     ].map((item) => (
                       <div key={item.code} className="p-3 rounded-xl bg-white/50 border border-slate-200/50 flex flex-col items-center group">
                         <span className={`w-6 h-6 rounded-full ${item.color} mb-2 flex items-center justify-center text-[11.5px] text-white font-mono font-bold`}>
                           {item.code}
                         </span>
-                        <h3 className="text-[11.5px] font-display font-bold text-[#2C3947] leading-tight">{item.name}</h3>
+                        <h3 className="text-[11.5px] font-display font-bold text-navy-soft leading-tight">{item.name}</h3>
                       </div>
                     ))}
                   </div>
@@ -396,7 +397,7 @@ export default function OGIDiagnostic() {
                   <button
                     onClick={() => setScreen("INFO_CAPTURE")}
                     aria-label="Begin OGI assessment"
-                    className="group inline-flex items-center gap-3 bg-[#2C3947] hover:bg-[#C2A56D] text-white font-display text-sm font-semibold tracking-wider uppercase px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+                    className="group inline-flex items-center gap-3 bg-navy-soft hover:bg-gold text-white font-display text-sm font-semibold tracking-wider uppercase px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none cursor-pointer"
                     id="ogi-btn-start"
                   >
                     <span>Begin Assessment</span>
@@ -421,13 +422,13 @@ export default function OGIDiagnostic() {
                   <button
                     onClick={() => setScreen("INTRO")}
                     aria-label="Back to intro"
-                    className="inline-flex items-center gap-2 text-xs text-slate-400 hover:text-[#C5A059] font-mono tracking-wide mb-5 group cursor-pointer"
+                    className="inline-flex items-center gap-2 text-xs text-slate-400 hover:text-gold font-mono tracking-wide mb-5 group focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none cursor-pointer"
                   >
                     <ChevronLeft className="w-4 h-4 transform group-hover:-translate-x-0.5 transition-transform" />
                     Back to intro
                   </button>
 
-                  <h3 className="font-display font-bold text-xl sm:text-2xl text-[#0A192F] tracking-tight mb-2">
+                  <h3 className="font-display font-bold text-xl sm:text-2xl text-navy-deep tracking-tight mb-2">
                     Let&rsquo;s index your identity
                   </h3>
                   <p className="text-slate-400 text-xs sm:text-sm font-sans font-light leading-relaxed mb-6 max-w-xl">
@@ -437,9 +438,9 @@ export default function OGIDiagnostic() {
                   <form onSubmit={validateAndNextInfo} className="space-y-5 max-w-xl">
                     {/* Name Entry */}
                     <div className="space-y-1.5">
-                      <label className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">Your Full Name</label>
+                      <label htmlFor="ogi-input-name" className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">Your Full Name</label>
                       <div className="relative">
-                        <User className="absolute left-4 top-3.5 w-4 h-4 text-[#C5A059] pointer-events-none" />
+                        <User className="absolute left-4 top-3.5 w-4 h-4 text-gold pointer-events-none" />
                         <input
                           type="text"
                           required
@@ -450,18 +451,18 @@ export default function OGIDiagnostic() {
                             clearFieldError();
                           }}
                           placeholder="e.g. Kirankumar Pandey"
-                          className={`w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isNameValid ? "ogi-input-valid" : ""} ${invalidField === "name" ? "ogi-input-shake ogi-input-invalid" : ""}`}
+                          className={`w-full bg-slate-50 border border-slate-200 focus:border-gold focus:ring-1 focus:ring-gold/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isNameValid ? "ogi-input-valid" : ""} ${invalidField === "name" ? "ogi-input-shake ogi-input-invalid" : ""}`}
                           id="ogi-input-name"
                         />
-                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-[#C5A059] ${isNameValid ? "is-visible" : ""}`} />
+                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-gold ${isNameValid ? "is-visible" : ""}`} />
                       </div>
                     </div>
 
                     {/* Role Entry */}
                     <div className="space-y-1.5">
-                      <label className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">Professional Designation / Role</label>
+                      <label htmlFor="ogi-input-role" className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">Professional Designation / Role</label>
                       <div className="relative">
-                        <Briefcase className="absolute left-4 top-3.5 w-4 h-4 text-[#C5A059] pointer-events-none" />
+                        <Briefcase className="absolute left-4 top-3.5 w-4 h-4 text-gold pointer-events-none" />
                         <input
                           type="text"
                           required
@@ -472,18 +473,18 @@ export default function OGIDiagnostic() {
                             clearFieldError();
                           }}
                           placeholder="e.g. Founder, CEO, VP of Operations"
-                          className={`w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isRoleValid ? "ogi-input-valid" : ""} ${invalidField === "role" ? "ogi-input-shake ogi-input-invalid" : ""}`}
+                          className={`w-full bg-slate-50 border border-slate-200 focus:border-gold focus:ring-1 focus:ring-gold/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isRoleValid ? "ogi-input-valid" : ""} ${invalidField === "role" ? "ogi-input-shake ogi-input-invalid" : ""}`}
                           id="ogi-input-role"
                         />
-                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-[#C5A059] ${isRoleValid ? "is-visible" : ""}`} />
+                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-gold ${isRoleValid ? "is-visible" : ""}`} />
                       </div>
                     </div>
 
                     {/* WhatsApp Number */}
                     <div className="space-y-1.5">
-                      <label className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">WhatsApp Number</label>
+                      <label htmlFor="ogi-input-phone" className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">WhatsApp Number</label>
                       <div className="relative">
-                        <Phone className="absolute left-4 top-3.5 w-4 h-4 text-[#C5A059] pointer-events-none" />
+                        <Phone className="absolute left-4 top-3.5 w-4 h-4 text-gold pointer-events-none" />
                         <input
                           type="tel"
                           required
@@ -494,19 +495,19 @@ export default function OGIDiagnostic() {
                             clearFieldError();
                           }}
                           placeholder="e.g. +91 91234 56789"
-                          className={`w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isPhoneValid ? "ogi-input-valid" : ""} ${invalidField === "phone" ? "ogi-input-shake ogi-input-invalid" : ""}`}
+                          className={`w-full bg-slate-50 border border-slate-200 focus:border-gold focus:ring-1 focus:ring-gold/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isPhoneValid ? "ogi-input-valid" : ""} ${invalidField === "phone" ? "ogi-input-shake ogi-input-invalid" : ""}`}
                           id="ogi-input-phone"
                           autoComplete="tel"
                         />
-                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-[#C5A059] ${isPhoneValid ? "is-visible" : ""}`} />
+                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-gold ${isPhoneValid ? "is-visible" : ""}`} />
                       </div>
                     </div>
 
                     {/* Business Email */}
                     <div className="space-y-1.5">
-                      <label className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">Business Email</label>
+                      <label htmlFor="ogi-input-email" className="block text-[11.5px] font-mono tracking-wider text-slate-400 uppercase font-bold">Business Email</label>
                       <div className="relative">
-                        <Mail className="absolute left-4 top-3.5 w-4 h-4 text-[#C5A059] pointer-events-none" />
+                        <Mail className="absolute left-4 top-3.5 w-4 h-4 text-gold pointer-events-none" />
                         <input
                           type="email"
                           required
@@ -517,11 +518,11 @@ export default function OGIDiagnostic() {
                             clearFieldError();
                           }}
                           placeholder="e.g. contact@firm.com"
-                          className={`w-full bg-slate-50 border border-slate-200 focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isEmailValid ? "ogi-input-valid" : ""} ${invalidField === "email" ? "ogi-input-shake ogi-input-invalid" : ""}`}
+                          className={`w-full bg-slate-50 border border-slate-200 focus:border-gold focus:ring-1 focus:ring-gold/20 rounded-xl py-3.5 pl-11 pr-12 text-slate-800 placeholder-slate-400/80 font-sans text-sm focus:outline-none transition-all ${isEmailValid ? "ogi-input-valid" : ""} ${invalidField === "email" ? "ogi-input-shake ogi-input-invalid" : ""}`}
                           id="ogi-input-email"
                           autoComplete="email"
                         />
-                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-[#C5A059] ${isEmailValid ? "is-visible" : ""}`} />
+                        <CheckCircle2 className={`ogi-field-check absolute right-4 top-3.5 w-4 h-4 text-gold ${isEmailValid ? "is-visible" : ""}`} />
                       </div>
                     </div>
 
@@ -542,7 +543,7 @@ export default function OGIDiagnostic() {
                   <button
                     onClick={() => validateAndNextInfo()}
                     aria-label="Continue to questions"
-                    className="group inline-flex items-center gap-2.5 bg-[#0A192F] hover:bg-[#C5A059] text-white font-display text-xs font-bold tracking-wider uppercase px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+                    className="group inline-flex items-center gap-2.5 bg-navy-deep hover:bg-gold text-white font-display text-xs font-bold tracking-wider uppercase px-7 py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none cursor-pointer"
                     id="ogi-btn-info-continue"
                   >
                     <span>Continue to Questions</span>
@@ -571,7 +572,7 @@ export default function OGIDiagnostic() {
                         className="w-2.5 h-2.5 rounded-full"
                         style={{ backgroundColor: currentQ.color }}
                       />
-                      <span className="text-[11.5px] font-mono tracking-widest text-[#0A192F] uppercase font-bold">
+                      <span className="text-[11.5px] font-mono tracking-widest text-navy-deep uppercase font-bold">
                         {currentQ.dimensionName}
                       </span>
                     </div>
@@ -579,7 +580,7 @@ export default function OGIDiagnostic() {
                     <button
                       onClick={handleBack}
                       aria-label="Go back to previous question"
-                      className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#C5A059] font-mono transition-colors group cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-gold font-mono transition-colors group focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none cursor-pointer"
                     >
                       <ChevronLeft className="w-3.5 h-3.5 transform group-hover:-translate-x-0.5 transition-transform" />
                       Back
@@ -596,9 +597,9 @@ export default function OGIDiagnostic() {
                     <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
                       <motion.div
                         className="h-full rounded-full"
-                        style={{ backgroundColor: currentQ.color }}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progressPercent}%` }}
+                        style={{ backgroundColor: currentQ.color, transformOrigin: "left" }}
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: progressPercent / 100 }}
                         transition={{ duration: 0.5, ease: EASE }}
                       />
                     </div>
@@ -606,9 +607,9 @@ export default function OGIDiagnostic() {
 
                   {/* Question Text: Large, Centered */}
                   <div className="text-center py-4 px-2 max-w-2xl mx-auto my-3">
-                    <h3 className="font-display font-medium text-xl sm:text-2xl text-[#0A192F] leading-snug tracking-tight">
+                    <p className="font-display font-medium text-xl sm:text-2xl text-navy-deep leading-snug tracking-tight">
                       &ldquo;{currentQ.text}&rdquo;
-                    </h3>
+                    </p>
                   </div>
                 </div>
 
@@ -621,12 +622,13 @@ export default function OGIDiagnostic() {
                         <motion.button
                           key={opt.label}
                           onClick={() => handleAnswerSelect(opt.value)}
+                          aria-pressed={isSelected}
                           whileTap={{ scale: 0.95 }}
                           transition={{ duration: 0.15, ease: EASE }}
-                          className={`relative py-4 px-3 text-xs sm:text-sm text-center rounded-xl font-display font-semibold transition-all duration-300 border cursor-pointer select-none ${
+                          className={`relative py-4 px-3 text-xs sm:text-sm text-center rounded-xl font-display font-semibold transition-all duration-300 border cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none ${
                             isSelected
-                              ? "bg-[#0A192F] border-[#0A192F] text-white shadow-md shadow-slate-900/10"
-                              : "bg-slate-50 border-slate-200/80 hover:border-[#C5A059] hover:bg-white text-slate-600 hover:text-[#0A192F] hover:shadow-sm"
+                              ? "bg-navy-deep border-navy-deep text-white shadow-md shadow-slate-900/10"
+                              : "bg-slate-50 border-slate-200/80 hover:border-gold hover:bg-white text-slate-600 hover:text-navy-deep hover:shadow-sm"
                           }`}
                           id={`ogi-q-${currentQ.id}-opt-${opt.label}`}
                         >
@@ -652,22 +654,32 @@ export default function OGIDiagnostic() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3, ease: EASE }}
+                role="button"
+                tabIndex={0}
+                aria-label="Skip countdown and continue to next questions"
                 onClick={() => {
                   setScreen("QUESTIONS");
                   setCurrentQuestionIndex(8);
                 }}
-                className="p-8 sm:p-10 md:p-12 flex flex-col items-center justify-center h-full flex-grow text-center bg-slate-50 relative cursor-pointer group"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setScreen("QUESTIONS");
+                    setCurrentQuestionIndex(8);
+                  }
+                }}
+                className="p-8 sm:p-10 md:p-12 flex flex-col items-center justify-center h-full flex-grow text-center bg-slate-50 relative cursor-pointer group focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
                 id="ogi-screen-nudge"
               >
                 <div className="absolute top-4 right-4 text-[10.5px] font-mono text-slate-300 uppercase tracking-widest">
                   Tap to skip countdown
                 </div>
 
-                <div className="w-14 h-14 rounded-full bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-[#C5A059] mb-5">
+                <div className="w-14 h-14 rounded-full bg-gold/10 border border-gold/20 flex items-center justify-center text-gold mb-5">
                   <TrendingUp className="w-8 h-8 animate-pulse" />
                 </div>
 
-                <h3 className="font-display font-medium text-xl sm:text-2xl text-[#0A192F] tracking-tight mb-2">
+                <h3 className="font-display font-medium text-xl sm:text-2xl text-navy-deep tracking-tight mb-2">
                   Halfway There
                 </h3>
 
@@ -677,7 +689,7 @@ export default function OGIDiagnostic() {
 
                 <div className="w-24 h-[1px] bg-slate-200 my-4" />
 
-                <p className="text-[#A68449] font-mono text-[11.5px] tracking-widest uppercase font-bold flex items-center gap-1.5 animate-bounce">
+                <p className="text-gold-deep font-mono text-[11.5px] tracking-widest uppercase font-bold flex items-center gap-1.5 animate-bounce">
                   Next Dimension: Team Accountability
                   <ChevronRight className="w-3.5 h-3.5" />
                 </p>
@@ -692,7 +704,7 @@ export default function OGIDiagnostic() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3, ease: EASE }}
-                className="p-8 sm:p-10 md:p-12 flex flex-col items-center justify-center h-full flex-grow text-center bg-[#0D1640] text-white relative min-h-[380px]"
+                className="p-8 sm:p-10 md:p-12 flex flex-col items-center justify-center h-full flex-grow text-center bg-navy-deep text-white relative min-h-[380px]"
                 id="ogi-screen-loading"
               >
                 {/* Micro tech grid background overlay */}
@@ -700,7 +712,7 @@ export default function OGIDiagnostic() {
 
                 <div className="relative flex flex-col items-center z-10">
                   <div className="relative mb-6">
-                    <Loader2 className="w-10 h-10 text-[#C5A059] animate-spin" />
+                    <Loader2 className="w-10 h-10 text-gold animate-spin" />
                     <div className="absolute inset-0 rounded-full border-2 border-white/5 opacity-25 animate-ping" />
                   </div>
 
@@ -731,10 +743,10 @@ export default function OGIDiagnostic() {
 
                 let label = "";
                 let color = "";
-                if (code === "L") { label = "Leadership & Direction"; color = "#2C3947"; }
-                if (code === "M") { label = "Manager Effectiveness"; color = "#C2A56D"; }
-                if (code === "T") { label = "Team Accountability"; color = "#547A95"; }
-                if (code === "E") { label = "Execution Systems"; color = "#10B981"; }
+                if (code === "L") { label = "Leadership & Direction"; color = "var(--color-navy-soft)"; }
+                if (code === "M") { label = "Manager Effectiveness"; color = "var(--color-gold)"; }
+                if (code === "T") { label = "Team Accountability"; color = "var(--color-info)"; }
+                if (code === "E") { label = "Execution Systems"; color = "var(--color-success)"; }
 
                 return { code, avg, pct, label, color };
               };
@@ -968,14 +980,14 @@ export default function OGIDiagnostic() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.35, ease: EASE }}
-                  className="p-4 sm:p-6 md:p-8 flex flex-col justify-between h-full flex-grow text-[#2C3947]"
+                  className="p-4 sm:p-6 md:p-8 flex flex-col justify-between h-full flex-grow text-navy-soft"
                   id="ogi-screen-results"
                 >
                   <div className="space-y-6">
                     {/* 2.1 Header: Score circle progress and band details */}
-                    <div className="flex flex-col md:flex-row items-center gap-6 bg-gradient-to-br from-[#0D1640] to-[#12205C] rounded-2xl p-5 sm:p-8 text-white border border-blue-900/40 relative overflow-hidden shadow-lg">
+                    <div className="flex flex-col md:flex-row items-center gap-6 bg-gradient-to-br from-navy-deep to-navy-soft rounded-2xl p-5 sm:p-8 text-white border border-blue-900/40 relative overflow-hidden shadow-lg">
                       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-                      <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#C2A56D]/5 rounded-full blur-3xl pointer-events-none" />
+                      <div className="absolute -right-20 -top-20 w-80 h-80 bg-gold/5 rounded-full blur-3xl pointer-events-none" />
 
                       {/* Circle Progress Meter */}
                       <div className="relative flex-shrink-0 w-32 h-32 flex items-center justify-center">
@@ -1021,7 +1033,7 @@ export default function OGIDiagnostic() {
                       {/* Band Details */}
                       <div className="space-y-3 text-left max-w-2xl relative z-10">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#C2A56D]/15 rounded-full border border-[#C2A56D]/20 text-[10.5px] text-[#C2A56D] font-mono tracking-widest font-bold uppercase">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-gold/15 rounded-full border border-gold/20 text-[10.5px] text-gold font-mono tracking-widest font-bold uppercase">
                             Growth Level
                           </span>
                           <span
@@ -1041,7 +1053,7 @@ export default function OGIDiagnostic() {
                         </p>
 
                         <div className="p-3 bg-white/5 border border-white/10 rounded-xl text-slate-300 text-xs font-sans leading-relaxed">
-                          <strong className="text-[#C2A56D] font-semibold">Reflection Note:</strong> This report reflects how you see your organization. The most important question — would your team answer these the same way?
+                          <strong className="text-gold font-semibold">Reflection Note:</strong> This report reflects how you see your organization. The most important question — would your team answer these the same way?
                         </div>
                       </div>
                     </div>
@@ -1050,7 +1062,7 @@ export default function OGIDiagnostic() {
                     <div className="bg-white border border-slate-100 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                         <div>
-                          <h3 className="font-display font-semibold text-lg text-[#2C3947]">
+                          <h3 className="font-display font-semibold text-lg text-navy-soft">
                             Score vs. Benchmark
                           </h3>
                           <p className="text-xs text-slate-500 font-sans font-light">
@@ -1059,7 +1071,7 @@ export default function OGIDiagnostic() {
                         </div>
                         <div className="flex items-center gap-4 text-xs font-mono text-slate-500">
                           <span className="flex items-center gap-1.5">
-                            <span className="w-3 h-3 bg-[#2C3947] rounded" /> User Score
+                            <span className="w-3 h-3 bg-navy-soft rounded" /> User Score
                           </span>
                           <span className="flex items-center gap-1.5">
                             <span className="w-3 border-t border-dashed border-slate-400" /> Benchmark Threshold
@@ -1085,7 +1097,7 @@ export default function OGIDiagnostic() {
                                   <span className="p-1.5 rounded-lg bg-slate-50 border border-slate-100 text-slate-700">
                                     <PillarIcon className="w-4 h-4" style={{ color: p.color }} />
                                   </span>
-                                  <span className="font-display font-medium text-sm text-[#2C3947]">
+                                  <span className="font-display font-medium text-sm text-navy-soft">
                                     {p.label}
                                   </span>
 
@@ -1098,17 +1110,17 @@ export default function OGIDiagnostic() {
                                   </span>
                                 </div>
 
-                                <div className="text-sm font-mono font-bold text-[#2C3947]">
+                                <div className="text-sm font-mono font-bold text-navy-soft">
                                   {p.pct}%
                                 </div>
                               </div>
 
                               <div className="relative h-4 bg-slate-50 rounded-full border border-slate-100 overflow-visible">
                                 <motion.div
-                                  className="absolute left-0 top-0 h-full rounded-full"
-                                  style={{ backgroundColor: p.color }}
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${p.pct}%` }}
+                                  className="absolute left-0 top-0 h-full w-full rounded-full"
+                                  style={{ backgroundColor: p.color, transformOrigin: "left" }}
+                                  initial={{ scaleX: 0 }}
+                                  animate={{ scaleX: p.pct / 100 }}
                                   transition={{ duration: 1.2, ease: EASE, delay: 0.3 + idx * 0.1 }}
                                 />
 
@@ -1130,7 +1142,7 @@ export default function OGIDiagnostic() {
                     {/* 2.3 Pillar Cards — Performance By Dimension */}
                     <div className="space-y-4">
                       <div className="pb-2 border-b border-slate-100">
-                        <h3 className="font-display font-semibold text-lg text-[#2C3947]">
+                        <h3 className="font-display font-semibold text-lg text-navy-soft">
                           Pillar Insights & Analysis
                         </h3>
                         <p className="text-xs text-slate-500 font-sans font-light">
@@ -1163,7 +1175,7 @@ export default function OGIDiagnostic() {
                                     <span className="p-2 rounded-xl bg-white border border-slate-100 shadow-sm">
                                       <PillarIcon className="w-5 h-5" style={{ color: p.color }} />
                                     </span>
-                                    <h4 className="font-display font-semibold text-base text-[#2C3947]">
+                                    <h4 className="font-display font-semibold text-base text-navy-soft">
                                       {p.label}
                                     </h4>
                                   </div>
@@ -1173,7 +1185,7 @@ export default function OGIDiagnostic() {
                                 </div>
 
                                 <div className="flex items-baseline gap-1.5">
-                                  <span className="text-2xl font-mono font-bold text-[#2C3947]">
+                                  <span className="text-2xl font-mono font-bold text-navy-soft">
                                     {p.pct}%
                                   </span>
                                   <span className="text-xs font-sans text-slate-400">
@@ -1200,7 +1212,7 @@ export default function OGIDiagnostic() {
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-rose-50 rounded-full border border-rose-100 text-[11.5px] text-rose-700 font-mono tracking-wider font-bold uppercase mb-2">
                               Critical Gaps
                             </span>
-                            <h3 className="font-display font-semibold text-lg text-[#2C3947]">
+                            <h3 className="font-display font-semibold text-lg text-navy-soft">
                               Key Assessment Findings
                             </h3>
                             <p className="text-xs text-slate-500 font-sans font-light">
@@ -1237,7 +1249,7 @@ export default function OGIDiagnostic() {
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-50 rounded-full border border-emerald-100 text-[11.5px] text-emerald-700 font-mono tracking-wider font-bold uppercase mb-2">
                               Strategic Focus
                             </span>
-                            <h3 className="font-display font-semibold text-lg text-[#2C3947]">
+                            <h3 className="font-display font-semibold text-lg text-navy-soft">
                               Top 3 Priority Actions
                             </h3>
                             <p className="text-xs text-slate-500 font-sans font-light">
@@ -1282,7 +1294,7 @@ export default function OGIDiagnostic() {
                             <AlertTriangle className="w-3 h-3 text-amber-600" />
                             Friction Indicators Detected
                           </span>
-                          <h3 className="font-display font-semibold text-lg text-[#2C3947]">
+                          <h3 className="font-display font-semibold text-lg text-navy-soft">
                             Your responses reveal an interesting pattern...
                           </h3>
                           <p className="text-xs text-slate-500 font-sans font-light">
@@ -1295,14 +1307,14 @@ export default function OGIDiagnostic() {
                             <div key={idx} className="bg-white border border-slate-100 rounded-xl p-5 space-y-4">
                               <div className="flex items-center gap-2">
                                 <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
-                                <h4 className="font-display font-bold text-sm text-[#2C3947] uppercase tracking-wider">
+                                <h4 className="font-display font-bold text-sm text-navy-soft uppercase tracking-wider">
                                   {item.title}
                                 </h4>
                               </div>
 
                               <div className="space-y-3 text-xs sm:text-sm text-slate-600 font-sans font-light leading-relaxed">
                                 <p>
-                                  <strong className="text-[#2C3947] font-semibold">Contradiction:</strong> {item.desc}
+                                  <strong className="text-navy-soft font-semibold">Contradiction:</strong> {item.desc}
                                 </p>
                                 <p>
                                   <strong className="text-rose-600 font-semibold">Strategic Risk:</strong> {item.risk}
@@ -1320,7 +1332,7 @@ export default function OGIDiagnostic() {
                     {/* 2.7 Recommended Programs */}
                     <div className="space-y-4 text-left">
                       <div className="pb-2 border-b border-slate-100">
-                        <h3 className="font-display font-semibold text-lg text-[#2C3947]">
+                        <h3 className="font-display font-semibold text-lg text-navy-soft">
                           Recommended Alignment Portfolios
                         </h3>
                         <p className="text-xs text-slate-500 font-sans font-light">
@@ -1336,14 +1348,14 @@ export default function OGIDiagnostic() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, ease: EASE, delay: idx * 0.1 }}
-                            className="bg-gradient-to-br from-[#0D1640] to-[#12205C] rounded-2xl p-6 text-white border border-blue-900/40 relative overflow-hidden shadow-md"
+                            className="bg-gradient-to-br from-navy-deep to-navy-soft rounded-2xl p-6 text-white border border-blue-900/40 relative overflow-hidden shadow-md"
                           >
                             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-                            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#C2A56D]/5 rounded-full blur-2xl pointer-events-none" />
+                            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-gold/5 rounded-full blur-2xl pointer-events-none" />
 
                             <div className="relative z-10 space-y-4 flex flex-col justify-between h-full">
                               <div className="space-y-2">
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#C2A56D]/15 rounded-full border border-[#C2A56D]/20 text-[10.5px] text-[#C2A56D] font-mono tracking-widest font-bold uppercase">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-gold/15 rounded-full border border-gold/20 text-[10.5px] text-gold font-mono tracking-widest font-bold uppercase">
                                   Pillar {prog.pillar} Solution
                                 </span>
                                 <h4 className="font-display font-semibold text-base text-white">
@@ -1360,7 +1372,7 @@ export default function OGIDiagnostic() {
                                   e.preventDefault();
                                   smoothScrollTo("programs");
                                 }}
-                                className="inline-flex items-center gap-1 text-[12.5px] font-mono font-bold text-[#C2A56D] hover:text-white transition-colors pt-2"
+                                className="inline-flex items-center gap-1 text-[12.5px] font-mono font-bold text-gold hover:text-white transition-colors pt-2"
                               >
                                 Explore Portfolio Details
                                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1372,11 +1384,11 @@ export default function OGIDiagnostic() {
                     </div>
 
                     {/* 2.75 Get My Full Report — submit results to backend */}
-                    <div className="bg-gradient-to-br from-[#0A192F] to-[#162033] rounded-2xl p-6 sm:p-8 border border-[#C2A56D]/20 shadow-lg text-left">
+                    <div className="bg-gradient-to-br from-navy-deep to-navy-soft rounded-2xl p-6 sm:p-8 border border-gold/20 shadow-lg text-left">
                       {!submissionResult ? (
                         <div className="space-y-4">
                           <div>
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#C2A56D]/15 rounded-full border border-[#C2A56D]/20 text-[10.5px] text-[#C2A56D] font-mono tracking-widest font-bold uppercase mb-2">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-gold/15 rounded-full border border-gold/20 text-[10.5px] text-gold font-mono tracking-widest font-bold uppercase mb-2">
                               <Mail className="w-3 h-3" />
                               Get Your Full Report
                             </span>
@@ -1399,7 +1411,7 @@ export default function OGIDiagnostic() {
                             onClick={handleSubmitResults}
                             disabled={isSubmitting}
                             aria-label="Get my full OGI report"
-                            className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 bg-[#C2A56D] hover:bg-[#D4B26A] disabled:opacity-60 disabled:cursor-not-allowed text-[#0A192F] font-display font-bold text-xs uppercase tracking-[0.16em] rounded-xl cursor-pointer transition-all active:scale-[0.98] shadow-md"
+                            className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 bg-gold hover:bg-gold-light disabled:opacity-60 disabled:cursor-not-allowed text-navy-deep font-display font-bold text-xs uppercase tracking-[0.16em] rounded-xl focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none cursor-pointer transition-all active:scale-[0.98] shadow-md"
                           >
                             {isSubmitting ? (
                               <>
@@ -1464,7 +1476,7 @@ export default function OGIDiagnostic() {
                           window.open(`https://wa.me/918596059607?text=${encodeURIComponent(msg)}`);
                         }}
                         aria-label="Discuss on WhatsApp"
-                        className="w-full inline-flex items-center justify-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-display font-semibold text-xs uppercase tracking-wider rounded-xl cursor-pointer transition-all active:scale-[0.98] shadow-sm"
+                        className="w-full inline-flex items-center justify-center gap-2 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-display font-semibold text-xs uppercase tracking-wider rounded-xl focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none cursor-pointer transition-all active:scale-[0.98] shadow-sm"
                       >
                         <MessageSquare className="w-4 h-4" />
                         <span>Discuss on WhatsApp</span>
@@ -1484,7 +1496,7 @@ export default function OGIDiagnostic() {
                     <button
                       onClick={handleRestart}
                       aria-label="Restart assessment"
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-mono font-bold text-slate-400 hover:text-[#C2A56D] uppercase tracking-wider bg-slate-50 hover:bg-slate-100 border border-slate-200 px-6 py-3.5 rounded-xl cursor-pointer transition-all active:scale-95"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-mono font-bold text-slate-400 hover:text-gold uppercase tracking-wider bg-slate-50 hover:bg-slate-100 border border-slate-200 px-6 py-3.5 rounded-xl focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none cursor-pointer transition-all active:scale-95"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       Restart assessment
@@ -1495,7 +1507,7 @@ export default function OGIDiagnostic() {
                         e.preventDefault();
                         smoothScrollTo("team");
                       }}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-display font-bold text-slate-500 hover:text-[#2C3947] uppercase tracking-wider px-6 py-3.5 rounded-xl cursor-pointer transition-all"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-display font-bold text-slate-500 hover:text-navy-soft uppercase tracking-wider px-6 py-3.5 rounded-xl cursor-pointer transition-all"
                     >
                       Meet our Partners
                     </a>

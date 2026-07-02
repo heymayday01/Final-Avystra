@@ -15,6 +15,7 @@ import {
 import { UnderlineSquiggle } from "./DoodleWidgets";
 import CountUp from "./CountUp";
 import CumulativePenalty from "./CumulativePenalty";
+import { useReveal } from "@/lib/useReveal";
 
 interface StatItemProps {
   id: string;
@@ -32,6 +33,12 @@ interface StatItemProps {
 export default function StatsFounder() {
   const [photoFailed, setPhotoFailed] = useState(false);
 
+  // Scroll reveal refs (single call per reveal group, never inside .map()).
+  const headerRef = useReveal<HTMLDivElement>();
+  const statsGridRef = useReveal<HTMLDivElement>({ stagger: true });
+  const portraitRef = useReveal<HTMLDivElement>();
+  const credentialsGridRef = useReveal<HTMLDivElement>({ stagger: true });
+
   // CountUp (inside StatCard) uses motion/react useInView as a counter
   // trigger (not a reveal animation) — left untouched.
 
@@ -46,7 +53,7 @@ export default function StatsFounder() {
       percentage: 95,
       label: "Financial Drain",
       context: "lost to disengagement every year in India",
-      icon: <TrendingUp className="w-5 h-5 text-red-400" />,
+      icon: <TrendingUp className="w-5 h-5 text-danger" />,
     },
     {
       id: "stat-managers",
@@ -58,7 +65,7 @@ export default function StatsFounder() {
       percentage: 82,
       label: "Manager Selection",
       context: "of companies choose the wrong managers",
-      icon: <Users2 className="w-5 h-5 text-red-400" />,
+      icon: <Users2 className="w-5 h-5 text-danger" />,
     },
     {
       id: "stat-engaged",
@@ -70,7 +77,7 @@ export default function StatsFounder() {
       percentage: 23,
       label: "Employee Engagement",
       context: "of India employees are engaged at work",
-      icon: <Briefcase className="w-5 h-5 text-red-400" />,
+      icon: <Briefcase className="w-5 h-5 text-danger" />,
     },
     {
       id: "stat-responsibility",
@@ -82,7 +89,7 @@ export default function StatsFounder() {
       percentage: 69,
       label: "Latent Ownership",
       context: "Employees are ready. Systems aren't.",
-      icon: <BarChart4 className="w-5 h-5 text-red-400" />,
+      icon: <BarChart4 className="w-5 h-5 text-danger" />,
     },
   ];
 
@@ -138,20 +145,20 @@ export default function StatsFounder() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* SECTION 1: STATS */}
-        <div className="mb-8 text-center">
+        <div ref={headerRef} className="reveal mb-8 text-center">
           <div className="mb-8">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/60 border border-slate-200/50 rounded-full mb-3 shadow-sm">
-              <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-              <span className="text-[10.5px] text-red-500 font-mono tracking-widest font-bold uppercase">
+              <AlertTriangle className="w-3.5 h-3.5 text-danger" />
+              <span className="text-[10.5px] text-danger font-mono tracking-widest font-bold uppercase">
                 The Numbers Don&apos;t Lie
               </span>
             </div>
-            <h2 className="font-display font-bold text-3xl sm:text-4xl text-red-500 tracking-tight mb-3 leading-[1.2]">
+            <h2 className="font-display font-bold text-3xl sm:text-4xl text-danger tracking-tight mb-3 leading-[1.2]">
               India is Bleeding{" "}
               <span className="font-serif italic font-light relative inline-block">
                 Performance
                 <UnderlineSquiggle
-                  className="text-red-500"
+                  className="text-danger"
                   duration={1.5}
                   delay={0.3}
                 />
@@ -164,10 +171,11 @@ export default function StatsFounder() {
 
           {/* Metrics Grid */}
           <div
+            ref={statsGridRef}
             className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10"
           >
             {stats.map((stat) => (
-              <div key={stat.id} className="h-full">
+              <div key={stat.id} className="reveal h-full" data-reveal>
                 <StatCard stat={stat} />
               </div>
             ))}
@@ -186,7 +194,8 @@ export default function StatsFounder() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
             {/* Founder Portrait Column — premium framed card */}
             <div
-              className="lg:col-span-5 flex justify-center"
+              ref={portraitRef}
+              className="reveal lg:col-span-5 flex justify-center"
             >
               <div className="relative w-full max-w-[280px] sm:max-w-[320px]">
                 {/* Decorative gold glow behind portrait */}
@@ -273,7 +282,7 @@ export default function StatsFounder() {
                 </p>
 
                 {/* Premium quote box — gold gradient with decorative marks */}
-                <div className="relative my-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-navy-deep to-[#132540] border border-gold/20 shadow-[0_12px_36px_-12px_rgba(11,27,46,0.25)] overflow-hidden">
+                <div className="relative my-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-navy-deep to-navy-soft border border-gold/20 shadow-[0_12px_36px_-12px_rgba(11,27,46,0.25)] overflow-hidden">
                   {/* Decorative quote mark */}
                   <span className="absolute top-2 left-4 text-5xl font-serif text-gold/20 leading-none select-none pointer-events-none">
                     &ldquo;
@@ -297,16 +306,18 @@ export default function StatsFounder() {
 
           {/* Credentials Block */}
           <div className="mt-10 pt-6 border-t border-slate-100 text-left">
-            <h4 className="text-[11.5px] font-mono font-bold text-gold uppercase tracking-widest text-center mb-6">
+            <p className="text-[11.5px] font-mono font-bold text-gold uppercase tracking-widest text-center mb-6">
               — A DECADE OF BUILDING WHAT WORKS —
-            </h4>
+            </p>
             <div
+              ref={credentialsGridRef}
               className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
             >
               {credentials.map((cred, i) => (
                 <div
                   key={i}
-                  className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 border border-slate-100 hover:border-gold/25 transition-[border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-sm flex flex-col"
+                  className="reveal card-premium p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50 shadow-sm flex flex-col"
+                  data-reveal
                 >
                   {/* Icon */}
                   <div className="p-2 bg-gold/10 rounded-xl w-fit mb-3 shrink-0">
@@ -337,11 +348,11 @@ const StatCard = React.memo(function StatCard({
   stat: StatItemProps;
 }) {
   return (
-    <div className="relative rounded-2xl p-5 bg-navy-deep border border-red-500/15 flex flex-col items-center text-center group transition-[border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-red-500/30 overflow-hidden h-full">
+    <div className="card-premium relative rounded-2xl p-5 bg-navy-deep border border-danger/15 flex flex-col items-center text-center group overflow-hidden h-full">
       {/* Red warning line at top */}
-      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-red-500/0 via-red-500 to-red-500/0" />
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-danger/0 via-danger to-danger/0" />
 
-      <div className="p-3 bg-red-500/10 rounded-full text-red-400 mb-4 shrink-0">
+      <div className="p-3 bg-danger/10 rounded-full text-danger mb-4 shrink-0">
         {stat.icon}
       </div>
 
@@ -361,7 +372,7 @@ const StatCard = React.memo(function StatCard({
         )}
       </span>
 
-      <span className="text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest mt-1 mb-2">
+      <span className="text-[10px] font-mono font-bold text-danger uppercase tracking-widest mt-1 mb-2">
         {stat.label}
       </span>
 

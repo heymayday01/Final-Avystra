@@ -4,6 +4,7 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { BookOpen, Calendar, Users, ArrowUpRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import TextReveal from "./TextReveal";
+import { useReveal } from "@/lib/useReveal";
 
 interface Program {
   id: string;
@@ -26,7 +27,7 @@ interface Program {
 function ProgramCard({ prog }: { prog: Program }) {
   return (
     <article
-      className="program-card group relative bg-gradient-to-br from-white to-slate-50/80 border border-slate-100 rounded-3xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between hover:shadow-[0_16px_32px_-16px_rgba(11,27,46,0.10)] hover:border-gold/25 transition-[box-shadow,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] h-full overflow-hidden"
+      className="program-card card-premium group relative bg-gradient-to-br from-white to-slate-50/80 border border-slate-100 rounded-3xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between transition-[box-shadow,border-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] h-full overflow-hidden"
     >
       {/* Subtle Glow Reflection Layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -87,7 +88,7 @@ function ProgramCard({ prog }: { prog: Program }) {
           )}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full min-h-[44px] py-3 sm:py-3.5 px-4 rounded-xl bg-navy-deep text-gold hover:bg-gold hover:text-navy-deep transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-[0.18em] sm:tracking-[0.2em] group/btn"
+          className="btn-premium flex items-center justify-center gap-2 w-full min-h-[44px] py-3 sm:py-3.5 px-4 rounded-xl bg-navy-deep text-gold hover:bg-gold hover:text-navy-deep transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer text-[10px] sm:text-[10.5px] font-mono font-black uppercase tracking-[0.18em] sm:tracking-[0.2em] group/btn focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
           aria-label={`Enquire about ${prog.title} program`}
         >
           <span>Enquire Now</span>
@@ -103,6 +104,10 @@ export default function ProgramsSection() {
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+
+  const headingRef = useReveal<HTMLDivElement>();
+  const tabsRef = useReveal<HTMLDivElement>();
+  const gridRef = useReveal<HTMLDivElement>({ stagger: true });
 
   // Track viewport for mobile carousel behavior
   useEffect(() => {
@@ -306,7 +311,8 @@ export default function ProgramsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 select-none">
         {/* Section Heading */}
         <div
-          className="flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
+          ref={headingRef}
+          className="reveal flex flex-col items-center text-center max-w-3xl mx-auto mb-6 md:mb-8"
         >
           <div className="border border-gold/20 bg-gradient-to-br from-white to-slate-50 border border-slate-100 px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-3 shadow-sm">
             <BookOpen className="w-3.5 h-3.5 text-gold" />
@@ -343,14 +349,14 @@ export default function ProgramsSection() {
         </div>
 
         {/* Categories Tab Navigation */}
-        <div className="flex flex-nowrap overflow-x-auto scrollbar-none pb-4 lg:pb-0 lg:flex-wrap justify-start lg:justify-center gap-3 mb-6 select-none max-w-4xl mx-auto px-4 lg:px-0 lg:mx-auto" style={{ scrollPaddingRight: '2rem' }}>
+        <div ref={tabsRef} className="reveal flex flex-nowrap overflow-x-auto scrollbar-none pb-4 lg:pb-0 lg:flex-wrap justify-start lg:justify-center gap-3 mb-6 select-none max-w-4xl mx-auto px-4 lg:px-0 lg:mx-auto" style={{ scrollPaddingRight: '2rem' }}>
           {categories.map((cat) => {
             const isActive = activeTab === cat.key;
             return (
               <button
                 key={cat.key}
                 onClick={() => setActiveTab(cat.key)}
-                className={`min-h-[44px] px-4 sm:px-6 py-3 rounded-2xl font-mono text-[10px] sm:text-[12.5px] font-black uppercase tracking-[0.14em] sm:tracking-[0.2em] border transition-all duration-500 cursor-pointer relative group shrink-0 ${
+                className={`min-h-[44px] px-4 sm:px-6 py-3 rounded-2xl font-mono text-[10px] sm:text-[12.5px] font-black uppercase tracking-[0.14em] sm:tracking-[0.2em] border transition-all duration-500 cursor-pointer relative group shrink-0 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none ${
                   isActive
                     ? "bg-navy-deep text-gold border-navy-deep shadow-xl"
                     : "bg-gradient-to-br from-white to-slate-50 border border-slate-100 text-slate-500 hover:text-navy-deep hover:border-slate-300 shadow-sm"
@@ -366,7 +372,7 @@ export default function ProgramsSection() {
                     />
                     <motion.div
                       layoutId="activeTabUnderline"
-                      className="absolute bottom-0 left-4 right-4 h-[2px] bg-gold rounded-t-full shadow-[0_0_8px_rgba(184,146,78,0.5)]"
+                      className="absolute bottom-0 left-4 right-4 h-[2px] bg-gold rounded-t-full shadow-[0_0_8px_rgba(var(--gold-rgb),0.5)]"
                       transition={{
                         type: "spring",
                         bounce: 0.2,
@@ -387,6 +393,7 @@ export default function ProgramsSection() {
 
         {/* DESKTOP & TABLET GRID — hidden on mobile */}
         <div
+          ref={gridRef}
           className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 min-h-[400px] items-stretch"
           aria-label="Programs grid"
         >
@@ -402,7 +409,8 @@ export default function ProgramsSection() {
                   ease: [0.16, 1, 0.3, 1],
                   delay: index * 0.05,
                 }}
-                className="h-full"
+                data-reveal
+                className="reveal h-full"
               >
                 <ProgramCard prog={prog} />
               </motion.div>
@@ -478,7 +486,7 @@ export default function ProgramsSection() {
                   <button
                     key={prog.id}
                     onClick={() => scrollToCard(index)}
-                    className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 group/dot"
+                    className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 group/dot focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
                     role="tab"
                     aria-selected={isActive}
                     aria-label={`Go to program ${index + 1}: ${prog.title}`}
@@ -486,7 +494,7 @@ export default function ProgramsSection() {
                     <span
                       className={`block rounded-full transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                         isActive
-                          ? "w-5 h-1.5 bg-gold shadow-[0_0_6px_rgba(184,146,78,0.5)]"
+                          ? "w-5 h-1.5 bg-gold shadow-[0_0_6px_rgba(var(--gold-rgb),0.5)]"
                           : "w-1.5 h-1.5 bg-navy-deep/20 group-hover/dot:bg-navy-deep/40"
                       }`}
                     />

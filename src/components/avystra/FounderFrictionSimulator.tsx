@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
+import { useReveal } from "@/lib/useReveal";
 import {
   Compass,
   Briefcase,
@@ -75,6 +76,15 @@ export default function FounderFrictionSimulator() {
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
 
+  // ── Scroll-reveal refs (one useReveal call per reveal group) ──
+  const subtextRef = useReveal<HTMLParagraphElement>();
+  const toggleRef = useReveal<HTMLDivElement>();
+  const desktopCardsRef = useReveal<HTMLDivElement>({ stagger: true });
+  const desktopCenterNodeRef = useReveal<HTMLDivElement>();
+  const mobileCenterNodeRef = useReveal<HTMLDivElement>();
+  const mobileCardsRef = useReveal<HTMLDivElement>({ stagger: true });
+  const ctaRef = useReveal<HTMLDivElement>();
+
   // Pause SVG animateMotion + CSS animations when section is off-screen
   useEffect(() => {
     const el = sectionRef.current;
@@ -145,14 +155,14 @@ export default function FounderFrictionSimulator() {
   ];
 
   // Active accent color: red when bottlenecked, green when AVYSTRA system
-  const accent = isResolved ? "#10B981" : "#EF4444";
+  const accent = isResolved ? "var(--color-success)" : "var(--color-danger)";
   const accentSoft = isResolved
     ? "rgba(16,185,129,0.35)"
     : "rgba(239,68,68,0.35)";
   const accentFaint = isResolved
     ? "rgba(16,185,129,0.5)"
     : "rgba(239,68,68,0.5)";
-  const pulseColor = isResolved ? "#10B981" : "#EF4444";
+  const pulseColor = isResolved ? "var(--color-success)" : "var(--color-danger)";
 
   return (
     <section
@@ -161,7 +171,7 @@ export default function FounderFrictionSimulator() {
       className="relative w-full overflow-hidden select-none scroll-mt-20"
       style={{
         background:
-          "radial-gradient(ellipse at 50% 0%, #0D1220 0%, #060810 50%, #04060C 100%)",
+          "radial-gradient(ellipse at 50% 0%, var(--color-navy-deep) 0%, color-mix(in srgb, var(--color-navy-deep) 55%, black) 50%, color-mix(in srgb, var(--color-navy-deep) 35%, black) 100%)",
       }}
     >
       {/* Architectural grid overlay */}
@@ -169,7 +179,7 @@ export default function FounderFrictionSimulator() {
         className="absolute inset-0 pointer-events-none opacity-[0.04]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, #C9A84C 1px, transparent 1px), linear-gradient(to bottom, #C9A84C 1px, transparent 1px)",
+            "linear-gradient(to right, var(--color-gold) 1px, transparent 1px), linear-gradient(to bottom, var(--color-gold) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
         }}
       />
@@ -184,13 +194,17 @@ export default function FounderFrictionSimulator() {
       />
 
       <div className="relative max-w-[1200px] mx-auto px-5 sm:px-6 lg:px-8 z-10 py-[60px] sm:py-[80px] lg:py-[100px]">
+        {/* Visually-hidden section heading for screen-reader navigation */}
+        <h2 className="sr-only">Founder Dependency Diagnostic</h2>
+
         {/* ─── HEADER BLOCK ───
             "Interactive Structural Diagnostic" badge removed per spec.
             This section now leads directly with subtext + toggle. */}
         <div className="flex flex-col items-center text-center mb-12">
           {/* Subtext */}
           <p
-            className="text-white/50 font-sans text-sm sm:text-base max-w-[520px] leading-relaxed"
+            ref={subtextRef}
+            className="reveal text-white/50 font-sans text-sm sm:text-base max-w-[520px] leading-relaxed"
             style={{ letterSpacing: "0.02em" }}
           >
             Toggle between states to see exactly what AVYSTRA engineers.
@@ -199,7 +213,8 @@ export default function FounderFrictionSimulator() {
 
         {/* ─── PREMIUM TOGGLE — red/green active pill ─── */}
         <div
-          className="relative mx-auto mb-12 flex items-center h-12 w-full max-w-[380px] rounded-full p-1 backdrop-blur-md"
+          ref={toggleRef}
+          className="reveal relative mx-auto mb-12 flex items-center h-12 w-full max-w-[380px] rounded-full p-1 backdrop-blur-md"
           style={{
             background: "rgba(255,255,255,0.04)",
             border: "1px solid rgba(255,255,255,0.12)",
@@ -214,14 +229,14 @@ export default function FounderFrictionSimulator() {
             transition={{ type: "spring", stiffness: 320, damping: 30 }}
             style={{
               width: "calc(50% - 4px)",
-              background: `linear-gradient(135deg, ${accent} 0%, ${isResolved ? "#34D399" : "#F87171"} 100%)`,
+              background: `linear-gradient(135deg, ${accent} 0%, ${isResolved ? "var(--color-success)" : "var(--color-danger)"} 100%)`,
               boxShadow: `0 4px 16px ${accentSoft}, 0 0 0 1px ${accentFaint}`,
             }}
           />
           <button
             onClick={() => setIsResolved(false)}
             aria-label="Show bottlenecked state"
-            className={`toggle-pill-btn relative z-10 w-1/2 text-center text-[12px] font-mono tracking-[0.14em] font-bold h-full transition-colors duration-300 ${
+            className={`toggle-pill-btn relative z-10 w-1/2 text-center text-[12px] font-mono tracking-[0.14em] font-bold h-full transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none ${
               !isResolved
                 ? "text-white"
                 : "text-white/50 hover:text-white/70"
@@ -232,7 +247,7 @@ export default function FounderFrictionSimulator() {
           <button
             onClick={() => setIsResolved(true)}
             aria-label="Show AVYSTRA system state"
-            className={`toggle-pill-btn relative z-10 w-1/2 text-center text-[12px] font-mono tracking-[0.14em] font-bold h-full transition-colors duration-300 ${
+            className={`toggle-pill-btn relative z-10 w-1/2 text-center text-[12px] font-mono tracking-[0.14em] font-bold h-full transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none ${
               isResolved
                 ? "text-white"
                 : "text-white/50 hover:text-white/70"
@@ -244,6 +259,7 @@ export default function FounderFrictionSimulator() {
 
         {/* ═══ DIAGRAM — DESKTOP & TABLET (≥768px) ═══ */}
         <div
+          ref={desktopCardsRef}
           className="relative w-full max-w-[1000px] h-[480px] md:h-[520px] lg:h-[560px] mx-auto hidden md:block"
         >
           {/* SVG Connector Lines — color matches active state */}
@@ -314,7 +330,8 @@ export default function FounderFrictionSimulator() {
             return (
               <div
                 key={outcome.id}
-                className="friction-card absolute w-[200px] md:w-[220px] lg:w-[240px] rounded-2xl p-4 sm:p-5 z-10 transition-colors duration-500 overflow-hidden"
+                data-reveal
+                className="reveal card-premium-dark absolute w-[200px] md:w-[220px] lg:w-[240px] rounded-2xl p-4 sm:p-5 z-10 transition-colors duration-500 overflow-hidden"
                 style={{
                   ...outcome.desktopStyle,
                   background: "rgba(255,255,255,0.08)",
@@ -368,7 +385,7 @@ export default function FounderFrictionSimulator() {
                       >
                         <span
                           className="text-[11.5px] font-bold shrink-0 mt-1 transition-colors duration-500"
-                          style={{ color: "#EF444499" }}
+                          style={{ color: "color-mix(in srgb, var(--color-danger) 60%, transparent)" }}
                         >
                           ◆
                         </span>
@@ -391,7 +408,7 @@ export default function FounderFrictionSimulator() {
                       <ShieldCheck
                         className="w-3.5 h-3.5 shrink-0 mt-0.5 transition-colors duration-500"
                         strokeWidth={2}
-                        style={{ color: "#10B981" }}
+                        style={{ color: "var(--color-success)" }}
                       />
                       <span className="text-white/90 font-sans text-[13px] leading-relaxed font-medium">
                         {outcome.solution}
@@ -404,7 +421,7 @@ export default function FounderFrictionSimulator() {
           })}
 
           {/* ─── CENTER NODE — founder portrait crossfade, accent ring, label ─── */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+          <div ref={desktopCenterNodeRef} className="reveal absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
             <div
               className="relative w-[140px] h-[140px] rounded-full overflow-hidden flex flex-col items-center justify-center text-center transition-all duration-500"
               style={{
@@ -442,39 +459,43 @@ export default function FounderFrictionSimulator() {
 
         {/* ═══ MOBILE STACKED VIEW (<768px) ═══ */}
         <div className="md:hidden flex flex-col items-center">
-          {/* Center node — label BELOW circle to avoid clipping */}
-          <div
-            className="relative w-[120px] h-[120px] rounded-full overflow-hidden transition-all duration-500"
-            style={{
-              border: `1px solid ${accentFaint}`,
-              boxShadow: `0 0 0 6px ${accentSoft}19, 0 0 40px ${accentSoft}, inset 0 0 20px rgba(0,0,0,0.4)`,
-            }}
-          >
-            <FounderImages isResolved={isResolved} />
-            <span
-              className="absolute inset-0 rounded-full pointer-events-none"
+          {/* Center node — wrapped for scroll reveal (label BELOW circle) */}
+          <div ref={mobileCenterNodeRef} className="reveal flex flex-col items-center">
+            {/* Center node circle */}
+            <div
+              className="relative w-[120px] h-[120px] rounded-full overflow-hidden transition-all duration-500"
               style={{
                 border: `1px solid ${accentFaint}`,
-                animation: "centerPulse 2s ease-out infinite",
+                boxShadow: `0 0 0 6px ${accentSoft}19, 0 0 40px ${accentSoft}, inset 0 0 20px rgba(0,0,0,0.4)`,
               }}
-            />
-          </div>
-
-          {/* Center node label — FOUNDER / AVYSTRA SYSTEM */}
-          <div className="mt-4 mb-10 text-center">
-            <div
-              className="text-[12px] font-mono font-bold tracking-[0.18em] uppercase transition-colors duration-500"
-              style={{ color: accent }}
             >
-              {isResolved ? "AVYSTRA SYSTEM" : "FOUNDER"}
+              <FounderImages isResolved={isResolved} />
+              <span
+                className="absolute inset-0 rounded-full pointer-events-none"
+                style={{
+                  border: `1px solid ${accentFaint}`,
+                  animation: "centerPulse 2s ease-out infinite",
+                }}
+              />
             </div>
-            <div className="text-[10.5px] font-sans text-white/45 mt-1 transition-colors duration-500">
-              {isResolved ? "The system that holds" : "Single point of failure"}
+
+            {/* Center node label — FOUNDER / AVYSTRA SYSTEM */}
+            <div className="mt-4 mb-10 text-center">
+              <div
+                className="text-[12px] font-mono font-bold tracking-[0.18em] uppercase transition-colors duration-500"
+                style={{ color: accent }}
+              >
+                {isResolved ? "AVYSTRA SYSTEM" : "FOUNDER"}
+              </div>
+              <div className="text-[10.5px] font-sans text-white/45 mt-1 transition-colors duration-500">
+                {isResolved ? "The system that holds" : "Single point of failure"}
+              </div>
             </div>
           </div>
 
           {/* Stacked outcome cards */}
           <div
+            ref={mobileCardsRef}
             className="w-full grid grid-cols-1 gap-4"
           >
             {outcomes.map((outcome) => {
@@ -482,7 +503,8 @@ export default function FounderFrictionSimulator() {
               return (
                 <div
                   key={outcome.id}
-                  className="rounded-2xl p-5 transition-colors duration-500"
+                  data-reveal
+                  className="reveal card-premium-dark rounded-2xl p-5 transition-colors duration-500"
                   style={{
                     background: "rgba(255,255,255,0.08)",
                     border: "1px solid rgba(255,255,255,0.10)",
@@ -528,7 +550,7 @@ export default function FounderFrictionSimulator() {
                         >
                           <span
                             className="text-[11.5px] font-bold shrink-0 mt-1"
-                            style={{ color: "#EF444499" }}
+                            style={{ color: "color-mix(in srgb, var(--color-danger) 60%, transparent)" }}
                           >
                             ◆
                           </span>
@@ -547,7 +569,7 @@ export default function FounderFrictionSimulator() {
                         <ShieldCheck
                           className="w-3.5 h-3.5 shrink-0 mt-0.5"
                           strokeWidth={2}
-                          style={{ color: "#10B981" }}
+                          style={{ color: "var(--color-success)" }}
                         />
                         <span className="text-white/90 font-sans text-[13px] leading-relaxed font-medium">
                           {outcome.solution}
@@ -563,7 +585,8 @@ export default function FounderFrictionSimulator() {
 
         {/* ─── BOTTOM CTA STRIP ─── */}
         <div
-          className="mt-10 w-full max-w-[1000px] mx-auto rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"
+          ref={ctaRef}
+          className="reveal mt-10 w-full max-w-[1000px] mx-auto rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left"
           style={{
             background: "rgba(255,255,255,0.06)",
             border: "1px solid rgba(201,168,76,0.15)",
@@ -575,7 +598,7 @@ export default function FounderFrictionSimulator() {
           <button
             onClick={handleBookCall}
             aria-label="Book an assessment call"
-            className="group inline-flex items-center gap-2 bg-gold text-[#0B1B2E] font-sans font-bold text-xs uppercase tracking-[0.12em] px-7 py-3.5 rounded-full hover:bg-gold-light transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer w-full sm:w-auto shrink-0"
+            className="btn-premium group inline-flex items-center gap-2 bg-gold text-navy-deep font-sans font-bold text-xs uppercase tracking-[0.12em] px-7 py-3.5 rounded-full hover:bg-gold-light transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer w-full sm:w-auto shrink-0 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             Book an assessment call
             <ArrowRight
