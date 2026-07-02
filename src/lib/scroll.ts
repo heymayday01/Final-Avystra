@@ -35,13 +35,13 @@ function getLenis(): LenisLike | undefined {
  * Smooth-scroll to a target element.
  * @param target  Element ID (without #) or the element itself
  * @param offset  Pixel offset from top (negative = above the element).
- *                Default -100 to clear the sticky header.
- * @param duration Scroll duration in seconds (default 1.2)
+ *                Default -110 to clear the sticky header + promo banner.
+ * @param duration Scroll duration in seconds (default 1.0)
  */
 export function smoothScrollTo(
   target: string | HTMLElement,
-  offset: number = -100,
-  duration: number = 1.2
+  offset: number = -110,
+  duration: number = 1.0
 ): void {
   const el =
     typeof target === "string" ? document.getElementById(target) : target;

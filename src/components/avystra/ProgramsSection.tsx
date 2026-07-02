@@ -403,17 +403,11 @@ export default function ProgramsSection() {
           aria-label="Programs grid"
         >
           <AnimatePresence mode="popLayout">
-            {filteredPrograms.map((prog, index) => (
+            {filteredPrograms.map((prog) => (
               <motion.div
                 key={prog.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  duration: 0.5,
-                  ease: EASE,
-                  delay: index * 0.05,
-                }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.3, ease: EASE }}
                 className="h-full"
               >
                 <ProgramCard prog={prog} />

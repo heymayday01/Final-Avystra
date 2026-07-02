@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Quote, Star, MessageSquare } from "lucide-react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { usePageReady } from "@/lib/pageReady";
 import { useGsapReveal } from "@/lib/useGsapReveal";
 import { useGsapCards } from "@/lib/useGsapCards";
 
@@ -19,6 +22,38 @@ export default function TestimonialsSection() {
   });
   const headingRef = useGsapReveal<HTMLHeadingElement>("words");
   const gridRef = useGsapCards<HTMLDivElement>();
+  const pageReady = usePageReady();
+
+  // Animate stars — stagger pop-in when the star container scrolls into view
+  useEffect(() => {
+    if (!pageReady) return;
+    const el = gridRef.current;
+    if (!el) return;
+
+    const starContainers = el.querySelectorAll('[aria-label="5 out of 5 stars"]');
+    if (starContainers.length === 0) return;
+
+    const ctx = gsap.context(() => {
+      starContainers.forEach((container) => {
+        const stars = container.querySelectorAll("svg");
+        gsap.set(stars, { scale: 0, opacity: 0 });
+        gsap.to(stars, {
+          scale: 1,
+          opacity: 1,
+          duration: 0.4,
+          ease: "back.out(1.7)",
+          stagger: 0.08,
+          scrollTrigger: {
+            trigger: container,
+            start: "top 90%",
+            toggleActions: "play none none none",
+          },
+        });
+      });
+    }, el);
+
+    return () => ctx.revert();
+  }, [pageReady]);
 
   const testimonials: Testimonial[] = [
     {

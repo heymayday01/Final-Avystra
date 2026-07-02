@@ -361,26 +361,12 @@ body::-webkit-scrollbar {
   box-shadow: var(--shadow-btn-glow);
 }
 
-/* Premium nav link hover — opacity + underline */
+/* Premium nav link hover — smooth color transition (no underline) */
 .nav-premium {
-  position: relative;
   transition: opacity var(--dur-micro) var(--ease-sine);
 }
-.nav-premium::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: var(--color-gold);
-  transition: width var(--dur-micro) var(--ease-sine);
-}
 .nav-premium:hover {
-  opacity: 0.8;
-}
-.nav-premium:hover::after {
-  width: 100%;
+  opacity: 0.7;
 }
 
 /* ═══ FOCUS RING UTILITY ═══

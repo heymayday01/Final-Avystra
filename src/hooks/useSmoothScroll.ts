@@ -51,7 +51,7 @@ function createHashClickHandler(
 }
 
 /** Native smooth scroll to an element ID (mobile + reduced-motion fallback). */
-function nativeScrollToId(targetId: string, offset = -100) {
+function nativeScrollToId(targetId: string, offset = -110) {
   if (targetId === "") {
     window.scrollTo({ top: 0, behavior: "smooth" });
     return;
@@ -226,7 +226,7 @@ export function useSmoothScroll() {
       }
       const el = document.getElementById(targetId);
       if (el) {
-        lenis.scrollTo(el, { offset: -100, duration: 1.25 });
+        lenis.scrollTo(el, { offset: -110, duration: 1.0 });
       }
     });
     document.addEventListener("click", hashHandler);
